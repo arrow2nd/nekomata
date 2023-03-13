@@ -1,21 +1,16 @@
 package misskey
 
-import (
-	"net/url"
+import "github.com/arrow2nd/nekomata/api/shared"
 
-	"github.com/arrow2nd/nekomata/api/shared"
-)
-
+// Misskey : みすきー
 type Misskey struct {
-	shared.Client
 	config  *shared.Config
 	baseURL string
 }
 
-func Init(c *shared.Config) *Misskey {
-	baseURL := url.URL{}
-	baseURL.Scheme = "https"
-	baseURL = *baseURL.JoinPath(c.Host, "api")
+// New : 新しいクライアントを生成
+func New(c *shared.Config) *Misskey {
+	baseURL := shared.CreateURL(c.Host, "api")
 
 	return &Misskey{
 		config:  c,

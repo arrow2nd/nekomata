@@ -41,6 +41,8 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.AuthResponse, error) {
 	return miauth.Run(w)
 }
 
+const listenAddr = "localhost:3000"
+
 type miAuthResponse struct {
 	OK    bool   `json:"ok"`
 	Token string `json:"token"`
@@ -67,7 +69,7 @@ func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
 	mux.HandleFunc("/callback", m.handleCallback)
 
 	serve := http.Server{
-		Addr:    "127.0.0.1:3000",
+		Addr:    listenAddr,
 		Handler: mux,
 	}
 
@@ -93,9 +95,8 @@ func (m *miAuth) createAuthURL(permissions []string) string {
 	u := shared.CreateURL(m.Host, "miauth", m.sessionID)
 
 	q := url.Values{}
-	callbackURL := "http://localhost:3000/callback"
 	q.Add("name", m.Name)
-	q.Add("callback", callbackURL)
+	q.Add("callback", "http://"+listenAddr+"/callback")
 	q.Add("permission", strings.Join(permissions, ","))
 
 	u.RawQuery = q.Encode()

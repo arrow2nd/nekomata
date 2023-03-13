@@ -15,6 +15,6 @@ const (
 )
 
 func NewClient(w io.Writer, s Service, c *shared.Config) (shared.Client, error) {
-	// TODO: サービス毎にそれぞれクライアントを返す
-	return misskey.Init(c), nil
+	// TODO: サービス毎にそれぞれのクライアントを初期化して返す
+	return misskey.New(c), nil
 }
