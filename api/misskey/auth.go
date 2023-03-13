@@ -75,6 +75,7 @@ func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
 
 	go func() {
 		if err := serve.ListenAndServe(); err != http.ErrServerClosed {
+			// TODO: ここのエラーも返したい
 			log.Fatalf("server error: %v", err)
 		}
 	}()
