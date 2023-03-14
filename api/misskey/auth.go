@@ -55,10 +55,10 @@ type miAuth struct {
 
 func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
 	// 認証URLを組み立て
-	authURL, sessionID := m.createAuthURL(m.Permissions)
+	authURL, sessionID := m.createURL(m.Permissions)
 	shared.PrintAuthURL(w, authURL)
 
-	// サーバーを建ててリダイレクトを待機
+	// セッションIDを受け取る
 	id, err := m.recieveSessionID(sessionID)
 	if err != nil {
 		return nil, err
@@ -67,14 +67,14 @@ func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
 	return m.recieveToken(id)
 }
 
-func (m *miAuth) createAuthURL(permissions []string) (string, string) {
+func (m *miAuth) createURL(permissions []string) (string, string) {
 	ID, _ := uuid.NewUUID()
 	sessionID := ID.String()
-	u := shared.CreateURL(m.Host, "miauth", sessionID)
+	u := shared.CreateURL("https", m.Host, "miauth", sessionID)
 
 	q := url.Values{}
 	q.Add("name", m.Name)
-	q.Add("callback", "http://"+listenAddr+"/callback")
+	q.Add("callback", shared.CreateURL("http", listenAddr, "callback").String())
 	q.Add("permission", strings.Join(permissions, ","))
 
 	u.RawQuery = q.Encode()
@@ -87,13 +87,15 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 	sessionID := make(chan string, 1)
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		recieved := r.URL.Query().Get("session")
-		if recieved != id {
-			w.WriteHeader(http.StatusBadRequest)
+
+		if recieved == id {
+			sessionID <- recieved
+			w.Write([]byte("Authentication complete! You may close this page."))
 			return
 		}
 
-		sessionID <- recieved
-		w.Write([]byte("Authentication complete! You may close this page."))
+		w.WriteHeader(http.StatusBadRequest)
+		sessionID <- ""
 	})
 
 	// サーバーを建ててリダイレクトを待機
@@ -101,8 +103,8 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 		Addr:    listenAddr,
 		Handler: mux,
 	}
-	serverErr := make(chan error, 1)
 
+	serverErr := make(chan error, 1)
 	go func() {
 		serverErr <- serve.ListenAndServe()
 	}()
@@ -111,18 +113,22 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 
 	// サーバーを閉じる
 	if err := serve.Shutdown(context.Background()); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to shut down server: %w", err)
 	}
 
 	if err := <-serverErr; err != http.ErrServerClosed {
-		return "", fmt.Errorf("server error: %w", err)
+		return "", fmt.Errorf("failed to listen server: %w", err)
+	}
+
+	if recievedSessionID == "" {
+		return "", fmt.Errorf("failed to recieve session id")
 	}
 
 	return recievedSessionID, nil
 }
 
 func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
-	endpointURL := shared.CreateURL(m.Host, "api", "miauth", sessionID, "check")
+	endpointURL := shared.CreateURL("https", m.Host, "api", "miauth", sessionID, "check")
 	res, err := http.Post(endpointURL.String(), "text/plain", nil)
 	if err != nil {
 		return nil, err

@@ -10,7 +10,7 @@ type Misskey struct {
 
 // New : 新しいクライアントを生成
 func New(c *shared.Config) *Misskey {
-	baseURL := shared.CreateURL(c.Host, "api")
+	baseURL := shared.CreateURL("https", c.Host, "api")
 
 	return &Misskey{
 		config:  c,
