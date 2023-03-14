@@ -13,22 +13,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMiAuthRun(t *testing.T) {
-	// 取得できるか
-}
-
 func TestMiAuthCreateURL(t *testing.T) {
 	m := &miAuth{
-		Name: "test_app",
-		Host: "example.com",
+		Name:        "test_app",
+		Host:        "example.com",
+		Permissions: []string{"aaaa", "bbbb"},
 	}
 
-	p := []string{
-		"aaaa",
-		"bbbb",
-	}
-
-	u, _ := m.createURL(p)
+	u, _ := m.createURL()
 	r := regexp.MustCompile("https://example.com/miauth/.+callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb")
 
 	assert.Regexp(t, r, u, "正しい形式か")

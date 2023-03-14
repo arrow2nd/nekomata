@@ -38,7 +38,17 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.AuthResponse, error) {
 		Permissions: permissions,
 	}
 
-	return miauth.Run(w)
+	// 認証URLを組み立て
+	authURL, sessionID := miauth.createURL()
+	shared.PrintAuthURL(w, authURL)
+
+	// セッションIDを受け取る
+	id, err := miauth.recieveSessionID(sessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	return miauth.recieveToken(id)
 }
 
 const listenAddr = "localhost:3000"
@@ -55,21 +65,7 @@ type miAuth struct {
 	Permissions []string
 }
 
-func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
-	// 認証URLを組み立て
-	authURL, sessionID := m.createURL(m.Permissions)
-	shared.PrintAuthURL(w, authURL)
-
-	// セッションIDを受け取る
-	id, err := m.recieveSessionID(sessionID)
-	if err != nil {
-		return nil, err
-	}
-
-	return m.recieveToken(id)
-}
-
-func (m *miAuth) createURL(permissions []string) (string, string) {
+func (m *miAuth) createURL() (string, string) {
 	ID, _ := uuid.NewUUID()
 	sessionID := ID.String()
 	u := shared.CreateURL("https", m.Host, "miauth", sessionID)
@@ -77,7 +73,7 @@ func (m *miAuth) createURL(permissions []string) (string, string) {
 	q := url.Values{}
 	q.Add("name", m.Name)
 	q.Add("callback", shared.CreateURL("http", listenAddr, "callback").String())
-	q.Add("permission", strings.Join(permissions, ","))
+	q.Add("permission", strings.Join(m.Permissions, ","))
 
 	u.RawQuery = q.Encode()
 	return u.String(), sessionID
