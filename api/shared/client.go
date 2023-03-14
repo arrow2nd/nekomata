@@ -4,7 +4,8 @@ import "io"
 
 // Client : API クライアント
 type Client interface {
-	Authenticate(io.Writer) (*AuthResponse, error)
+	Authenticate(io.Writer) (*User, error)
+	GetAnnouncements() ([]*Announcement, error)
 }
 
 // Config : クライアントの設定

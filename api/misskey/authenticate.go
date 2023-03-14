@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (m *Misskey) Authenticate(w io.Writer) (*shared.AuthResponse, error) {
+func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 	permissions := []string{
 		"read:account",
 		"read:blocks",
@@ -40,7 +40,7 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.AuthResponse, error) {
 
 	// 認証URLを組み立て
 	authURL, sessionID := miauth.createURL()
-	shared.PrintAuthURL(w, authURL)
+	shared.PrintAuthenticateURL(w, authURL)
 
 	// セッションIDを受け取る
 	id, err := miauth.recieveSessionID(sessionID)
@@ -125,7 +125,7 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 	return recievedSessionID, nil
 }
 
-func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
+func (m *miAuth) recieveToken(sessionID string) (*shared.User, error) {
 	endpointURL := shared.CreateURL(m.Scheme, m.Host, "api", "miauth", sessionID, "check")
 	res, err := http.Post(endpointURL.String(), "text/plain", nil)
 	if err != nil {
@@ -148,7 +148,7 @@ func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
 		return nil, fmt.Errorf("failed to get token")
 	}
 
-	return &shared.AuthResponse{
+	return &shared.User{
 		Token: authRes.Token,
 	}, nil
 }
