@@ -1,7 +1,9 @@
 package misskey
 
 import (
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"regexp"
 	"testing"
@@ -85,13 +87,52 @@ func TestMiAuthRecieveSessionID(t *testing.T) {
 }
 
 func TestMiAuthRecieveToken(t *testing.T) {
-	// Postに失敗
+	isNotJSON := true
+	isExpired := true
 
-	// HTTPエラー
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/miauth/SESSION_ID/check" {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		} else if isNotJSON {
+			isNotJSON = false
+			fmt.Fprintln(w, `<html><head><title>Apps</title></head></html>`)
+			return
+		} else if isExpired {
+			isExpired = false
+			fmt.Fprintln(w, `{"ok": false}`)
+			return
+		}
 
-	// JSONデコードエラー
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, `{"ok": true, "token": "USER_TOKEN"}`)
+	}))
 
-	// トークン取得失敗
+	defer ts.Close()
+	tsURL, _ := url.Parse(ts.URL)
 
-	// 取得できるか
+	t.Run("アクセス失敗", func(t *testing.T) {
+		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		_, err := m.recieveToken("hoge")
+		assert.ErrorContains(t, err, "http error")
+	})
+
+	t.Run("JSONデコードエラー", func(t *testing.T) {
+		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		_, err := m.recieveToken("SESSION_ID")
+		assert.ErrorContains(t, err, "failed to decord json")
+	})
+
+	t.Run("URL期限切れ", func(t *testing.T) {
+		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		_, err := m.recieveToken("SESSION_ID")
+		assert.ErrorContains(t, err, "failed to get token")
+	})
+
+	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
+		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		res, err := m.recieveToken("SESSION_ID")
+		assert.NoError(t, err)
+		assert.Equal(t, "USER_TOKEN", res.Token)
+	})
 }

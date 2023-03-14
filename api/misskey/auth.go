@@ -33,6 +33,7 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.AuthResponse, error) {
 
 	miauth := &miAuth{
 		Name:        m.config.AppName,
+		Scheme:      "https",
 		Host:        m.config.Host,
 		Permissions: permissions,
 	}
@@ -49,6 +50,7 @@ type miAuthResponse struct {
 
 type miAuth struct {
 	Name        string
+	Scheme      string
 	Host        string
 	Permissions []string
 }
@@ -128,7 +130,7 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 }
 
 func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
-	endpointURL := shared.CreateURL("https", m.Host, "api", "miauth", sessionID, "check")
+	endpointURL := shared.CreateURL(m.Scheme, m.Host, "api", "miauth", sessionID, "check")
 	res, err := http.Post(endpointURL.String(), "text/plain", nil)
 	if err != nil {
 		return nil, err
@@ -137,13 +139,13 @@ func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("http error: status %s", res.Status)
+		return nil, fmt.Errorf("http error: %s", res.Status)
 	}
 
 	decorder := json.NewDecoder(res.Body)
 	authRes := &miAuthResponse{}
 	if err := decorder.Decode(authRes); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decord json: %w", err)
 	}
 
 	if !authRes.OK {
