@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -52,48 +51,26 @@ type miAuth struct {
 	Name        string
 	Host        string
 	Permissions []string
-
-	sessionID string
-	res       chan string
 }
 
 func (m *miAuth) Run(w io.Writer) (*shared.AuthResponse, error) {
-	m.res = make(chan string, 1)
-
 	// 認証URLを組み立て
-	authURL := m.createAuthURL(m.Permissions)
+	authURL, sessionID := m.createAuthURL(m.Permissions)
 	shared.PrintAuthURL(w, authURL)
 
 	// サーバーを建ててリダイレクトを待機
-	mux := http.NewServeMux()
-	mux.HandleFunc("/callback", m.handleCallback)
-
-	serve := http.Server{
-		Addr:    listenAddr,
-		Handler: mux,
-	}
-
-	go func() {
-		if err := serve.ListenAndServe(); err != http.ErrServerClosed {
-			// TODO: ここのエラーも返したい
-			log.Fatalf("server error: %v", err)
-		}
-	}()
-
-	sessionID := <-m.res
-
-	// サーバーを閉じる
-	if err := serve.Shutdown(context.Background()); err != nil {
+	id, err := m.recieveSessionID(sessionID)
+	if err != nil {
 		return nil, err
 	}
 
-	return m.recieveToken(sessionID)
+	return m.recieveToken(id)
 }
 
-func (m *miAuth) createAuthURL(permissions []string) string {
+func (m *miAuth) createAuthURL(permissions []string) (string, string) {
 	ID, _ := uuid.NewUUID()
-	m.sessionID = ID.String()
-	u := shared.CreateURL(m.Host, "miauth", m.sessionID)
+	sessionID := ID.String()
+	u := shared.CreateURL(m.Host, "miauth", sessionID)
 
 	q := url.Values{}
 	q.Add("name", m.Name)
@@ -101,20 +78,47 @@ func (m *miAuth) createAuthURL(permissions []string) string {
 	q.Add("permission", strings.Join(permissions, ","))
 
 	u.RawQuery = q.Encode()
-	return u.String()
+	return u.String(), sessionID
 }
 
-func (m *miAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
-	sessionID := r.URL.Query().Get("session")
+func (m *miAuth) recieveSessionID(id string) (string, error) {
+	mux := http.NewServeMux()
 
-	// 受け取ったセッションIDが正しいかチェック
-	if m.sessionID != sessionID {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	sessionID := make(chan string, 1)
+	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		recieved := r.URL.Query().Get("session")
+		if recieved != id {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		sessionID <- recieved
+		w.Write([]byte("Authentication complete! You may close this page."))
+	})
+
+	// サーバーを建ててリダイレクトを待機
+	serve := http.Server{
+		Addr:    listenAddr,
+		Handler: mux,
+	}
+	serverErr := make(chan error, 1)
+
+	go func() {
+		serverErr <- serve.ListenAndServe()
+	}()
+
+	recievedSessionID := <-sessionID
+
+	// サーバーを閉じる
+	if err := serve.Shutdown(context.Background()); err != nil {
+		return "", err
 	}
 
-	m.res <- sessionID
-	w.Write([]byte("Authentication complete! You may close this page."))
+	if err := <-serverErr; err != http.ErrServerClosed {
+		return "", fmt.Errorf("server error: %w", err)
+	}
+
+	return recievedSessionID, nil
 }
 
 func (m *miAuth) recieveToken(sessionID string) (*shared.AuthResponse, error) {
