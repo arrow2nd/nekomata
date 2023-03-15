@@ -8,12 +8,12 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	c := &shared.Config{
-		Host: "example.com",
+	c := &shared.ClientOpts{
+		Server: "https://example.com",
 	}
 
-	want := "https://example.com/api"
+	want := "https://example.com"
 	client := New(c)
 
-	assert.Equal(t, want, client.baseURL, "指定したホスト名を元にベースURLが作成できているか")
+	assert.Equal(t, want, client.opts.Server)
 }

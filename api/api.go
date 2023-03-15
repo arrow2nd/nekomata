@@ -14,7 +14,7 @@ const (
 	ServiceMisskey  Service = "Misskey"
 )
 
-func NewClient(w io.Writer, s Service, c *shared.Config) (shared.Client, error) {
+func NewClient(w io.Writer, s Service, c *shared.ClientOpts) (shared.Client, error) {
 	// TODO: サービス毎にそれぞれのクライアントを初期化して返す
 	return misskey.New(c), nil
 }

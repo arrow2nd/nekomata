@@ -5,24 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 )
 
 // Misskey : みすきー
 type Misskey struct {
-	config  *shared.Config
-	baseURL string
+	opts *shared.ClientOpts
 }
 
 // New : 新しいクライアントを生成
-func New(c *shared.Config) *Misskey {
-	baseURL := shared.CreateURL("https", c.Host, "api")
-
+func New(c *shared.ClientOpts) *Misskey {
 	return &Misskey{
-		config:  c,
-		baseURL: baseURL.String(),
+		opts: c,
 	}
 }
 
@@ -32,7 +27,11 @@ func (m *Misskey) post(endpoint string, in, out interface{}) error {
 		return fmt.Errorf("failed to marshal json: %w", err)
 	}
 
-	u, _ := url.JoinPath(m.baseURL, endpoint)
+	u, err := shared.CreateURL(nil, m.opts.Server, endpoint)
+	if err != nil {
+		return fmt.Errorf("failed to create URL: %w", err)
+	}
+
 	req, err := http.NewRequest("POST", u, bytes.NewBuffer(payload))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)

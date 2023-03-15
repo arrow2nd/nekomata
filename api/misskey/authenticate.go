@@ -13,6 +13,13 @@ import (
 	"github.com/google/uuid"
 )
 
+const listenAddr = "localhost:3000"
+
+type miAuthResponse struct {
+	OK    bool   `json:"ok"`
+	Token string `json:"token"`
+}
+
 func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 	permissions := []string{
 		"read:account",
@@ -31,55 +38,40 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 		"write:votes",
 	}
 
-	miauth := &miAuth{
-		Name:        m.config.AppName,
-		Scheme:      "https",
-		Host:        m.config.Host,
-		Permissions: permissions,
+	// 認証URL組み立て
+	authURL, sessionID, err := m.createAuthorizeURL(permissions)
+	if err != nil {
+		return nil, err
 	}
-
-	// 認証URLを組み立て
-	authURL, sessionID := miauth.createURL()
 	shared.PrintAuthenticateURL(w, authURL)
 
 	// セッションIDを受け取る
-	id, err := miauth.recieveSessionID(sessionID)
+	id, err := m.recieveSessionID(sessionID)
 	if err != nil {
 		return nil, err
 	}
 
-	return miauth.recieveToken(id)
+	return m.recieveToken(id)
 }
 
-const listenAddr = "localhost:3000"
+func (m *Misskey) createAuthorizeURL(permissions []string) (string, string, error) {
+	sessionID, _ := uuid.NewUUID()
+	callbackURL, _ := shared.CreateURL(nil, "http://"+listenAddr, "callback")
 
-type miAuthResponse struct {
-	OK    bool   `json:"ok"`
-	Token string `json:"token"`
+	q := &url.Values{}
+	q.Add("name", m.opts.Name)
+	q.Add("callback", callbackURL)
+	q.Add("permission", strings.Join(permissions, ","))
+
+	authURL, err := shared.CreateURL(q, m.opts.Server, "miauth", sessionID.String())
+	if err != nil {
+		return "", "", fmt.Errorf("failed to create URL: %w", err)
+	}
+
+	return authURL, sessionID.String(), nil
 }
 
-type miAuth struct {
-	Name        string
-	Scheme      string
-	Host        string
-	Permissions []string
-}
-
-func (m *miAuth) createURL() (string, string) {
-	ID, _ := uuid.NewUUID()
-	sessionID := ID.String()
-	u := shared.CreateURL("https", m.Host, "miauth", sessionID)
-
-	q := url.Values{}
-	q.Add("name", m.Name)
-	q.Add("callback", shared.CreateURL("http", listenAddr, "callback").String())
-	q.Add("permission", strings.Join(m.Permissions, ","))
-
-	u.RawQuery = q.Encode()
-	return u.String(), sessionID
-}
-
-func (m *miAuth) recieveSessionID(id string) (string, error) {
+func (m *Misskey) recieveSessionID(id string) (string, error) {
 	mux := http.NewServeMux()
 
 	sessionID := make(chan string, 1)
@@ -98,7 +90,7 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 
 	// サーバーを建ててリダイレクトを待機
 	serve := http.Server{
-		Addr:    listenAddr,
+		Addr:    "localhost:3000",
 		Handler: mux,
 	}
 
@@ -125,11 +117,15 @@ func (m *miAuth) recieveSessionID(id string) (string, error) {
 	return recievedSessionID, nil
 }
 
-func (m *miAuth) recieveToken(sessionID string) (*shared.User, error) {
-	endpointURL := shared.CreateURL(m.Scheme, m.Host, "api", "miauth", sessionID, "check")
-	res, err := http.Post(endpointURL.String(), "text/plain", nil)
+func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
+	endpointURL, err := shared.CreateURL(nil, m.opts.Server, "api", "miauth", sessionID, "check")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create URL: %w", err)
+	}
+
+	res, err := http.Post(endpointURL, "text/plain", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to request: %w", err)
 	}
 
 	defer res.Body.Close()
@@ -138,8 +134,8 @@ func (m *miAuth) recieveToken(sessionID string) (*shared.User, error) {
 		return nil, fmt.Errorf("http error: %s", res.Status)
 	}
 
-	decorder := json.NewDecoder(res.Body)
 	authRes := &miAuthResponse{}
+	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(authRes); err != nil {
 		return nil, fmt.Errorf("failed to decord json: %w", err)
 	}

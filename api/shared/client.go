@@ -8,11 +8,11 @@ type Client interface {
 	GetAnnouncements() ([]*Announcement, error)
 }
 
-// Config : クライアントの設定
-type Config struct {
-	AppName      string
-	Host         string
-	ClientID     string
-	ClientSecret string
-	Token        string
+// ClientOpts : クライアントの設定
+type ClientOpts struct {
+	Server    string
+	Name      string
+	ID        string
+	Secret    string
+	UserToken string
 }

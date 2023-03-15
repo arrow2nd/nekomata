@@ -6,7 +6,7 @@ import (
 	"github.com/arrow2nd/nekomata/api/shared"
 )
 
-type announcementsRequest struct {
+type announcementsOpts struct {
 	Limit       int  `json:"limit"`
 	WithUnreads bool `json:"withUnreads"`
 }
@@ -22,7 +22,7 @@ type announcementsResponse struct {
 
 func (m *Misskey) GetAnnouncements() ([]*shared.Announcement, error) {
 	res := []*announcementsResponse{}
-	req := &announcementsRequest{
+	req := &announcementsOpts{
 		Limit:       10,
 		WithUnreads: false,
 	}

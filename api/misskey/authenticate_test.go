@@ -13,37 +13,47 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMiAuthCreateURL(t *testing.T) {
-	m := &miAuth{
-		Name:        "test_app",
-		Host:        "example.com",
-		Permissions: []string{"aaaa", "bbbb"},
+func TestCreateAuthorizeURL(t *testing.T) {
+	m := &Misskey{
+		opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"},
 	}
+	permissions := []string{"aaaa", "bbbb"}
 
-	u, _ := m.createURL()
-	r := regexp.MustCompile("https://example.com/miauth/.+callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb")
+	t.Run("正常", func(t *testing.T) {
+		u, sessionID, err := m.createAuthorizeURL(permissions)
+		r := regexp.MustCompile("https://example.com/miauth/.+callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb")
 
-	assert.Regexp(t, r, u, "正しい形式か")
+		assert.NoError(t, err)
+		assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
+		assert.Regexp(t, r, u, "正しい形式で生成されているか")
+	})
+
+	t.Run("URLの組み立てに失敗", func(t *testing.T) {
+		m.opts.Server = ":"
+		_, _, err := m.createAuthorizeURL(permissions)
+		assert.ErrorContains(t, err, "failed to create URL")
+	})
 }
 
-func TestMiAuthRecieveSessionID(t *testing.T) {
+func TestRecieveSessionID(t *testing.T) {
 	type result struct {
 		id  string
 		err error
 	}
 
 	run := func(r chan *result, id string) {
-		m := &miAuth{Name: "test_app", Host: "example.com"}
+		m := &Misskey{
+			opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"},
+		}
 		recieveID, err := m.recieveSessionID(id)
 		r <- &result{id: recieveID, err: err}
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		q := url.Values{}
+		q := &url.Values{}
 		q.Set("session", id)
-
-		url := shared.CreateURL("http", listenAddr, "callback").String()
-		return http.Post(url+"?"+q.Encode(), "", nil)
+		url, _ := shared.CreateURL(q, "http://"+listenAddr, "callback")
+		return http.Post(url, "", nil)
 	}
 
 	t.Run("セッションIDが受け取れるか", func(t *testing.T) {
@@ -78,7 +88,7 @@ func TestMiAuthRecieveSessionID(t *testing.T) {
 	})
 }
 
-func TestMiAuthRecieveToken(t *testing.T) {
+func TestRecieveToken(t *testing.T) {
 	isNotJSON := true
 	isExpired := true
 
@@ -101,28 +111,39 @@ func TestMiAuthRecieveToken(t *testing.T) {
 	}))
 
 	defer ts.Close()
-	tsURL, _ := url.Parse(ts.URL)
+
+	t.Run("URLの組み立てに失敗", func(t *testing.T) {
+		m := &Misskey{opts: &shared.ClientOpts{Server: ":"}}
+		_, err := m.recieveToken("SESSION_ID")
+		assert.ErrorContains(t, err, "failed to create URL")
+	})
+
+	t.Run("リクエストに失敗", func(t *testing.T) {
+		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
+		_, err := m.recieveToken("SESSION_ID")
+		assert.ErrorContains(t, err, "failed to request")
+	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("hoge")
 		assert.ErrorContains(t, err, "http error")
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
 		assert.ErrorContains(t, err, "failed to decord json")
 	})
 
 	t.Run("URL期限切れ", func(t *testing.T) {
-		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
 		assert.ErrorContains(t, err, "failed to get token")
 	})
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
-		m := &miAuth{Scheme: "http", Host: tsURL.Host}
+		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		res, err := m.recieveToken("SESSION_ID")
 		assert.NoError(t, err)
 		assert.Equal(t, "USER_TOKEN", res.Token)
