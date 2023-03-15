@@ -1,9 +1,7 @@
 package mastodon
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -46,47 +44,9 @@ func (m *Mastodon) createAuthorizeURL(permissions []string) string {
 }
 
 func (m *Mastodon) recieveCode() (string, error) {
-	code := make(chan string, 1)
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		recieved := r.URL.Query().Get("code")
-		if recieved != "" {
-			code <- recieved
-			w.Write([]byte("Authentication complete! You may close this page."))
-			return
-		}
-
-		w.WriteHeader(http.StatusBadRequest)
-		code <- ""
+	return shared.RecieveAuthenticateCode("code", func(code string) bool {
+		return code != ""
 	})
-
-	// サーバーを建ててリダイレクトを待機
-	serve := http.Server{
-		Addr:    shared.AuthCallbackAddr,
-		Handler: mux,
-	}
-
-	serverErr := make(chan error, 1)
-	go func() {
-		serverErr <- serve.ListenAndServe()
-	}()
-
-	recievedCode := <-code
-
-	if err := serve.Shutdown(context.Background()); err != nil {
-		return "", fmt.Errorf("server shutdown error: %w", err)
-	}
-
-	if err := <-serverErr; err != http.ErrServerClosed {
-		return "", fmt.Errorf("listen server error: %w", err)
-	}
-
-	if recievedCode == "" {
-		return "", fmt.Errorf("failed to recieve authenticate code")
-	}
-
-	return recievedCode, nil
 }
 
 func (m *Mastodon) recieveToken(code string) (*shared.User, error) {

@@ -76,7 +76,7 @@ func TestRecieveSessionID(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, res.StatusCode, "呼び出し元に適切なステータスコードが返っているか")
 
 		r := <-result
-		assert.ErrorContains(t, r.err, "failed to recieve session id")
+		assert.ErrorContains(t, r.err, "failed to recieve session")
 	})
 }
 

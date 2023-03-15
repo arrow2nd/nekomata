@@ -1,7 +1,6 @@
 package misskey
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -63,48 +62,9 @@ func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 }
 
 func (m *Misskey) recieveSessionID(id string) (string, error) {
-	mux := http.NewServeMux()
-
-	sessionID := make(chan string, 1)
-	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		recieved := r.URL.Query().Get("session")
-		if recieved == id {
-			sessionID <- recieved
-			w.Write([]byte("Authentication complete! You may close this page."))
-			return
-		}
-
-		w.WriteHeader(http.StatusBadRequest)
-		sessionID <- ""
+	return shared.RecieveAuthenticateCode("session", func(sessionID string) bool {
+		return sessionID == id
 	})
-
-	// サーバーを建ててリダイレクトを待機
-	serve := http.Server{
-		Addr:    shared.AuthCallbackAddr,
-		Handler: mux,
-	}
-
-	serverErr := make(chan error, 1)
-	go func() {
-		serverErr <- serve.ListenAndServe()
-	}()
-
-	recievedSessionID := <-sessionID
-
-	// サーバーを閉じる
-	if err := serve.Shutdown(context.Background()); err != nil {
-		return "", fmt.Errorf("shutdown server error: %w", err)
-	}
-
-	if err := <-serverErr; err != http.ErrServerClosed {
-		return "", fmt.Errorf("listen server error: %w", err)
-	}
-
-	if recievedSessionID == "" {
-		return "", fmt.Errorf("failed to recieve session id")
-	}
-
-	return recievedSessionID, nil
 }
 
 func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
