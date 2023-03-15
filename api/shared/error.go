@@ -5,6 +5,15 @@ import (
 	"net/http"
 )
 
+type RequestError struct {
+	Endpoint Endpoint
+	Err      error
+}
+
+func (r RequestError) Error() string {
+	return fmt.Sprintf("request error (%s): %v", r.Endpoint, r.Err)
+}
+
 type HTTPError struct {
 	Status     string
 	StatusCode int
@@ -20,14 +29,14 @@ func NewHTTPError(res *http.Response) *HTTPError {
 }
 
 func (h *HTTPError) Error() string {
-	return fmt.Sprintf("http error (%s) code: %d status: %s", h.URL, h.StatusCode, h.Status)
+	return fmt.Sprintf("http error (%s): code %d, status %s", h.URL, h.StatusCode, h.Status)
 }
 
 type DecodeError struct {
-	Name string
-	Err  error
+	Endpoint Endpoint
+	Err      error
 }
 
 func (d *DecodeError) Error() string {
-	return fmt.Sprintf("%s decode error: %v", d.Name, d.Err)
+	return fmt.Sprintf("decode error (%s): %v", d.Endpoint, d.Err)
 }

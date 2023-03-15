@@ -74,13 +74,12 @@ func (m *Mastodon) recieveCode() (string, error) {
 
 	recievedCode := <-code
 
-	// サーバーを閉じる
 	if err := serve.Shutdown(context.Background()); err != nil {
-		return "", fmt.Errorf("shutdown server: %w", err)
+		return "", fmt.Errorf("server shutdown error: %w", err)
 	}
 
 	if err := <-serverErr; err != http.ErrServerClosed {
-		return "", fmt.Errorf("listen server: %w", err)
+		return "", fmt.Errorf("listen server error: %w", err)
 	}
 
 	if recievedCode == "" {
@@ -101,7 +100,10 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	endpoint := oauthTokenEndpoint.URL(m.opts.Server)
 	res, err := http.PostForm(endpoint, q)
 	if err != nil {
-		return nil, fmt.Errorf("obtain a token request: %w", err)
+		return nil, &shared.RequestError{
+			Endpoint: oauthTokenEndpoint,
+			Err:      err,
+		}
 	}
 
 	defer res.Body.Close()
@@ -119,8 +121,8 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	authRes := &authenticateResponse{}
 	if err := decorder.Decode(authRes); err != nil {
 		return nil, &shared.DecodeError{
-			Name: "oauth token",
-			Err:  err,
+			Endpoint: oauthTokenEndpoint,
+			Err:      err,
 		}
 	}
 

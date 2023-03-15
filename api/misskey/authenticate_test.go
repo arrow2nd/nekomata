@@ -20,18 +20,11 @@ func TestCreateAuthorizeURL(t *testing.T) {
 	permissions := []string{"aaaa", "bbbb"}
 
 	t.Run("正常", func(t *testing.T) {
-		u, sessionID, err := m.createAuthorizeURL(permissions)
+		u, sessionID := m.createAuthorizeURL(permissions)
 		r := regexp.MustCompile("https://example.com/miauth/.+callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb")
 
-		assert.NoError(t, err)
 		assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
 		assert.Regexp(t, r, u, "正しい形式で生成されているか")
-	})
-
-	t.Run("URLの組み立てに失敗", func(t *testing.T) {
-		m.opts.Server = ":"
-		_, _, err := m.createAuthorizeURL(permissions)
-		assert.ErrorContains(t, err, "failed to create URL")
 	})
 }
 
@@ -50,10 +43,9 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		q := &url.Values{}
-		q.Set("session", id)
-		url, _ := shared.CreateURL(q, "http://"+listenAddr, "callback")
-		return http.Post(url, "", nil)
+		q := url.Values{}
+		q.Add("session", id)
+		return http.Post(shared.AuthCallbackURL+"?"+q.Encode(), "", nil)
 	}
 
 	t.Run("セッションIDが受け取れるか", func(t *testing.T) {
@@ -112,34 +104,31 @@ func TestRecieveToken(t *testing.T) {
 
 	defer ts.Close()
 
-	t.Run("URLの組み立てに失敗", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ":"}}
-		_, err := m.recieveToken("SESSION_ID")
-		assert.ErrorContains(t, err, "failed to create URL")
-	})
-
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
 		_, err := m.recieveToken("SESSION_ID")
-		assert.ErrorContains(t, err, "failed to request")
+		e := &shared.RequestError{}
+		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("hoge")
-		assert.ErrorContains(t, err, "http error")
+		e := &shared.HTTPError{}
+		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
-		assert.ErrorContains(t, err, "failed to decord json")
+		e := &shared.DecodeError{}
+		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("URL期限切れ", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
-		assert.ErrorContains(t, err, "failed to get token")
+		assert.ErrorContains(t, err, "get token error")
 	})
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
