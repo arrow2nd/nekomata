@@ -20,7 +20,7 @@ func TestCreateURL(t *testing.T) {
 
 	t.Run("異常", func(t *testing.T) {
 		_, err := shared.CreateURL(nil, ":", "test")
-		assert.Error(t, err)
+		assert.ErrorContains(t, err, "failed to create URL")
 	})
 
 	t.Run("パスを省略した場合", func(t *testing.T) {

@@ -18,6 +18,6 @@ type announcementsResponse struct {
 	// Reactions
 }
 
-func (m *Mastodon) GetAnnouncements() (*shared.Announcement, error) {
+func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	return nil, nil
 }

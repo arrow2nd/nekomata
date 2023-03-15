@@ -5,6 +5,13 @@ import (
 	"io"
 )
 
+const (
+	// AuthCallbackAddr : コールバックを待つサーバーのアドレス
+	AuthCallbackAddr = "localhost:3000"
+	// AuthCallbackURL : コールバックURL
+	AuthCallbackURL = "http://localhost:3000/callback"
+)
+
 // User : ユーザー情報
 type User struct {
 	UserID   string

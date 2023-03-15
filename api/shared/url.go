@@ -1,12 +1,15 @@
 package shared
 
-import "net/url"
+import (
+	"fmt"
+	"net/url"
+)
 
 // CreateURL : URLを作成
 func CreateURL(q *url.Values, rawURL string, path ...string) (string, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create URL: %w", err)
 	}
 
 	if len(path) != 0 {
