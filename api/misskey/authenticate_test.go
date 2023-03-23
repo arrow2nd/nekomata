@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api/shared"
@@ -14,18 +14,14 @@ import (
 )
 
 func TestCreateAuthorizeURL(t *testing.T) {
-	m := &Misskey{
-		opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"},
-	}
-	permissions := []string{"aaaa", "bbbb"}
+	m := &Misskey{opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"}}
+	u, sessionID := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 
-	t.Run("正常", func(t *testing.T) {
-		u, sessionID := m.createAuthorizeURL(permissions)
-		r := regexp.MustCompile("https://example.com/miauth/.+callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb")
+	want := miAuthEndpoint.URL(m.opts.Server) + "?callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb"
+	want = strings.Replace(want, ":session_id", sessionID, 1)
 
-		assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
-		assert.Regexp(t, r, u, "正しい形式で生成されているか")
-	})
+	assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
+	assert.Equal(t, want, u, "正しい形式で生成されているか")
 }
 
 func TestRecieveSessionID(t *testing.T) {
@@ -35,9 +31,7 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	run := func(r chan *result, id string) {
-		m := &Misskey{
-			opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"},
-		}
+		m := &Misskey{opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"}}
 		recieveID, err := m.recieveSessionID(id)
 		r <- &result{id: recieveID, err: err}
 	}
