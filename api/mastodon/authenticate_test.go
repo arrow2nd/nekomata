@@ -1,7 +1,9 @@
 package mastodon
 
 import (
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 
@@ -60,4 +62,18 @@ func TestRecieveCode(t *testing.T) {
 		r := <-result
 		assert.ErrorContains(t, r.err, "failed to recieve code")
 	})
+}
+
+func TestRecieveToken(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, `{ "access_token": "USER_TOKEN", "token_type": "Bearer", "scope": "read write follow push", "created_at": 0 }`)
+	}))
+
+	defer ts.Close()
+
+	m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
+	res, err := m.recieveToken("CODE")
+	assert.NoError(t, err)
+	assert.Equal(t, "USER_TOKEN", res.Token)
 }

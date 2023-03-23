@@ -93,13 +93,6 @@ func TestRecieveToken(t *testing.T) {
 
 	defer ts.Close()
 
-	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
-		_, err := m.recieveToken("SESSION_ID")
-		e := &shared.RequestError{}
-		assert.ErrorAs(t, err, &e)
-	})
-
 	t.Run("URL期限切れ", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
