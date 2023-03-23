@@ -1,9 +1,7 @@
 package mastodon
 
 import (
-	"encoding/json"
 	"io"
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -57,36 +55,12 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	q.Add("client_secret", m.opts.Secret)
 	q.Add("redirect_uri", shared.AuthCallbackURL)
 
-	endpoint := oauthTokenEndpoint.URL(m.opts.Server)
-	res, err := http.PostForm(endpoint, q)
-	if err != nil {
-		return nil, &shared.RequestError{
-			Endpoint: oauthTokenEndpoint,
-			Err:      err,
-		}
-	}
-
-	defer res.Body.Close()
-	decorder := json.NewDecoder(res.Body)
-
-	if res.StatusCode != http.StatusOK {
-		e := &errorResponse{}
-		if err := decorder.Decode(e); err != nil {
-			return nil, shared.NewHTTPError(res)
-		}
-
-		return nil, e
-	}
-
-	authRes := &authenticateResponse{}
-	if err := decorder.Decode(authRes); err != nil {
-		return nil, &shared.DecodeError{
-			Endpoint: oauthTokenEndpoint,
-			Err:      err,
-		}
+	res := &authenticateResponse{}
+	if err := m.post(oauthTokenEndpoint, q, res); err != nil {
+		return nil, err
 	}
 
 	return &shared.User{
-		Token: authRes.AccessToken,
+		Token: res.AccessToken,
 	}, nil
 }

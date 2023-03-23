@@ -2,6 +2,10 @@ package mastodon
 
 import "github.com/arrow2nd/nekomata/api/shared"
 
+type announcementsOpts struct {
+	WithDismissed bool `json:"with_dismissed"`
+}
+
 type announcementsResponse struct {
 	ID          string  `json:"id"`
 	Content     string  `json:"content"`
@@ -11,13 +15,12 @@ type announcementsResponse struct {
 	PublishedAt string  `json:"published_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	Read        bool    `json:"read"`
-	// Mentions
-	// Statuses
-	// Tags
-	// Emojis
-	// Reactions
 }
 
 func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
+	// res := []*announcementsResponse{}
+	// req := &announcementsOpts{
+	// 	WithDismissed: false,
+	// }
 	return nil, nil
 }
