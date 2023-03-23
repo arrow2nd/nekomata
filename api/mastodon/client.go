@@ -2,8 +2,10 @@ package mastodon
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 )
@@ -18,9 +20,19 @@ func New(c *shared.ClientOpts) *Mastodon {
 	}
 }
 
-func (m *Mastodon) post(endpoint shared.Endpoint, q url.Values, out interface{}) error {
+func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values, auth bool, out interface{}) error {
 	url := endpoint.URL(m.opts.Server)
-	res, err := http.PostForm(url, q)
+	req, err := http.NewRequest(method, url, strings.NewReader(q.Encode()))
+	if err != nil {
+		return fmt.Errorf("create request error (%s): %w", endpoint, err)
+	}
+
+	if auth {
+		req.Header.Set("Authorization", "Bearer "+m.opts.UserToken)
+	}
+
+	client := http.DefaultClient
+	res, err := client.Do(req)
 	if err != nil {
 		return &shared.RequestError{
 			Endpoint: endpoint,

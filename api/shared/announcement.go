@@ -2,10 +2,6 @@ package shared
 
 import "time"
 
-type AnnouncementOpts struct {
-	Limit int
-}
-
 // Announcement : サービスからのお知らせ
 type Announcement struct {
 	ID          string

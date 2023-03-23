@@ -56,7 +56,7 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	q.Add("redirect_uri", shared.AuthCallbackURL)
 
 	res := &authenticateResponse{}
-	if err := m.post(oauthTokenEndpoint, q, res); err != nil {
+	if err := m.request("POST", oauthTokenEndpoint, q, false, res); err != nil {
 		return nil, err
 	}
 

@@ -7,7 +7,6 @@ import (
 )
 
 type announcementsOpts struct {
-	Limit       int  `json:"limit"`
 	WithUnreads bool `json:"withUnreads"`
 }
 
@@ -17,16 +16,14 @@ type announcementsResponse struct {
 	UpdatedAt *string `json:"updatedAt"`
 	Text      string  `json:"text"`
 	Title     string  `json:"title"`
-	ImageURL  string  `json:"imageUrl"`
 }
 
 func (m *Misskey) GetAnnouncements() ([]*shared.Announcement, error) {
-	res := []*announcementsResponse{}
 	req := &announcementsOpts{
-		Limit:       10,
 		WithUnreads: false,
 	}
 
+	res := []*announcementsResponse{}
 	if err := m.post(announcementsEndpoint, req, &res); err != nil {
 		return nil, err
 	}
