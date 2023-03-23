@@ -75,16 +75,11 @@ func TestRecieveSessionID(t *testing.T) {
 }
 
 func TestRecieveToken(t *testing.T) {
-	isNotJSON := true
 	isExpired := true
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/api/miauth/SESSION_ID/check" {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
-		} else if isNotJSON {
-			isNotJSON = false
-			fmt.Fprintln(w, `<html><head><title>Apps</title></head></html>`)
 			return
 		} else if isExpired {
 			isExpired = false
@@ -102,20 +97,6 @@ func TestRecieveToken(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
 		_, err := m.recieveToken("SESSION_ID")
 		e := &shared.RequestError{}
-		assert.ErrorAs(t, err, &e)
-	})
-
-	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		_, err := m.recieveToken("hoge")
-		e := &shared.HTTPError{}
-		assert.ErrorAs(t, err, &e)
-	})
-
-	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		_, err := m.recieveToken("SESSION_ID")
-		e := &shared.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
 

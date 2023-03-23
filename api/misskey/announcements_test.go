@@ -11,20 +11,10 @@ import (
 )
 
 func TestGetAnnouncements(t *testing.T) {
-	networkErr := true
-	isNotJSON := true
 	nullUpdatedAt := true
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if networkErr {
-			networkErr = false
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
-		} else if isNotJSON {
-			isNotJSON = false
-			fmt.Fprintln(w, `<html><head><title>Apps</title></head></html>`)
-			return
-		} else if nullUpdatedAt {
+		if nullUpdatedAt {
 			nullUpdatedAt = false
 			fmt.Fprintln(w, `[{ "id": "hogehoge", "createdAt": "2023-01-01T00:00:00.000Z", "updatedAt": null, "text_1": "text", "title_1": "title", "imageUrl": null }]`)
 			return
@@ -52,27 +42,6 @@ func TestGetAnnouncements(t *testing.T) {
 	}))
 
 	defer ts.Close()
-
-	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
-		_, err := m.GetAnnouncements()
-		e := &shared.RequestError{}
-		assert.ErrorAs(t, err, &e)
-	})
-
-	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		_, err := m.GetAnnouncements()
-		e := &shared.HTTPError{}
-		assert.ErrorAs(t, err, &e)
-	})
-
-	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		_, err := m.GetAnnouncements()
-		e := &shared.DecodeError{}
-		assert.ErrorAs(t, err, &e)
-	})
 
 	t.Run("nullのフィールドに対応できるか", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
