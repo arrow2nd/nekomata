@@ -11,7 +11,18 @@ import (
 )
 
 func TestCreatePost(t *testing.T) {
+	type result struct {
+		s string
+		v string
+	}
+
+	serverRes := make(chan *result, 1)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		serverRes <- &result{
+			s: r.URL.Query().Get("status"),
+			v: r.URL.Query().Get("visibility"),
+		}
+
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, `{
   "id": "000000",
@@ -87,6 +98,12 @@ func TestCreatePost(t *testing.T) {
 	res, err := m.CreatePost(opts)
 
 	assert.NoError(t, err)
+
+	t.Run("サーバーにデータを送信できているか", func(t *testing.T) {
+		res := <-serverRes
+		assert.Equal(t, postText, res.s)
+		assert.Equal(t, postVisibility, res.v)
+	})
 
 	t.Run("レスポンスをパースできるか", func(t *testing.T) {
 		assert.Equal(t, postText, res.Text)
