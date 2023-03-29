@@ -10,6 +10,48 @@ import (
 	"jaytaylor.com/html2text"
 )
 
+type mentionAttribute struct {
+	ID       string `json:"id"`
+	UserName string `json:"username"`
+	Acct     string `json:"acct"`
+}
+
+type poll struct {
+	ID          string       `json:"id"`
+	ExpiresAt   *time.Time   `json:"expires_at"`
+	Expired     bool         `json:"expired"`
+	Multiple    bool         `json:"multiple"`
+	VotesCount  int          `json:"votes_count"`
+	VotersCount *int         `json:"voters_count"`
+	Voted       bool         `json:"voted"`
+	OwnVotes    []int        `json:"own_votes"`
+	Options     []pollOption `json:"options"`
+}
+
+type pollOption struct {
+	Title      string `json:"title"`
+	VotesCount int    `json:"votes_count"`
+}
+
+type mediaAttachment struct {
+	ID         string    `json:"id"`
+	Type       string    `json:"type"`
+	URL        string    `json:"url"`
+	PreviewURL string    `json:"preview_url"`
+	TextURL    string    `json:"text_url"`
+	Meta       mediaMeta `json:"meta"`
+}
+
+type mediaMeta struct {
+	Original mediaSize `json:"original"`
+	Small    mediaSize `json:"small"`
+}
+
+type mediaSize struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+}
+
 type status struct {
 	ID              string    `json:"id"`
 	CreatedAt       time.Time `json:"created_at"`
@@ -62,48 +104,7 @@ func (s *status) ToPost() *shared.Post {
 	return post
 }
 
-type mentionAttribute struct {
-	ID       string `json:"id"`
-	UserName string `json:"username"`
-	Acct     string `json:"acct"`
-}
-
-type poll struct {
-	ID          string       `json:"id"`
-	ExpiresAt   *time.Time   `json:"expires_at"`
-	Expired     bool         `json:"expired"`
-	Multiple    bool         `json:"multiple"`
-	VotesCount  int          `json:"votes_count"`
-	VotersCount *int         `json:"voters_count"`
-	Voted       bool         `json:"voted"`
-	OwnVotes    []int        `json:"own_votes"`
-	Options     []pollOption `json:"options"`
-}
-
-type pollOption struct {
-	Title      string `json:"title"`
-	VotesCount int    `json:"votes_count"`
-}
-
-type mediaAttachment struct {
-	ID         string    `json:"id"`
-	Type       string    `json:"type"`
-	URL        string    `json:"url"`
-	PreviewURL string    `json:"preview_url"`
-	TextURL    string    `json:"text_url"`
-	Meta       mediaMeta `json:"meta"`
-}
-
-type mediaMeta struct {
-	Original mediaSize `json:"original"`
-	Small    mediaSize `json:"small"`
-}
-
-type mediaSize struct {
-	Width  int `json:"width"`
-	Height int `json:"height"`
-}
-
+// CreatePost : 投稿
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
 	q := url.Values{}
 	q.Add("status", opts.Text)
@@ -113,6 +114,7 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 		q.Add("sensitive", "true")
 	}
 
+	// TODO: 未検証。もしかするとカンマ区切りじゃないかも
 	if len(opts.MediaIDs) > 0 {
 		q.Add("media_ids", strings.Join(opts.MediaIDs, ","))
 	}
