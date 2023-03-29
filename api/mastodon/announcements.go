@@ -20,7 +20,8 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	q.Add("with_dismissed", "false")
 
 	res := []*announcement{}
-	if err := m.request("GET", announcementsEndpoint, q, true, &res); err != nil {
+	url := announcementsEndpoint.URL(m.opts.Server)
+	if err := m.request("GET", url, q, true, &res); err != nil {
 		return nil, err
 	}
 

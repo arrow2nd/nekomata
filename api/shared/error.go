@@ -6,12 +6,12 @@ import (
 )
 
 type RequestError struct {
-	Endpoint Endpoint
-	Err      error
+	URL string
+	Err error
 }
 
 func (r RequestError) Error() string {
-	return fmt.Sprintf("request error (%s): %v", r.Endpoint, r.Err)
+	return fmt.Sprintf("request error (%s): %v", r.URL, r.Err)
 }
 
 type HTTPError struct {
@@ -33,10 +33,10 @@ func (h *HTTPError) Error() string {
 }
 
 type DecodeError struct {
-	Endpoint Endpoint
-	Err      error
+	URL string
+	Err error
 }
 
 func (d *DecodeError) Error() string {
-	return fmt.Sprintf("decode error (%s): %v", d.Endpoint, d.Err)
+	return fmt.Sprintf("decode error (%s): %v", d.URL, d.Err)
 }

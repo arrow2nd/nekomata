@@ -38,8 +38,8 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 	res, err := client.Do(req)
 	if err != nil {
 		return &shared.RequestError{
-			Endpoint: endpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 
@@ -53,8 +53,8 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(out); err != nil {
 		return &shared.DecodeError{
-			Endpoint: endpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 

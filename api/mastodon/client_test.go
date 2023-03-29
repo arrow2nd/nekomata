@@ -44,28 +44,32 @@ func TestRequest(t *testing.T) {
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
-		err := m.request("POST", announcementsEndpoint, nil, false, nil)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("POST", u, nil, false, nil)
 		e := &shared.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		err := m.request("POST", announcementsEndpoint, nil, false, nil)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("POST", u, nil, false, nil)
 		e := &shared.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		err := m.request("POST", announcementsEndpoint, nil, false, nil)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("POST", u, nil, false, nil)
 		e := &shared.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		err := m.request("POST", announcementsEndpoint, nil, false, nil)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("POST", u, nil, false, nil)
 		e := &errorResponse{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -77,7 +81,8 @@ func TestRequest(t *testing.T) {
 	t.Run("認証情報がヘッダーにあるか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
-		err := m.request("POST", announcementsEndpoint, nil, true, res)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("POST", u, nil, true, res)
 		assert.NoError(t, err)
 		assert.Equal(t, "authorization", res.S)
 	})
@@ -85,7 +90,8 @@ func TestRequest(t *testing.T) {
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
-		err := m.request("GET", announcementsEndpoint, nil, false, res)
+		u := announcementsEndpoint.URL(m.opts.Server)
+		err := m.request("GET", u, nil, false, res)
 		assert.NoError(t, err)
 		assert.Equal(t, "GET", res.S)
 	})
