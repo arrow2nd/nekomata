@@ -74,8 +74,8 @@ func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
 	res, err := http.Post(url, "text/plain", nil)
 	if err != nil {
 		return nil, &shared.RequestError{
-			Endpoint: miAuthCheckEndpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 
@@ -89,8 +89,8 @@ func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(authRes); err != nil {
 		return nil, &shared.DecodeError{
-			Endpoint: miAuthCheckEndpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 

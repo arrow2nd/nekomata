@@ -19,11 +19,10 @@ func New(c *shared.ClientOpts) *Mastodon {
 	}
 }
 
-func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values, auth bool, out interface{}) error {
-	url := endpoint.URL(m.opts.Server)
+func (m *Mastodon) request(method, url string, q url.Values, auth bool, out interface{}) error {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		return fmt.Errorf("create request error (%s): %w", endpoint, err)
+		return fmt.Errorf("create request error (%s): %w", url, err)
 	}
 
 	if auth {
@@ -36,8 +35,8 @@ func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values
 	res, err := client.Do(req)
 	if err != nil {
 		return &shared.RequestError{
-			Endpoint: endpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 
@@ -55,8 +54,8 @@ func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values
 
 	if err := decorder.Decode(out); err != nil {
 		return &shared.DecodeError{
-			Endpoint: endpoint,
-			Err:      err,
+			URL: url,
+			Err: err,
 		}
 	}
 

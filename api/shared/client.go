@@ -9,6 +9,8 @@ type Client interface {
 	GetAnnouncements() ([]*Announcement, error)
 	// CreatePost : 投稿を作成
 	CreatePost(*CreatePostOpts) (*Post, error)
+	// DeletePost : 投稿を削除
+	DeletePost(string) (*Post, error)
 }
 
 // ClientOpts : クライアントの設定

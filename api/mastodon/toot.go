@@ -104,7 +104,6 @@ func (s *status) ToPost() *shared.Post {
 	return post
 }
 
-// CreatePost : 投稿
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
 	q := url.Values{}
 	q.Add("status", opts.Text)
@@ -120,7 +119,18 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 	}
 
 	res := &status{}
-	if err := m.request("POST", postNewStatusEndpoint, q, true, &res); err != nil {
+	url := statusesEndpoint.URL(m.opts.Server)
+	if err := m.request("POST", url, q, true, &res); err != nil {
+		return nil, err
+	}
+
+	return res.ToPost(), nil
+}
+
+func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
+	res := &status{}
+	u, _ := url.JoinPath(statusesEndpoint.URL(m.opts.Server), id)
+	if err := m.request("DELETE", u, nil, true, &res); err != nil {
 		return nil, err
 	}
 

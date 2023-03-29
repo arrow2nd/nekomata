@@ -1,14 +1,50 @@
-package mastodon
+package mastodon_test
 
 import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
 )
+
+const mockAnnouncements = `
+[
+  {
+    "id": "0",
+    "content": "<p>text_1</p>",
+    "starts_at": null,
+    "ends_at": null,
+    "all_day": false,
+    "published_at": "2023-01-01T00:00:00.000Z",
+    "updated_at": "2023-01-02T00:00:00.000Z",
+    "read": true,
+    "mentions": [],
+    "statuses": [],
+    "tags": [],
+    "emojis": [],
+    "reactions": []
+  },
+  {
+    "id": "1",
+    "content": "<p>text_2</p>",
+    "starts_at": null,
+    "ends_at": null,
+    "all_day": false,
+    "published_at": "2022-01-01T00:40:00.000Z",
+    "updated_at": "2022-01-02T00:00:00.000Z",
+    "read": true,
+    "mentions": [],
+    "statuses": [],
+    "tags": [],
+    "emojis": [],
+    "reactions": []
+  }
+]`
 
 func TestGetAnnouncements(t *testing.T) {
 	isNotHTMLContent := true
@@ -21,51 +57,19 @@ func TestGetAnnouncements(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `
-    [
-      {
-        "id": "0",
-        "content": "<p>text_1</p>",
-        "starts_at": null,
-        "ends_at": null,
-        "all_day": false,
-        "published_at": "2023-01-01T00:00:00.000Z",
-        "updated_at": "2023-01-02T00:00:00.000Z",
-        "read": true,
-        "mentions": [],
-        "statuses": [],
-        "tags": [],
-        "emojis": [],
-        "reactions": []
-      },
-      {
-        "id": "1",
-        "content": "<p>text_2</p>",
-        "starts_at": null,
-        "ends_at": null,
-        "all_day": false,
-        "published_at": "2022-01-01T00:40:00.000Z",
-        "updated_at": "2022-01-02T00:00:00.000Z",
-        "read": true,
-        "mentions": [],
-        "statuses": [],
-        "tags": [],
-        "emojis": [],
-        "reactions": []
-      }
-    ]`)
+		fmt.Fprintln(w, mockAnnouncements)
 	}))
 
 	defer ts.Close()
 
 	t.Run("Contentパースエラー", func(t *testing.T) {
-		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
 	t.Run("内容を取得できるか", func(t *testing.T) {
-		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)
