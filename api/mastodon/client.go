@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 )
@@ -22,7 +21,7 @@ func New(c *shared.ClientOpts) *Mastodon {
 
 func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values, auth bool, out interface{}) error {
 	url := endpoint.URL(m.opts.Server)
-	req, err := http.NewRequest(method, url, strings.NewReader(q.Encode()))
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return fmt.Errorf("create request error (%s): %w", endpoint, err)
 	}
@@ -30,6 +29,8 @@ func (m *Mastodon) request(method string, endpoint shared.Endpoint, q url.Values
 	if auth {
 		req.Header.Set("Authorization", "Bearer "+m.opts.UserToken)
 	}
+
+	req.URL.RawQuery = q.Encode()
 
 	client := http.DefaultClient
 	res, err := client.Do(req)
