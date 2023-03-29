@@ -21,24 +21,25 @@ func TestGetAnnouncements(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `[
-{
-  "id": "hogehoge",
-  "createdAt": "2023-01-01T00:00:00.000Z",
-  "updatedAt": "2023-01-02T00:00:00.000Z",
-  "text": "text_1",
-  "title": "title_1",
-  "imageUrl": null
-},
-{
-  "id": "fugafuga",
-  "createdAt": "2022-01-01T00:40:00.000Z",
-  "updatedAt": "2022-01-02T00:00:00.000Z",
-  "text": "text_2",
-  "title": "title_2",
-  "imageUrl": null
-}
-]`)
+		fmt.Fprintln(w, `
+    [
+      {
+        "id": "hogehoge",
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-02T00:00:00.000Z",
+        "text": "text_1",
+        "title": "title_1",
+        "imageUrl": null
+      },
+      {
+        "id": "fugafuga",
+        "createdAt": "2022-01-01T00:40:00.000Z",
+        "updatedAt": "2022-01-02T00:00:00.000Z",
+        "text": "text_2",
+        "title": "title_2",
+        "imageUrl": null
+      }
+  ]`)
 	}))
 
 	defer ts.Close()

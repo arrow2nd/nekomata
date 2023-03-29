@@ -11,11 +11,11 @@ type announcementsOpts struct {
 }
 
 type announcementsResponse struct {
-	ID        string  `json:"id"`
-	CreatedAt string  `json:"createdAt"`
-	UpdatedAt *string `json:"updatedAt"`
-	Text      string  `json:"text"`
-	Title     string  `json:"title"`
+	ID        string     `json:"id"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	Text      string     `json:"text"`
+	Title     string     `json:"title"`
 }
 
 func (m *Misskey) GetAnnouncements() ([]*shared.Announcement, error) {
@@ -30,22 +30,13 @@ func (m *Misskey) GetAnnouncements() ([]*shared.Announcement, error) {
 
 	results := []*shared.Announcement{}
 	for _, r := range res {
-		publishedAt, _ := time.Parse(time.RFC3339, r.CreatedAt)
-
-		a := &shared.Announcement{
+		results = append(results, &shared.Announcement{
 			ID:          r.ID,
-			PublishedAt: publishedAt,
-			UpdatedAt:   nil,
+			PublishedAt: r.CreatedAt,
+			UpdatedAt:   r.UpdatedAt,
 			Title:       r.Title,
 			Text:        r.Text,
-		}
-
-		if r.UpdatedAt != nil {
-			u, _ := time.Parse(time.RFC3339, *r.UpdatedAt)
-			a.UpdatedAt = &u
-		}
-
-		results = append(results, a)
+		})
 	}
 
 	return results, nil

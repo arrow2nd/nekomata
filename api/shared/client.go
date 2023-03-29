@@ -2,17 +2,25 @@ package shared
 
 import "io"
 
-// Client : API クライアント
 type Client interface {
+	// Authenticate : アプリケーション認証を行なってアクセストークンを取得
 	Authenticate(io.Writer) (*User, error)
+	// GetAnnouncements : サーバーからのお知らせを取得
 	GetAnnouncements() ([]*Announcement, error)
+	// CreatePost : 投稿を作成
+	CreatePost(*CreatePostOpts) (*Post, error)
 }
 
 // ClientOpts : クライアントの設定
 type ClientOpts struct {
-	Server    string
-	Name      string
-	ID        string
-	Secret    string
+	// Server : 接続先のサーバーのURL
+	Server string
+	// Name : クライアント名
+	Name string
+	// ID : クライアント ID
+	ID string
+	// Secret : クライアントシークレット
+	Secret string
+	// UserToken : ユーザーのアクセストークン
 	UserToken string
 }
