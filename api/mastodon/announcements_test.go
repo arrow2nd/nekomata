@@ -21,38 +21,39 @@ func TestGetAnnouncements(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `[
-{
-  "id": "0",
-  "content": "<p>text_1</p>",
-  "starts_at": null,
-  "ends_at": null,
-  "all_day": false,
-  "published_at": "2023-01-01T00:00:00.000Z",
-  "updated_at": "2023-01-02T00:00:00.000Z",
-  "read": true,
-  "mentions": [],
-  "statuses": [],
-  "tags": [],
-  "emojis": [],
-  "reactions": []
-},
-{
-  "id": "1",
-  "content": "<p>text_2</p>",
-  "starts_at": null,
-  "ends_at": null,
-  "all_day": false,
-  "published_at": "2022-01-01T00:40:00.000Z",
-  "updated_at": "2022-01-02T00:00:00.000Z",
-  "read": true,
-  "mentions": [],
-  "statuses": [],
-  "tags": [],
-  "emojis": [],
-  "reactions": []
-}
-]`)
+		fmt.Fprintln(w, `
+    [
+      {
+        "id": "0",
+        "content": "<p>text_1</p>",
+        "starts_at": null,
+        "ends_at": null,
+        "all_day": false,
+        "published_at": "2023-01-01T00:00:00.000Z",
+        "updated_at": "2023-01-02T00:00:00.000Z",
+        "read": true,
+        "mentions": [],
+        "statuses": [],
+        "tags": [],
+        "emojis": [],
+        "reactions": []
+      },
+      {
+        "id": "1",
+        "content": "<p>text_2</p>",
+        "starts_at": null,
+        "ends_at": null,
+        "all_day": false,
+        "published_at": "2022-01-01T00:40:00.000Z",
+        "updated_at": "2022-01-02T00:00:00.000Z",
+        "read": true,
+        "mentions": [],
+        "statuses": [],
+        "tags": [],
+        "emojis": [],
+        "reactions": []
+      }
+    ]`)
 	}))
 
 	defer ts.Close()
