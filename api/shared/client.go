@@ -15,6 +15,8 @@ type Client interface {
 	ReplyPost(string, *CreatePostOpts) (*Post, error)
 	// DeletePost : 投稿を削除
 	DeletePost(string) (*Post, error)
+	// Reaction : 投稿にリアクション
+	Reaction(string, string) error
 }
 
 // ClientOpts : クライアントの設定

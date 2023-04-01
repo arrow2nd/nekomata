@@ -123,7 +123,7 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 }
 
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server)
+	url := statusesEndpoint.URL(m.opts.Server, nil)
 	q := m.createPostQuery(opts)
 
 	res := &status{}
@@ -140,7 +140,7 @@ func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Po
 }
 
 func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server)
+	url := statusesEndpoint.URL(m.opts.Server, nil)
 
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
@@ -154,7 +154,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*sh
 }
 
 func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
-	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server), id)
+	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server, nil), id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
 	}
@@ -165,4 +165,8 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 	}
 
 	return res.ToPost(), nil
+}
+
+func (m *Mastodon) Reaction(id, reaction string) error {
+	return nil
 }
