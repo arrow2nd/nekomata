@@ -49,16 +49,17 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 }
 
 func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
-	q := &url.Values{}
+	q := url.Values{}
 	q.Add("name", m.opts.Name)
 	q.Add("callback", shared.AuthCallbackURL)
 	q.Add("permission", strings.Join(permissions, ","))
 
 	sessionID, _ := uuid.NewUUID()
-	u := miAuthEndpoint.URL(m.opts.Server)
-	u = strings.Replace(u, ":session_id", sessionID.String(), 1)
+	p := url.Values{}
+	p.Add(":session_id", sessionID.String())
 
-	return u + "?" + q.Encode(), sessionID.String()
+	endpoint := miAuthEndpoint.URL(m.opts.Server, p)
+	return endpoint + "?" + q.Encode(), sessionID.String()
 }
 
 func (m *Misskey) recieveSessionID(id string) (string, error) {
@@ -68,9 +69,10 @@ func (m *Misskey) recieveSessionID(id string) (string, error) {
 }
 
 func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
-	url := miAuthCheckEndpoint.URL(m.opts.Server)
-	url = strings.Replace(url, ":session_id", sessionID, 1)
+	p := url.Values{}
+	p.Add(":session_id", sessionID)
 
+	url := miAuthCheckEndpoint.URL(m.opts.Server, p)
 	res, err := http.Post(url, "text/plain", nil)
 	if err != nil {
 		return nil, &shared.RequestError{
