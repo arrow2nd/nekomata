@@ -1,6 +1,7 @@
 package mastodon
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -104,7 +105,7 @@ func (s *status) ToPost() *shared.Post {
 	return post
 }
 
-func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
+func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 	q := url.Values{}
 	q.Add("status", opts.Text)
 	q.Add("visibility", opts.Visibility)
@@ -118,8 +119,33 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 		q.Add("media_ids", strings.Join(opts.MediaIDs, ","))
 	}
 
-	res := &status{}
+	return q
+}
+
+func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
 	url := statusesEndpoint.URL(m.opts.Server)
+	q := m.createPostQuery(opts)
+
+	res := &status{}
+	if err := m.request("POST", url, q, true, &res); err != nil {
+		return nil, err
+	}
+
+	return res.ToPost(), nil
+}
+
+func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Post, error) {
+	// NOTE: 引用する機能が公式の手段では存在しないので実装しない
+	return nil, errors.New("quote is not available on Mastodon")
+}
+
+func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
+	url := statusesEndpoint.URL(m.opts.Server)
+
+	q := m.createPostQuery(opts)
+	q.Add("in_reply_to_id", replyToId)
+
+	res := &status{}
 	if err := m.request("POST", url, q, true, &res); err != nil {
 		return nil, err
 	}
@@ -128,8 +154,12 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 }
 
 func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
+	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server), id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
+	}
+
 	res := &status{}
-	u, _ := url.JoinPath(statusesEndpoint.URL(m.opts.Server), id)
 	if err := m.request("DELETE", u, nil, true, &res); err != nil {
 		return nil, err
 	}

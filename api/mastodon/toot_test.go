@@ -104,7 +104,7 @@ func TestCreatePost(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	t.Run("サーバーにデータを送信できているか", func(t *testing.T) {
+	t.Run("データを送信できているか", func(t *testing.T) {
 		res := <-serverRes
 		assert.Equal(t, postText, res.s)
 		assert.Equal(t, postVisibility, res.v)
@@ -114,6 +114,26 @@ func TestCreatePost(t *testing.T) {
 		assert.Equal(t, postText, res.Text)
 		assert.Equal(t, postVisibility, res.Visibility)
 	})
+}
+
+func TestReplyPost(t *testing.T) {
+	serverReceivedId := make(chan string, 1)
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		serverReceivedId <- r.URL.Query().Get("in_reply_to_id")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, mockStatus)
+	}))
+
+	defer ts.Close()
+
+	replyToId := "012345"
+	opts := &shared.CreatePostOpts{Text: "a", Visibility: "public"}
+	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	_, err := m.ReplyPost(replyToId, opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, replyToId, <-serverReceivedId, "返信先のIDがパラメータに含まれているか")
 }
 
 func TestDeletePost(t *testing.T) {
