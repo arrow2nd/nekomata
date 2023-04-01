@@ -9,6 +9,10 @@ type Client interface {
 	GetAnnouncements() ([]*Announcement, error)
 	// CreatePost : 投稿を作成
 	CreatePost(*CreatePostOpts) (*Post, error)
+	// QuotePost : 投稿を引用
+	QuotePost(string, *CreatePostOpts) (*Post, error)
+	// ReplyPost : 投稿に返信
+	ReplyPost(string, *CreatePostOpts) (*Post, error)
 	// DeletePost : 投稿を削除
 	DeletePost(string) (*Post, error)
 }
