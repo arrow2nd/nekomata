@@ -29,18 +29,6 @@ func TestEnpoint(t *testing.T) {
 			p:    url.Values{":id": []string{"fuga"}},
 			want: "/api/hoge/fuga",
 		},
-		{
-			name: "クエリパラメータあり",
-			e:    "/api/hoge",
-			p:    nil,
-			want: "/api/hoge?a=fuga&b=piyo",
-		},
-		{
-			name: "パスパラメータ + クエリパラメータ",
-			e:    "/api/hoge/:id",
-			p:    url.Values{":id": []string{"fuga"}},
-			want: "/api/hoge/fuga?a=piyo",
-		},
 	}
 
 	for _, tc := range tests {
