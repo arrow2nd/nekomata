@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/google/uuid"
@@ -39,9 +38,10 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		q := url.Values{}
-		q.Add("session", id)
-		return http.Post(shared.AuthCallbackURL+"?"+q.Encode(), "", nil)
+		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req.URL.RawQuery = "session=" + id
+		c := http.DefaultClient
+		return c.Do(req)
 	}
 
 	t.Run("セッションIDが受け取れるか", func(t *testing.T) {
@@ -50,8 +50,6 @@ func TestRecieveSessionID(t *testing.T) {
 
 		result := make(chan *result, 1)
 		go run(result, wantSessionID)
-
-		time.Sleep(time.Second)
 
 		res, err := postCallback(wantSessionID)
 		assert.NoError(t, err)

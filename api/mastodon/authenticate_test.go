@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
-	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
@@ -34,16 +32,15 @@ func TestRecieveCode(t *testing.T) {
 	}
 
 	postCallback := func(code string) (*http.Response, error) {
-		q := url.Values{}
-		q.Add("code", code)
-		return http.Post(shared.AuthCallbackURL+"?"+q.Encode(), "", nil)
+		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req.URL.RawQuery = "code=" + code
+		c := http.DefaultClient
+		return c.Do(req)
 	}
 
 	t.Run("受け取れるか", func(t *testing.T) {
 		result := make(chan *result, 1)
 		go run(result)
-
-		time.Sleep(time.Second * 1)
 
 		wantCode := "CODE"
 		res, err := postCallback(wantCode)
