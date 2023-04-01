@@ -184,3 +184,21 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 
 	return nil
 }
+
+func (m *Mastodon) UnReaction(id, reaction string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := unfavouriteEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if res.Favourited {
+		return fmt.Errorf("failed to unfavourite (ID: %s)", id)
+	}
+
+	return nil
+}

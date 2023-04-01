@@ -8,4 +8,5 @@ const (
 	announcementsEndpoint  shared.Endpoint = "/api/v1/announcements"
 	statusesEndpoint       shared.Endpoint = "/api/v1/statuses"
 	favouriteEndpoint      shared.Endpoint = "/api/v1/statuses/:id/favourite"
+	unfavouriteEndpoint    shared.Endpoint = "/api/v1/statuses/:id/unfavourite"
 )

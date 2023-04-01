@@ -21,3 +21,7 @@ func (m *Misskey) DeletePost(id string) (*shared.Post, error) {
 func (m *Misskey) Reaction(id, reaction string) error {
 	return nil
 }
+
+func (m *Misskey) UnReaction(id, reaction string) error {
+	return nil
+}
