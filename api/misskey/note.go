@@ -17,3 +17,11 @@ func (m Misskey) ReplyPost(id string, opts *shared.CreatePostOpts) (*shared.Post
 func (m *Misskey) DeletePost(id string) (*shared.Post, error) {
 	return nil, nil
 }
+
+func (m *Misskey) Reaction(id, reaction string) error {
+	return nil
+}
+
+func (m *Misskey) UnReaction(id, reaction string) error {
+	return nil
+}

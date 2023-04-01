@@ -123,11 +123,11 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 }
 
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server)
+	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
 	q := m.createPostQuery(opts)
 
 	res := &status{}
-	if err := m.request("POST", url, q, true, &res); err != nil {
+	if err := m.request("POST", endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -140,13 +140,13 @@ func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Po
 }
 
 func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server)
+	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
 
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
 
 	res := &status{}
-	if err := m.request("POST", url, q, true, &res); err != nil {
+	if err := m.request("POST", endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -154,7 +154,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*sh
 }
 
 func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
-	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server), id)
+	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server, nil), id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
 	}
@@ -165,4 +165,40 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 	}
 
 	return res.ToPost(), nil
+}
+
+func (m *Mastodon) Reaction(id, reaction string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := favouriteEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if !res.Favourited {
+		return fmt.Errorf("failed to favourite (ID: %s)", id)
+	}
+
+	return nil
+}
+
+func (m *Mastodon) UnReaction(id, reaction string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := unfavouriteEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if res.Favourited {
+		return fmt.Errorf("failed to unfavourite (ID: %s)", id)
+	}
+
+	return nil
 }

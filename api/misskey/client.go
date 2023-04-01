@@ -27,8 +27,8 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 		return fmt.Errorf("create payload error (%s): %w", endpoint, err)
 	}
 
-	url := endpoint.URL(m.opts.Server)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	endpointURL := endpoint.URL(m.opts.Server, nil)
+	req, err := http.NewRequest("POST", endpointURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return fmt.Errorf("create request error (%s): %w", endpoint, err)
 	}
@@ -38,7 +38,7 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 	res, err := client.Do(req)
 	if err != nil {
 		return &shared.RequestError{
-			URL: url,
+			URL: endpointURL,
 			Err: err,
 		}
 	}
@@ -53,7 +53,7 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(out); err != nil {
 		return &shared.DecodeError{
-			URL: url,
+			URL: endpointURL,
 			Err: err,
 		}
 	}

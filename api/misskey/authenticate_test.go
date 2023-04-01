@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strings"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api/shared"
@@ -15,12 +14,15 @@ import (
 
 func TestCreateAuthorizeURL(t *testing.T) {
 	m := &Misskey{opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"}}
+
 	u, sessionID := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
-
-	want := miAuthEndpoint.URL(m.opts.Server) + "?callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb"
-	want = strings.Replace(want, ":session_id", sessionID, 1)
-
 	assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
+
+	pathParams := url.Values{}
+	pathParams.Add(":session_id", sessionID)
+	endpoint := miAuthEndpoint.URL(m.opts.Server, pathParams)
+
+	want := endpoint + "?callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb"
 	assert.Equal(t, want, u, "正しい形式で生成されているか")
 }
 
@@ -37,9 +39,10 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		q := url.Values{}
-		q.Add("session", id)
-		return http.Post(shared.AuthCallbackURL+"?"+q.Encode(), "", nil)
+		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req.URL.RawQuery = "session=" + id
+		c := http.DefaultClient
+		return c.Do(req)
 	}
 
 	t.Run("セッションIDが受け取れるか", func(t *testing.T) {
