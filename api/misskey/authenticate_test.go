@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/google/uuid"
@@ -49,6 +50,8 @@ func TestRecieveSessionID(t *testing.T) {
 
 		result := make(chan *result, 1)
 		go run(result, wantSessionID)
+
+		time.Sleep(time.Second)
 
 		res, err := postCallback(wantSessionID)
 		assert.NoError(t, err)

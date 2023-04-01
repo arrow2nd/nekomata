@@ -29,7 +29,9 @@ func (m *Mastodon) request(method, url string, q url.Values, auth bool, out inte
 		req.Header.Set("Authorization", "Bearer "+m.opts.UserToken)
 	}
 
-	req.URL.RawQuery = q.Encode()
+	if q != nil {
+		req.URL.RawQuery = q.Encode()
+	}
 
 	client := http.DefaultClient
 	res, err := client.Do(req)

@@ -168,5 +168,19 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 }
 
 func (m *Mastodon) Reaction(id, reaction string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := favouriteEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if !res.Favourited {
+		return fmt.Errorf("failed to favourite (ID: %s)", id)
+	}
+
 	return nil
 }

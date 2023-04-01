@@ -43,7 +43,7 @@ func TestRecieveCode(t *testing.T) {
 		result := make(chan *result, 1)
 		go run(result)
 
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 1)
 
 		wantCode := "CODE"
 		res, err := postCallback(wantCode)

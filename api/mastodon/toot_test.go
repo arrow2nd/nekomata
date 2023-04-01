@@ -27,7 +27,7 @@ const mockStatus = `
   "replies_count": 5,
   "reblogs_count": 6,
   "favourites_count": 10,
-  "favourited": false,
+  "favourited": true,
   "reblogged": false,
   "muted": false,
   "bookmarked": false,
@@ -149,6 +149,23 @@ func TestDeletePost(t *testing.T) {
 
 	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 	_, err := m.DeletePost(id)
+
+	assert.NoError(t, err)
+}
+
+func TestReaction(t *testing.T) {
+	id := "012345"
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, mockStatus)
+	}))
+
+	defer ts.Close()
+
+	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	err := m.Reaction(id, "")
 
 	assert.NoError(t, err)
 }
