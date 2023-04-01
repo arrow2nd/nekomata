@@ -123,11 +123,11 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 }
 
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server, nil)
+	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
 	q := m.createPostQuery(opts)
 
 	res := &status{}
-	if err := m.request("POST", url, q, true, &res); err != nil {
+	if err := m.request("POST", endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -140,13 +140,13 @@ func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Po
 }
 
 func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
-	url := statusesEndpoint.URL(m.opts.Server, nil)
+	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
 
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
 
 	res := &status{}
-	if err := m.request("POST", url, q, true, &res); err != nil {
+	if err := m.request("POST", endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 

@@ -51,6 +51,7 @@ func (m *Mastodon) recieveCode() (string, error) {
 
 func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	q := url.Values{}
+
 	q.Add("grant_type", "authorization_code")
 	q.Add("code", code)
 	q.Add("client_id", m.opts.ID)
@@ -58,8 +59,8 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	q.Add("redirect_uri", shared.AuthCallbackURL)
 
 	res := &authenticateResponse{}
-	url := oauthTokenEndpoint.URL(m.opts.Server, nil)
-	if err := m.request("POST", url, q, false, res); err != nil {
+	endpoint := oauthTokenEndpoint.URL(m.opts.Server, nil)
+	if err := m.request("POST", endpoint, q, false, res); err != nil {
 		return nil, err
 	}
 
