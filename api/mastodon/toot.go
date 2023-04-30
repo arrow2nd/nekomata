@@ -230,7 +230,7 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 	return nil
 }
 
-func (m *Mastodon) UnReaction(id, reaction string) error {
+func (m *Mastodon) UnReaction(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -243,6 +243,42 @@ func (m *Mastodon) UnReaction(id, reaction string) error {
 
 	if res.Favourited {
 		return fmt.Errorf("failed to unfavourite (ID: %s)", id)
+	}
+
+	return nil
+}
+
+func (m *Mastodon) Repost(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := reblogEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if !res.Reblogged {
+		return fmt.Errorf("failed to repost (ID: %s)", id)
+	}
+
+	return nil
+}
+
+func (m *Mastodon) UnRepost(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := unreblogEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if res.Reblogged {
+		return fmt.Errorf("failed to unrepost (ID: %s)", id)
 	}
 
 	return nil

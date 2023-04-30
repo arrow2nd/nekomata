@@ -22,6 +22,14 @@ func (m *Misskey) Reaction(id, reaction string) error {
 	return nil
 }
 
-func (m *Misskey) UnReaction(id, reaction string) error {
+func (m *Misskey) UnReaction(id string) error {
+	return nil
+}
+
+func (m *Misskey) Repost(id string) error {
+	return nil
+}
+
+func (m *Misskey) UnRepost(id string) error {
 	return nil
 }
