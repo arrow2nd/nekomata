@@ -8,11 +8,16 @@ import (
 	"jaytaylor.com/html2text"
 )
 
+// announcement : アナウンス
 type announcement struct {
-	ID          string    `json:"id"`
-	Content     string    `json:"content"`
+	// ID : アナウンス ID
+	ID string `json:"id"`
+	// Content : 内容
+	Content string `json:"content"`
+	// PublishedAt : 配信日
 	PublishedAt time.Time `json:"published_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	// UpdatedAt : 更新日
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
