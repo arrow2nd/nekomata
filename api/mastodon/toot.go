@@ -230,7 +230,7 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 	return nil
 }
 
-func (m *Mastodon) UnReaction(id, reaction string) error {
+func (m *Mastodon) UnReaction(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 

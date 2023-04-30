@@ -207,13 +207,13 @@ func TestUnReaction(t *testing.T) {
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnReaction(id, "")
+		err := m.UnReaction(id)
 		assert.ErrorContains(t, err, "failed to unfavourite")
 	})
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnReaction(id, "")
+		err := m.UnReaction(id)
 		assert.NoError(t, err)
 	})
 }
