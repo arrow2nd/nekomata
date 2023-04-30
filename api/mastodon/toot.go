@@ -249,9 +249,37 @@ func (m *Mastodon) UnReaction(id string) error {
 }
 
 func (m *Mastodon) Repost(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := reblogEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if !res.Reblogged {
+		return fmt.Errorf("failed to repost (ID: %s)", id)
+	}
+
 	return nil
 }
 
 func (m *Mastodon) UnRepost(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := unreblogEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if res.Reblogged {
+		return fmt.Errorf("failed to unrepost (ID: %s)", id)
+	}
+
 	return nil
 }
