@@ -247,3 +247,11 @@ func (m *Mastodon) UnReaction(id, reaction string) error {
 
 	return nil
 }
+
+func (m *Mastodon) Repost(id string) error {
+	return nil
+}
+
+func (m *Mastodon) UnRepost(id string) error {
+	return nil
+}

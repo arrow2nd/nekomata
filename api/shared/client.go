@@ -17,8 +17,12 @@ type Client interface {
 	DeletePost(string) (*Post, error)
 	// Reaction : 投稿にリアクション
 	Reaction(string, string) error
-	// UnReaction : リアクションを解除
+	// UnReaction : リアクションを削除
 	UnReaction(string, string) error
+	// Repost : 投稿をリポスト
+	Repost(string) error
+	// UnRepost : リポストを削除
+	UnRepost(string) error
 }
 
 // ClientOpts : クライアントの設定
