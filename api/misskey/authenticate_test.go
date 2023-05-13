@@ -20,7 +20,7 @@ func TestCreateAuthorizeURL(t *testing.T) {
 
 	pathParams := url.Values{}
 	pathParams.Add(":session_id", sessionID)
-	endpoint := miAuthEndpoint.URL(m.opts.Server, pathParams)
+	endpoint := endpointMiAuth.URL(m.opts.Server, pathParams)
 
 	want := endpoint + "?callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb"
 	assert.Equal(t, want, u, "正しい形式で生成されているか")
@@ -39,7 +39,7 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req, _ := http.NewRequest(http.MethodPost, shared.AuthCallbackURL, nil)
 		req.URL.RawQuery = "session=" + id
 		c := http.DefaultClient
 		return c.Do(req)

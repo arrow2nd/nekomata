@@ -28,7 +28,7 @@ func (m *Misskey) post(endpoint shared.Endpoint, in, out interface{}) error {
 	}
 
 	endpointURL := endpoint.URL(m.opts.Server, nil)
-	req, err := http.NewRequest("POST", endpointURL, bytes.NewBuffer(payload))
+	req, err := http.NewRequest(http.MethodPost, endpointURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return fmt.Errorf("create request error (%s): %w", endpoint, err)
 	}

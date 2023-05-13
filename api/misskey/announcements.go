@@ -24,7 +24,7 @@ func (m *Misskey) GetAnnouncements() ([]*shared.Announcement, error) {
 	}
 
 	res := []*announcementsResponse{}
-	if err := m.post(announcementsEndpoint, req, &res); err != nil {
+	if err := m.post(endpointAnnouncements, req, &res); err != nil {
 		return nil, err
 	}
 

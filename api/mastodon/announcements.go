@@ -1,6 +1,7 @@
 package mastodon
 
 import (
+	"net/http"
 	"net/url"
 	"time"
 
@@ -25,8 +26,8 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	q.Add("with_dismissed", "false")
 
 	res := []*announcement{}
-	url := announcementsEndpoint.URL(m.opts.Server, nil)
-	if err := m.request("GET", url, q, true, &res); err != nil {
+	url := endpointAnnouncements.URL(m.opts.Server, nil)
+	if err := m.request(http.MethodGet, url, q, true, &res); err != nil {
 		return nil, err
 	}
 

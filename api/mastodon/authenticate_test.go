@@ -14,7 +14,7 @@ func TestCreateAuthorizeURL(t *testing.T) {
 	m := &Mastodon{opts: &shared.ClientOpts{Server: "https://example.com", ID: "hoge"}}
 	u := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 
-	endpoint := oauthAuthorizeEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
 	want := endpoint + "?client_id=hoge&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&response_type=code&scope=aaaa+bbbb"
 	assert.Equal(t, want, u)
 }
@@ -32,7 +32,7 @@ func TestRecieveCode(t *testing.T) {
 	}
 
 	postCallback := func(code string) (*http.Response, error) {
-		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req, _ := http.NewRequest(http.MethodPost, shared.AuthCallbackURL, nil)
 		req.URL.RawQuery = "code=" + code
 		c := http.DefaultClient
 		return c.Do(req)

@@ -33,21 +33,21 @@ func TestPost(t *testing.T) {
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
-		err := m.post(announcementsEndpoint, &announcementsOpts{}, &announcementsResponse{})
+		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &shared.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		err := m.post(announcementsEndpoint, &announcementsOpts{}, &announcementsResponse{})
+		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &shared.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
-		err := m.post(announcementsEndpoint, &announcementsOpts{}, &announcementsResponse{})
+		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &shared.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -60,7 +60,7 @@ func TestPost(t *testing.T) {
 		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
 
 		res := &r{}
-		err := m.post(announcementsEndpoint, &announcementsOpts{}, &res)
+		err := m.post(endpointAnnouncements, &announcementsOpts{}, &res)
 		assert.NoError(t, err)
 
 		assert.True(t, res.OK)
