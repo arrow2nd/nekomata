@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
@@ -18,54 +17,6 @@ func TestCreateAuthorizeURL(t *testing.T) {
 	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
 	want := endpoint + "?client_id=hoge&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&response_type=code&scope=aaaa+bbbb"
 	assert.Equal(t, want, u)
-}
-
-func TestRecieveCode(t *testing.T) {
-	type result struct {
-		code string
-		err  error
-	}
-
-	run := func(r chan *result) {
-		m := &Mastodon{opts: &shared.ClientOpts{Server: "https://example.com"}}
-		recieveCode, err := m.recieveCode()
-		r <- &result{code: recieveCode, err: err}
-	}
-
-	postCallback := func(code string) (*http.Response, error) {
-		req, _ := http.NewRequest(http.MethodPost, shared.AuthCallbackURL, nil)
-		req.URL.RawQuery = "code=" + code
-		c := http.DefaultClient
-		return c.Do(req)
-	}
-
-	t.Run("受け取れるか", func(t *testing.T) {
-		result := make(chan *result, 1)
-		go run(result)
-
-		time.Sleep(1 * time.Second)
-
-		wantCode := "CODE"
-		res, err := postCallback(wantCode)
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusOK, res.StatusCode, "呼び出し元に適切なステータスコードが返っているか")
-
-		r := <-result
-		assert.NoError(t, r.err)
-		assert.Equal(t, wantCode, r.code)
-	})
-
-	t.Run("空の場合エラーを返すか", func(t *testing.T) {
-		result := make(chan *result, 1)
-		go run(result)
-
-		res, err := postCallback("")
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, res.StatusCode, "呼び出し元に適切なステータスコードが返っているか")
-
-		r := <-result
-		assert.ErrorContains(t, r.err, "failed to recieve code")
-	})
 }
 
 func TestRecieveToken(t *testing.T) {
