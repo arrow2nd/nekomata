@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
@@ -41,6 +42,8 @@ func TestRecieveCode(t *testing.T) {
 	t.Run("受け取れるか", func(t *testing.T) {
 		result := make(chan *result, 1)
 		go run(result)
+
+		time.Sleep(1 * time.Second)
 
 		wantCode := "CODE"
 		res, err := postCallback(wantCode)
