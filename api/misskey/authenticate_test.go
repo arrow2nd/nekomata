@@ -39,7 +39,7 @@ func TestRecieveSessionID(t *testing.T) {
 	}
 
 	postCallback := func(id string) (*http.Response, error) {
-		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req, _ := http.NewRequest(http.MethodPost, shared.AuthCallbackURL, nil)
 		req.URL.RawQuery = "session=" + id
 		c := http.DefaultClient
 		return c.Do(req)

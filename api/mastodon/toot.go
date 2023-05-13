@@ -3,6 +3,7 @@ package mastodon
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -172,7 +173,7 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 	q := m.createPostQuery(opts)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, q, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -191,7 +192,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*sh
 	q.Add("in_reply_to_id", replyToId)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, q, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -205,7 +206,7 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 	}
 
 	res := &status{}
-	if err := m.request("DELETE", u, nil, true, &res); err != nil {
+	if err := m.request(http.MethodDelete, u, nil, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -219,7 +220,7 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 	endpoint := favouriteEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 
@@ -237,7 +238,7 @@ func (m *Mastodon) UnReaction(id string) error {
 	endpoint := unfavouriteEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 
@@ -255,7 +256,7 @@ func (m *Mastodon) Repost(id string) error {
 	endpoint := reblogEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 
@@ -273,7 +274,7 @@ func (m *Mastodon) UnRepost(id string) error {
 	endpoint := unreblogEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 
@@ -291,7 +292,7 @@ func (m *Mastodon) Bookmark(id string) error {
 	endpoint := bookmarkEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 
@@ -309,7 +310,7 @@ func (m *Mastodon) UnBookmark(id string) error {
 	endpoint := unbookmarkEndpoint.URL(m.opts.Server, p)
 
 	res := &status{}
-	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
 		return err
 	}
 

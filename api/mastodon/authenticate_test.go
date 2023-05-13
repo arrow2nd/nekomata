@@ -32,7 +32,7 @@ func TestRecieveCode(t *testing.T) {
 	}
 
 	postCallback := func(code string) (*http.Response, error) {
-		req, _ := http.NewRequest("POST", shared.AuthCallbackURL, nil)
+		req, _ := http.NewRequest(http.MethodPost, shared.AuthCallbackURL, nil)
 		req.URL.RawQuery = "code=" + code
 		c := http.DefaultClient
 		return c.Do(req)

@@ -45,7 +45,7 @@ func TestRequest(t *testing.T) {
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("POST", u, nil, false, nil)
+		err := m.request(http.MethodPost, u, nil, false, nil)
 		e := &shared.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -53,7 +53,7 @@ func TestRequest(t *testing.T) {
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("POST", u, nil, false, nil)
+		err := m.request(http.MethodPost, u, nil, false, nil)
 		e := &shared.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -61,7 +61,7 @@ func TestRequest(t *testing.T) {
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("POST", u, nil, false, nil)
+		err := m.request(http.MethodPost, u, nil, false, nil)
 		e := &shared.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -69,7 +69,7 @@ func TestRequest(t *testing.T) {
 	t.Run("エラーレスポンス", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("POST", u, nil, false, nil)
+		err := m.request(http.MethodPost, u, nil, false, nil)
 		e := &errorResponse{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -82,7 +82,7 @@ func TestRequest(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("POST", u, nil, true, res)
+		err := m.request(http.MethodPost, u, nil, true, res)
 		assert.NoError(t, err)
 		assert.Equal(t, "authorization", res.S)
 	})
@@ -91,8 +91,8 @@ func TestRequest(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
 		u := announcementsEndpoint.URL(m.opts.Server, nil)
-		err := m.request("GET", u, nil, false, res)
+		err := m.request(http.MethodGet, u, nil, false, res)
 		assert.NoError(t, err)
-		assert.Equal(t, "GET", res.S)
+		assert.Equal(t, http.MethodGet, res.S)
 	})
 }

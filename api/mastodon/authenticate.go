@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -60,7 +61,7 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 
 	res := &authenticateResponse{}
 	endpoint := oauthTokenEndpoint.URL(m.opts.Server, nil)
-	if err := m.request("POST", endpoint, q, false, res); err != nil {
+	if err := m.request(http.MethodPost, endpoint, q, false, res); err != nil {
 		return nil, err
 	}
 

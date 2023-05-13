@@ -1,6 +1,7 @@
 package mastodon
 
 import (
+	"net/http"
 	"net/url"
 	"time"
 
@@ -26,7 +27,7 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 
 	res := []*announcement{}
 	url := announcementsEndpoint.URL(m.opts.Server, nil)
-	if err := m.request("GET", url, q, true, &res); err != nil {
+	if err := m.request(http.MethodGet, url, q, true, &res); err != nil {
 		return nil, err
 	}
 
