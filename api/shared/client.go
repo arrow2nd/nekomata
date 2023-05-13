@@ -23,7 +23,7 @@ type Client interface {
 	Repost(id string) (*Post, error)
 	// UnRepost : リポストを削除
 	UnRepost(id string) (*Post, error)
-	// Bookbart : 投稿をブックマーク
+	// Bookmark : 投稿をブックマーク
 	Bookmark(id string) (*Post, error)
 	// UnBookmark : ブックマークを解除
 	UnBookmark(id string) (*Post, error)
