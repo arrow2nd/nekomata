@@ -35,3 +35,11 @@ type accountFields struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
+
+func (m *Mastodon) Follow(id string) error {
+	return nil
+}
+
+func (m *Mastodon) UnFollow(id string) error {
+	return nil
+}

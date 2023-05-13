@@ -27,6 +27,10 @@ type Client interface {
 	Bookmark(id string) error
 	// UnBookmark : ブックマークを解除
 	UnBookmark(id string) error
+	// Follow : ユーザーをフォロー
+	Follow(id string) error
+	// UnFollow : ユーザーのフォローを解除
+	UnFollow(id string) error
 }
 
 // ClientOpts : クライアントの設定
