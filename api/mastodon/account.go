@@ -1,6 +1,11 @@
 package mastodon
 
-import "time"
+import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"time"
+)
 
 // account : ユーザー情報
 type account struct {
@@ -37,9 +42,31 @@ type accountFields struct {
 }
 
 func (m *Mastodon) Follow(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	res := &account{}
+	endpoint := endpointFollow.URL(m.opts.Server, p)
+
+	err := m.request(http.MethodPost, endpoint, nil, true, res)
+	if err != nil {
+		return fmt.Errorf("failed to follow (ID: %s): %w", id, err)
+	}
+
 	return nil
 }
 
 func (m *Mastodon) UnFollow(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	res := &account{}
+	endpoint := endpointUnfollow.URL(m.opts.Server, p)
+
+	err := m.request(http.MethodPost, endpoint, nil, true, res)
+	if err != nil {
+		return fmt.Errorf("failed to unfollow (ID: %s): %w", id, err)
+	}
+
 	return nil
 }
