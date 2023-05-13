@@ -213,7 +213,7 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 	return res.ToPost(), nil
 }
 
-func (m *Mastodon) Reaction(id, reaction string) error {
+func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -221,17 +221,13 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if !res.Favourited {
-		return fmt.Errorf("failed to favourite (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }
 
-func (m *Mastodon) UnReaction(id string) error {
+func (m *Mastodon) UnReaction(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -239,17 +235,13 @@ func (m *Mastodon) UnReaction(id string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if res.Favourited {
-		return fmt.Errorf("failed to unfavourite (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }
 
-func (m *Mastodon) Repost(id string) error {
+func (m *Mastodon) Repost(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -257,17 +249,13 @@ func (m *Mastodon) Repost(id string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if !res.Reblogged {
-		return fmt.Errorf("failed to repost (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }
 
-func (m *Mastodon) UnRepost(id string) error {
+func (m *Mastodon) UnRepost(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -275,17 +263,13 @@ func (m *Mastodon) UnRepost(id string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if res.Reblogged {
-		return fmt.Errorf("failed to unrepost (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }
 
-func (m *Mastodon) Bookmark(id string) error {
+func (m *Mastodon) Bookmark(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -293,17 +277,13 @@ func (m *Mastodon) Bookmark(id string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if !res.Bookmarked {
-		return fmt.Errorf("failed to bookmark (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }
 
-func (m *Mastodon) UnBookmark(id string) error {
+func (m *Mastodon) UnBookmark(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -311,12 +291,8 @@ func (m *Mastodon) UnBookmark(id string) error {
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return err
+		return nil, err
 	}
 
-	if res.Bookmarked {
-		return fmt.Errorf("failed to unbookmark (ID: %s)", id)
-	}
-
-	return nil
+	return res.ToPost(), nil
 }

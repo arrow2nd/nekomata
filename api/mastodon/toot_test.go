@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api"
@@ -76,6 +75,24 @@ const mockStatus = `
   "card": null,
   "poll": null
 }`
+
+func createMockServer(t *testing.T, id string) *httptest.Server {
+	isError := false
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
+
+		if isError {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintln(w, `{ "error": "Record not found" }`)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, mockStatus)
+		isError = true
+	}))
+}
 
 func TestCreatePost(t *testing.T) {
 	type result struct {
@@ -156,192 +173,114 @@ func TestDeletePost(t *testing.T) {
 
 func TestReaction(t *testing.T) {
 	id := "012345"
-	isSuccess := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isSuccess {
-			isSuccess = false
-			status = strings.Replace(status, `"favourited": false`, `"favourited": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Reaction(id, "")
+		_, err := m.Reaction(id, "")
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Reaction(id, "")
-		assert.ErrorContains(t, err, "failed to favourite")
+		_, err := m.Reaction(id, "")
+		assert.Error(t, err)
 	})
 }
 
 func TestUnReaction(t *testing.T) {
 	id := "012345"
-	isFailed := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isFailed {
-			isFailed = false
-			status = strings.Replace(status, `"favourited": false`, `"favourited": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
-
-	t.Run("失敗", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnReaction(id)
-		assert.ErrorContains(t, err, "failed to unfavourite")
-	})
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnReaction(id)
+		_, err := m.UnReaction(id)
 		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		_, err := m.UnReaction(id)
+		assert.Error(t, err)
 	})
 }
 
 func TestReblog(t *testing.T) {
 	id := "012345"
-	isSuccess := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isSuccess {
-			isSuccess = false
-			status = strings.Replace(status, `"reblogged": false`, `"reblogged": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Repost(id)
+		_, err := m.Repost(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Repost(id)
-		assert.ErrorContains(t, err, "failed to repost")
+		_, err := m.Repost(id)
+		assert.Error(t, err)
 	})
 }
 
 func TestUnRepost(t *testing.T) {
 	id := "012345"
-	isFailed := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isFailed {
-			isFailed = false
-			status = strings.Replace(status, `"reblogged": false`, `"reblogged": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
-
-	t.Run("失敗", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnRepost(id)
-		assert.ErrorContains(t, err, "failed to unrepost")
-	})
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnRepost(id)
+		_, err := m.UnRepost(id)
 		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		_, err := m.UnRepost(id)
+		assert.Error(t, err)
 	})
 }
 
 func TestBookmark(t *testing.T) {
 	id := "012345"
-	isSuccess := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isSuccess {
-			isSuccess = false
-			status = strings.Replace(status, `"bookmarked": false`, `"bookmarked": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Bookmark(id)
+		_, err := m.Bookmark(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.Bookmark(id)
-		assert.ErrorContains(t, err, "failed to bookmark")
+		_, err := m.Bookmark(id)
+		assert.Error(t, err)
 	})
 }
 
 func TestUnBookmarked(t *testing.T) {
 	id := "012345"
-	isFailed := true
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
-		w.WriteHeader(http.StatusOK)
-
-		status := mockStatus
-		if isFailed {
-			isFailed = false
-			status = strings.Replace(status, `"bookmarked": false`, `"bookmarked": true`, 1)
-		}
-
-		fmt.Fprintln(w, status)
-	}))
-
+	ts := createMockServer(t, id)
 	defer ts.Close()
-
-	t.Run("失敗", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnBookmark(id)
-		assert.ErrorContains(t, err, "failed to unbookmark")
-	})
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		err := m.UnBookmark(id)
+		_, err := m.UnBookmark(id)
 		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		_, err := m.UnBookmark(id)
+		assert.Error(t, err)
 	})
 }
