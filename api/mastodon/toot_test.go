@@ -281,3 +281,67 @@ func TestUnRepost(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestBookmark(t *testing.T) {
+	id := "012345"
+	isSuccess := true
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
+		w.WriteHeader(http.StatusOK)
+
+		status := mockStatus
+		if isSuccess {
+			isSuccess = false
+			status = strings.Replace(status, `"bookmarked": false`, `"bookmarked": true`, 1)
+		}
+
+		fmt.Fprintln(w, status)
+	}))
+
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		err := m.Bookmark(id)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		err := m.Bookmark(id)
+		assert.ErrorContains(t, err, "failed to bookmark")
+	})
+}
+
+func TestUnBookmarked(t *testing.T) {
+	id := "012345"
+	isFailed := true
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
+		w.WriteHeader(http.StatusOK)
+
+		status := mockStatus
+		if isFailed {
+			isFailed = false
+			status = strings.Replace(status, `"bookmarked": false`, `"bookmarked": true`, 1)
+		}
+
+		fmt.Fprintln(w, status)
+	}))
+
+	defer ts.Close()
+
+	t.Run("失敗", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		err := m.UnBookmark(id)
+		assert.ErrorContains(t, err, "failed to unbookmark")
+	})
+
+	t.Run("成功", func(t *testing.T) {
+		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		err := m.UnBookmark(id)
+		assert.NoError(t, err)
+	})
+}
