@@ -23,6 +23,10 @@ type Client interface {
 	Repost(id string) error
 	// UnRepost : リポストを削除
 	UnRepost(id string) error
+	// Bookbart : 投稿をブックマーク
+	Bookmark(id string) error
+	// UnBookmark : ブックマークを解除
+	UnBookmark(id string) error
 }
 
 // ClientOpts : クライアントの設定

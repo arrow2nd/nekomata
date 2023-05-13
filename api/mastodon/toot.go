@@ -283,3 +283,11 @@ func (m *Mastodon) UnRepost(id string) error {
 
 	return nil
 }
+
+func (m *Mastodon) Bookmark(id string) error {
+	return nil
+}
+
+func (m *Mastodon) UnBookmark(id string) error {
+	return nil
+}
