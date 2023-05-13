@@ -33,3 +33,11 @@ func (m *Misskey) Repost(id string) error {
 func (m *Misskey) UnRepost(id string) error {
 	return nil
 }
+
+func (m *Misskey) Bookmark(id string) error {
+	return nil
+}
+
+func (m *Misskey) UnBookmark(id string) error {
+	return nil
+}

@@ -283,3 +283,39 @@ func (m *Mastodon) UnRepost(id string) error {
 
 	return nil
 }
+
+func (m *Mastodon) Bookmark(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := bookmarkEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if !res.Bookmarked {
+		return fmt.Errorf("failed to bookmark (ID: %s)", id)
+	}
+
+	return nil
+}
+
+func (m *Mastodon) UnBookmark(id string) error {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := unbookmarkEndpoint.URL(m.opts.Server, p)
+
+	res := &status{}
+	if err := m.request("POST", endpoint, nil, true, &res); err != nil {
+		return err
+	}
+
+	if res.Bookmarked {
+		return fmt.Errorf("failed to unbookmark (ID: %s)", id)
+	}
+
+	return nil
+}
