@@ -14,7 +14,7 @@ func TestCreateAuthorizeURL(t *testing.T) {
 	m := &Mastodon{opts: &shared.ClientOpts{Server: "https://example.com", ID: "hoge"}}
 	u := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 
-	endpoint := oauthAuthorizeEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
 	want := endpoint + "?client_id=hoge&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&response_type=code&scope=aaaa+bbbb"
 	assert.Equal(t, want, u)
 }

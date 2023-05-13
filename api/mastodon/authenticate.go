@@ -40,7 +40,7 @@ func (m *Mastodon) createAuthorizeURL(permissions []string) string {
 	q.Add("redirect_uri", shared.AuthCallbackURL)
 	q.Add("scope", strings.Join(permissions, " "))
 
-	endpoint := oauthAuthorizeEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
 	return endpoint + "?" + q.Encode()
 }
 
@@ -60,7 +60,7 @@ func (m *Mastodon) recieveToken(code string) (*shared.User, error) {
 	q.Add("redirect_uri", shared.AuthCallbackURL)
 
 	res := &authenticateResponse{}
-	endpoint := oauthTokenEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointOauthToken.URL(m.opts.Server, nil)
 	if err := m.request(http.MethodPost, endpoint, q, false, res); err != nil {
 		return nil, err
 	}

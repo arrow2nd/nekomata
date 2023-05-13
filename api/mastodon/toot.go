@@ -169,7 +169,7 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 }
 
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
-	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointStatuses.URL(m.opts.Server, nil)
 	q := m.createPostQuery(opts)
 
 	res := &status{}
@@ -186,7 +186,7 @@ func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Po
 }
 
 func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
-	endpoint := statusesEndpoint.URL(m.opts.Server, nil)
+	endpoint := endpointStatuses.URL(m.opts.Server, nil)
 
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
@@ -200,7 +200,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*sh
 }
 
 func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
-	u, err := url.JoinPath(statusesEndpoint.URL(m.opts.Server, nil), id)
+	u, err := url.JoinPath(endpointStatuses.URL(m.opts.Server, nil), id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
 	}
@@ -217,7 +217,7 @@ func (m *Mastodon) Reaction(id, reaction string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := favouriteEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointFavourite.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -235,7 +235,7 @@ func (m *Mastodon) UnReaction(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := unfavouriteEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointUnfavourite.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -253,7 +253,7 @@ func (m *Mastodon) Repost(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := reblogEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointReblog.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -271,7 +271,7 @@ func (m *Mastodon) UnRepost(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := unreblogEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointUnreblog.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -289,7 +289,7 @@ func (m *Mastodon) Bookmark(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := bookmarkEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointBookmark.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -307,7 +307,7 @@ func (m *Mastodon) UnBookmark(id string) error {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := unbookmarkEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointUnbookmark.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {

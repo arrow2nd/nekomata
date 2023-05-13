@@ -58,7 +58,7 @@ func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID.String())
 
-	endpoint := miAuthEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointMiAuth.URL(m.opts.Server, p)
 	return endpoint + "?" + q.Encode(), sessionID.String()
 }
 
@@ -72,7 +72,7 @@ func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID)
 
-	endpoint := miAuthCheckEndpoint.URL(m.opts.Server, p)
+	endpoint := endpointMiAuthCheck.URL(m.opts.Server, p)
 	res, err := http.Post(endpoint, "text/plain", nil)
 	if err != nil {
 		return nil, &shared.RequestError{
