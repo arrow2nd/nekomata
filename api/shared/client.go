@@ -16,17 +16,17 @@ type Client interface {
 	// DeletePost : 投稿を削除
 	DeletePost(id string) (*Post, error)
 	// Reaction : 投稿にリアクション
-	Reaction(id string, reactionName string) error
+	Reaction(id string, reactionName string) (*Post, error)
 	// UnReaction : リアクションを削除
-	UnReaction(id string) error
+	UnReaction(id string) (*Post, error)
 	// Repost : 投稿をリポスト
-	Repost(id string) error
+	Repost(id string) (*Post, error)
 	// UnRepost : リポストを削除
-	UnRepost(id string) error
+	UnRepost(id string) (*Post, error)
 	// Bookbart : 投稿をブックマーク
-	Bookmark(id string) error
+	Bookmark(id string) (*Post, error)
 	// UnBookmark : ブックマークを解除
-	UnBookmark(id string) error
+	UnBookmark(id string) (*Post, error)
 }
 
 // ClientOpts : クライアントの設定
