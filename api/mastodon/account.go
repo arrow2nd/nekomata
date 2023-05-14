@@ -1,13 +1,19 @@
 package mastodon
 
-import "time"
+import (
+	"fmt"
+	"net/http"
+	"net/url"
+	"time"
+
+	"github.com/arrow2nd/nekomata/api/shared"
+	"jaytaylor.com/html2text"
+)
 
 // account : ユーザー情報
 type account struct {
 	// ID : ユーザーID
 	ID string `json:"id"`
-	// Username : ユーザー名
-	Username string `json:"username"`
 	// Acct : ユーザー名 + ドメイン名からなる文字列 (username@domain)
 	Acct string `json:"acct"`
 	// DisplayName : 表示名
@@ -34,4 +40,89 @@ type account struct {
 type accountFields struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+// ToShared : shared.Account に変換
+func (a *account) ToShared() *shared.Account {
+	// BIOをプレーンテキストに変換
+	bio, err := html2text.FromString(a.Note)
+	if err != nil {
+		bio = fmt.Sprintf("convert error: %s", err)
+	}
+
+	// フィールドをプロフィールに変換
+	profiles := []shared.Profile{}
+	for _, p := range a.Fields {
+		profiles = append(profiles, shared.Profile{
+			Label: p.Name,
+			Value: p.Value,
+		})
+	}
+
+	return &shared.Account{
+		ID:             a.ID,
+		Username:       a.Acct,
+		DisplayName:    a.DisplayName,
+		Private:        a.Locked,
+		Bot:            a.Bot,
+		Verified:       false,
+		BIO:            bio,
+		CreatedAt:      a.CreatedAt,
+		FollowersCount: a.FollowersCount,
+		FollowingCount: a.FollowingCount,
+		PostsCount:     a.StatusesCount,
+		Profiles:       profiles,
+	}
+}
+
+// relationship : ユーザーとの関係
+type relationship struct {
+	ID         string `json:"id"`
+	Following  bool   `json:"following"`
+	FollowedBy bool   `json:"followed_by"`
+	Blocking   bool   `json:"blocking"`
+	BlockedBy  bool   `json:"blocked_by"`
+	Muting     bool   `json:"muting"`
+	Requested  bool   `json:"requested"`
+}
+
+// ToShared : shared.Relation に変換
+func (r *relationship) ToShared() *shared.Relationship {
+	return &shared.Relationship{
+		ID:         r.ID,
+		Following:  r.Following,
+		FollowedBy: r.FollowedBy,
+		Blocking:   r.Blocking,
+		BlockedBy:  r.BlockedBy,
+		Muting:     r.Muting,
+		Requested:  r.Requested,
+	}
+}
+
+func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointFollow.URL(m.opts.Server, p)
+
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
+	}
+
+	return res.ToShared(), nil
+}
+
+func (m *Mastodon) UnFollow(id string) (*shared.Relationship, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointUnfollow.URL(m.opts.Server, p)
+
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
+	}
+
+	return res.ToShared(), nil
 }

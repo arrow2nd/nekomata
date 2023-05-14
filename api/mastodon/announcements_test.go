@@ -1,13 +1,12 @@
-package mastodon_test
+package mastodon
 
 import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
+	"time"
 
-	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,13 +45,31 @@ const mockAnnouncements = `
   }
 ]`
 
+func TestAnnouncementToShared(t *testing.T) {
+	content := "hoge"
+
+	a := &announcement{
+		ID:          "id",
+		Content:     "<p>" + content + "<p>",
+		PublishedAt: time.Now(),
+		UpdatedAt:   time.Now().Add(time.Hour),
+	}
+
+	got := a.ToShared()
+	assert.Equal(t, a.ID, got.ID, "IDが一致")
+	assert.Equal(t, content, got.Text, "本文が一致")
+	assert.Equal(t, a.PublishedAt, got.PublishedAt, "公開日が一致")
+	assert.Equal(t, a.UpdatedAt, *got.UpdatedAt, "更新日が一致")
+}
+
 func TestGetAnnouncements(t *testing.T) {
-	isNotHTMLContent := true
+	isError := true
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if isNotHTMLContent {
-			isNotHTMLContent = false
-			fmt.Fprintln(w, `[ { "id": "0", "content": "This is plain text", "published_at": "2023-01-01T00:00:00.000Z", "updated_at": "2023-01-02T00:00:00.000Z" }`)
+		if isError {
+			isError = false
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintln(w, `{ "error": "The access token is invalid" }`)
 			return
 		}
 
@@ -62,14 +79,14 @@ func TestGetAnnouncements(t *testing.T) {
 
 	defer ts.Close()
 
-	t.Run("Contentパースエラー", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	t.Run("エラー", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
 		_, err := m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
 	t.Run("内容を取得できるか", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := New(&shared.ClientOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)

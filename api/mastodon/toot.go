@@ -14,9 +14,8 @@ import (
 
 // mentionAttribute : メンション先のユーザー
 type mentionAttribute struct {
-	ID       string `json:"id"`
-	UserName string `json:"username"`
-	Acct     string `json:"acct"`
+	ID   string `json:"id"`
+	Acct string `json:"acct"`
 }
 
 // poll : アンケート
@@ -123,11 +122,12 @@ type status struct {
 	Poll *poll `json:"poll"`
 }
 
-// ToPost : shared.Post に変換
-func (s *status) ToPost() *shared.Post {
+// ToShared : shared.Post に変換
+// TODO: テスト書く
+func (s *status) ToShared() *shared.Post {
 	text, err := html2text.FromString(s.Content)
 	if err != nil {
-		text = fmt.Sprintf("convert error: %s", err)
+		text = fmt.Sprintf("convert error: %s", err.Error())
 	}
 
 	post := &shared.Post{
@@ -145,7 +145,7 @@ func (s *status) ToPost() *shared.Post {
 	}
 
 	if s.Reblog != nil {
-		post.Reference = s.Reblog.ToPost()
+		post.Reference = s.Reblog.ToShared()
 	}
 
 	return post
@@ -177,7 +177,7 @@ func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error)
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Post, error) {
@@ -196,7 +196,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*sh
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
@@ -210,7 +210,7 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
@@ -224,7 +224,7 @@ func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) UnReaction(id string) (*shared.Post, error) {
@@ -238,7 +238,7 @@ func (m *Mastodon) UnReaction(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) Repost(id string) (*shared.Post, error) {
@@ -252,7 +252,7 @@ func (m *Mastodon) Repost(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) UnRepost(id string) (*shared.Post, error) {
@@ -266,7 +266,7 @@ func (m *Mastodon) UnRepost(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) Bookmark(id string) (*shared.Post, error) {
@@ -280,7 +280,7 @@ func (m *Mastodon) Bookmark(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) UnBookmark(id string) (*shared.Post, error) {
@@ -294,5 +294,5 @@ func (m *Mastodon) UnBookmark(id string) (*shared.Post, error) {
 		return nil, err
 	}
 
-	return res.ToPost(), nil
+	return res.ToShared(), nil
 }
