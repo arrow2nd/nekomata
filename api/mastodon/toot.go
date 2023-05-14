@@ -213,11 +213,11 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
+func (m *Mastodon) doTootAction(id string, e shared.Endpoint) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := endpointFavourite.URL(m.opts.Server, p)
+	endpoint := e.URL(m.opts.Server, p)
 
 	res := &status{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
@@ -225,74 +225,28 @@ func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
 	}
 
 	return res.ToShared(), nil
+}
+
+func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
+	return m.doTootAction(id, endpointFavourite)
 }
 
 func (m *Mastodon) Unreaction(id string) (*shared.Post, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnfavourite.URL(m.opts.Server, p)
-
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doTootAction(id, endpointUnfavourite)
 }
 
 func (m *Mastodon) Repost(id string) (*shared.Post, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointReblog.URL(m.opts.Server, p)
-
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doTootAction(id, endpointReblog)
 }
 
 func (m *Mastodon) Unrepost(id string) (*shared.Post, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnreblog.URL(m.opts.Server, p)
-
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doTootAction(id, endpointUnreblog)
 }
 
 func (m *Mastodon) Bookmark(id string) (*shared.Post, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointBookmark.URL(m.opts.Server, p)
-
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doTootAction(id, endpointBookmark)
 }
 
 func (m *Mastodon) Unbookmark(id string) (*shared.Post, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnbookmark.URL(m.opts.Server, p)
-
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doTootAction(id, endpointUnbookmark)
 }
