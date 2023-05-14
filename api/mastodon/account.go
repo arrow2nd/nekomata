@@ -154,3 +154,31 @@ func (m *Mastodon) Unblock(id string) (*shared.Relationship, error) {
 
 	return res.ToShared(), nil
 }
+
+func (m *Mastodon) Mute(id string) (*shared.Relationship, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointMute.URL(m.opts.Server, p)
+
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
+	}
+
+	return res.ToShared(), nil
+}
+
+func (m *Mastodon) Unmute(id string) (*shared.Relationship, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointUnmute.URL(m.opts.Server, p)
+
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
+	}
+
+	return res.ToShared(), nil
+}

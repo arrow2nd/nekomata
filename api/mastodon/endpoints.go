@@ -17,4 +17,6 @@ const (
 	endpointUnfollow       shared.Endpoint = "/api/v1/accounts/:id/unfollow"
 	endpointBlock          shared.Endpoint = "/api/v1/accounts/:id/block"
 	endpointUnblock        shared.Endpoint = "/api/v1/accounts/:id/unblock"
+	endpointMute           shared.Endpoint = "/api/v1/accounts/:id/mute"
+	endpointUnmute         shared.Endpoint = "/api/v1/accounts/:id/unmute"
 )
