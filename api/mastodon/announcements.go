@@ -1,6 +1,7 @@
 package mastodon
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -21,6 +22,23 @@ type announcement struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// ToShared : shared.Announcement に変換
+func (a *announcement) ToShared() *shared.Announcement {
+	// Content は HTML なのでプレーンテキストに変換
+	text, err := html2text.FromString(a.Content, html2text.Options{PrettyTables: true})
+	if err != nil {
+		text = fmt.Sprintf("convert error: %s", err.Error())
+	}
+
+	return &shared.Announcement{
+		ID:          a.ID,
+		PublishedAt: a.PublishedAt,
+		UpdatedAt:   &a.UpdatedAt,
+		Title:       "",
+		Text:        text,
+	}
+}
+
 func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	q := url.Values{}
 	q.Add("with_dismissed", "false")
@@ -33,19 +51,7 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 
 	results := []*shared.Announcement{}
 	for _, r := range res {
-		// Content は HTML 文字列なので普通の文字列に変換する
-		text, err := html2text.FromString(r.Content, html2text.Options{PrettyTables: true})
-		if err != nil {
-			return nil, err
-		}
-
-		results = append(results, &shared.Announcement{
-			ID:          r.ID,
-			PublishedAt: r.PublishedAt,
-			UpdatedAt:   &r.UpdatedAt,
-			Title:       "",
-			Text:        text,
-		})
+		results = append(results, r.ToShared())
 	}
 
 	return results, nil
