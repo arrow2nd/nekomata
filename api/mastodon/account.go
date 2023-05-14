@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/arrow2nd/nekomata/api/shared"
+	"jaytaylor.com/html2text"
 )
 
 // account : ユーザー情報
@@ -41,32 +44,87 @@ type accountFields struct {
 	Value string `json:"value"`
 }
 
-func (m *Mastodon) Follow(id string) error {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	res := &account{}
-	endpoint := endpointFollow.URL(m.opts.Server, p)
-
-	err := m.request(http.MethodPost, endpoint, nil, true, res)
+// ToAccount : shared.Account に変換
+func (a *account) ToAccount() *shared.Account {
+	// BIOをプレーンテキストに変換
+	bio, err := html2text.FromString(a.Note)
 	if err != nil {
-		return fmt.Errorf("failed to follow (ID: %s): %w", id, err)
+		bio = fmt.Sprintf("convert error: %s", err)
 	}
 
-	return nil
+	// フィールドをプロフィールに変換
+	profiles := []shared.Profile{}
+	for _, p := range a.Fields {
+		profiles = append(profiles, shared.Profile{
+			Label: p.Name,
+			Value: p.Value,
+		})
+	}
+
+	return &shared.Account{
+		ID:             a.ID,
+		Username:       a.Acct,
+		DisplayName:    a.DisplayName,
+		Private:        a.Locked,
+		Bot:            a.Bot,
+		Verified:       false,
+		BIO:            bio,
+		CreatedAt:      a.CreatedAt,
+		FollowersCount: a.FollowersCount,
+		FollowingCount: a.FollowingCount,
+		PostsCount:     a.StatusesCount,
+		Profiles:       profiles,
+	}
 }
 
-func (m *Mastodon) UnFollow(id string) error {
+// relationship : ユーザーとの関係
+type relationship struct {
+	ID         string `json:"id"`
+	Following  bool   `json:"following"`
+	FollowedBy bool   `json:"followed_by"`
+	Blocking   bool   `json:"blocking"`
+	BlockedBy  bool   `json:"blocked_by"`
+	Muting     bool   `json:"muting"`
+	Requested  bool   `json:"requested"`
+}
+
+// ToRelationShip : shared.Relation に変換
+func (r *relationship) ToRelationShip() *shared.RelationShip {
+	return &shared.RelationShip{
+		ID:         r.ID,
+		Following:  r.Following,
+		FollowedBy: r.FollowedBy,
+		Blocking:   r.Blocking,
+		BlockedBy:  r.BlockedBy,
+		Muting:     r.Muting,
+		Requested:  r.Requested,
+	}
+}
+
+func (m *Mastodon) Follow(id string) (*shared.RelationShip, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	res := &account{}
-	endpoint := endpointUnfollow.URL(m.opts.Server, p)
+	endpoint := endpointFollow.URL(m.opts.Server, p)
 
-	err := m.request(http.MethodPost, endpoint, nil, true, res)
-	if err != nil {
-		return fmt.Errorf("failed to unfollow (ID: %s): %w", id, err)
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return res.ToRelationShip(), nil
+}
+
+func (m *Mastodon) UnFollow(id string) (*shared.RelationShip, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointUnfollow.URL(m.opts.Server, p)
+
+	res := &relationship{}
+	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+		return nil, err
+	}
+
+	return res.ToRelationShip(), nil
 }
