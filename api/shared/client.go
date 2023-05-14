@@ -31,6 +31,10 @@ type Client interface {
 	Follow(id string) (*Relationship, error)
 	// UnFollow : ユーザーのフォローを解除
 	UnFollow(id string) (*Relationship, error)
+	// Block : ユーザーをブロック
+	Block(id string) (*Relationship, error)
+	// UnBlock : ユーザーのブロックを解除
+	UnBlock(id string) (*Relationship, error)
 }
 
 // ClientOpts : クライアントの設定
