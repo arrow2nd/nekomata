@@ -35,6 +35,10 @@ type Client interface {
 	Block(id string) (*Relationship, error)
 	// Unblock : ユーザーのブロックを解除
 	Unblock(id string) (*Relationship, error)
+	// Mute : ユーザーをミュート
+	Mute(id string) (*Relationship, error)
+	// Unmute : ユーザーをミュート
+	Unmute(id string) (*Relationship, error)
 }
 
 // ClientOpts : クライアントの設定
