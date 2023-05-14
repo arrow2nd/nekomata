@@ -227,7 +227,7 @@ func (m *Mastodon) Reaction(id, reaction string) (*shared.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnReaction(id string) (*shared.Post, error) {
+func (m *Mastodon) Unreaction(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -255,7 +255,7 @@ func (m *Mastodon) Repost(id string) (*shared.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnRepost(id string) (*shared.Post, error) {
+func (m *Mastodon) Unrepost(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -283,7 +283,7 @@ func (m *Mastodon) Bookmark(id string) (*shared.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnBookmark(id string) (*shared.Post, error) {
+func (m *Mastodon) Unbookmark(id string) (*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 

@@ -17,24 +17,24 @@ type Client interface {
 	DeletePost(id string) (*Post, error)
 	// Reaction : 投稿にリアクション
 	Reaction(id string, reactionName string) (*Post, error)
-	// UnReaction : リアクションを削除
-	UnReaction(id string) (*Post, error)
+	// Unreaction : リアクションを削除
+	Unreaction(id string) (*Post, error)
 	// Repost : 投稿をリポスト
 	Repost(id string) (*Post, error)
-	// UnRepost : リポストを削除
-	UnRepost(id string) (*Post, error)
+	// Unrepost : リポストを削除
+	Unrepost(id string) (*Post, error)
 	// Bookmark : 投稿をブックマーク
 	Bookmark(id string) (*Post, error)
-	// UnBookmark : ブックマークを解除
-	UnBookmark(id string) (*Post, error)
+	// Unbookmark : ブックマークを解除
+	Unbookmark(id string) (*Post, error)
 	// Follow : ユーザーをフォロー
 	Follow(id string) (*Relationship, error)
-	// UnFollow : ユーザーのフォローを解除
-	UnFollow(id string) (*Relationship, error)
+	// Unfollow : ユーザーのフォローを解除
+	Unfollow(id string) (*Relationship, error)
 	// Block : ユーザーをブロック
 	Block(id string) (*Relationship, error)
-	// UnBlock : ユーザーのブロックを解除
-	UnBlock(id string) (*Relationship, error)
+	// Unblock : ユーザーのブロックを解除
+	Unblock(id string) (*Relationship, error)
 }
 
 // ClientOpts : クライアントの設定

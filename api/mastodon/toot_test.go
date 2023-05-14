@@ -190,7 +190,7 @@ func TestReaction(t *testing.T) {
 	})
 }
 
-func TestUnReaction(t *testing.T) {
+func TestUnreaction(t *testing.T) {
 	id := "012345"
 
 	ts := createMockServer(t, id)
@@ -198,13 +198,13 @@ func TestUnReaction(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnReaction(id)
+		_, err := m.Unreaction(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnReaction(id)
+		_, err := m.Unreaction(id)
 		assert.Error(t, err)
 	})
 }
@@ -228,7 +228,7 @@ func TestReblog(t *testing.T) {
 	})
 }
 
-func TestUnRepost(t *testing.T) {
+func TestUnrepost(t *testing.T) {
 	id := "012345"
 
 	ts := createMockServer(t, id)
@@ -236,13 +236,13 @@ func TestUnRepost(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnRepost(id)
+		_, err := m.Unrepost(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnRepost(id)
+		_, err := m.Unrepost(id)
 		assert.Error(t, err)
 	})
 }
@@ -266,7 +266,7 @@ func TestBookmark(t *testing.T) {
 	})
 }
 
-func TestUnBookmarked(t *testing.T) {
+func TestUnbookmarked(t *testing.T) {
 	id := "012345"
 
 	ts := createMockServer(t, id)
@@ -274,13 +274,13 @@ func TestUnBookmarked(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnBookmark(id)
+		_, err := m.Unbookmark(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnBookmark(id)
+		_, err := m.Unbookmark(id)
 		assert.Error(t, err)
 	})
 }
