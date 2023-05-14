@@ -1,11 +1,46 @@
 package mastodon
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
 )
+
+const mockRelationship = `
+{
+  "id": "id",
+  "isFollowing": true,
+  "isFollowed": false,
+  "hasPendingFollowRequestFromYou": false,
+  "hasPendingFollowRequestToYou": false,
+  "isBlocking": false,
+  "isBlocked": false,
+  "isMuted": false,
+  "isRenoteMuted": false
+}`
+
+func createMockServer(t *testing.T, id string) *httptest.Server {
+	isError := false
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Contains(t, r.URL.String(), id, "URLにユーザーIDが含まれているか")
+
+		if isError {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintln(w, `{ "error": "Record not found" }`)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, mockRelationship)
+		isError = true
+	}))
+}
 
 func TestAccountToShared(t *testing.T) {
 	note := "こんにちわ"
@@ -58,4 +93,42 @@ func TestRelationshipToShared(t *testing.T) {
 	assert.False(t, got.BlockedBy)
 	assert.True(t, got.Muting)
 	assert.False(t, got.Requested)
+}
+
+func TestFollow(t *testing.T) {
+	id := "012345"
+
+	ts := createMockServer(t, id)
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.Follow(id)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.Follow(id)
+		assert.Error(t, err)
+	})
+}
+
+func TestUnFollow(t *testing.T) {
+	id := "012345"
+
+	ts := createMockServer(t, id)
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.UnFollow(id)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.UnFollow(id)
+		assert.Error(t, err)
+	})
 }
