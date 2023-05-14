@@ -113,7 +113,7 @@ func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnFollow(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Unfollow(id string) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -141,7 +141,7 @@ func (m *Mastodon) Block(id string) (*shared.Relationship, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnBlock(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Unblock(id string) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 

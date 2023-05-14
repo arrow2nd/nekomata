@@ -129,7 +129,7 @@ func TestFollow(t *testing.T) {
 	})
 }
 
-func TestUnFollow(t *testing.T) {
+func TestUnfollow(t *testing.T) {
 	id := "012345"
 
 	ts := createMockServer(t, id)
@@ -137,14 +137,14 @@ func TestUnFollow(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		r, err := m.UnFollow(id)
+		r, err := m.Unfollow(id)
 		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnFollow(id)
+		_, err := m.Unfollow(id)
 		assert.Error(t, err)
 	})
 }
@@ -169,7 +169,7 @@ func TestBlock(t *testing.T) {
 	})
 }
 
-func TestUnBlock(t *testing.T) {
+func TestUnblock(t *testing.T) {
 	id := "012345"
 
 	ts := createMockServer(t, id)
@@ -177,14 +177,14 @@ func TestUnBlock(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		r, err := m.UnBlock(id)
+		r, err := m.Unblock(id)
 		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
 	})
 
 	t.Run("失敗", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnBlock(id)
+		_, err := m.Unblock(id)
 		assert.Error(t, err)
 	})
 }
