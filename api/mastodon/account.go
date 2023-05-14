@@ -14,8 +14,6 @@ import (
 type account struct {
 	// ID : ユーザーID
 	ID string `json:"id"`
-	// Username : ユーザー名
-	Username string `json:"username"`
 	// Acct : ユーザー名 + ドメイン名からなる文字列 (username@domain)
 	Acct string `json:"acct"`
 	// DisplayName : 表示名

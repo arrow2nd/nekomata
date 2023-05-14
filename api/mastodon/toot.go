@@ -14,9 +14,8 @@ import (
 
 // mentionAttribute : メンション先のユーザー
 type mentionAttribute struct {
-	ID       string `json:"id"`
-	UserName string `json:"username"`
-	Acct     string `json:"acct"`
+	ID   string `json:"id"`
+	Acct string `json:"acct"`
 }
 
 // poll : アンケート
