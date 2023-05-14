@@ -42,8 +42,8 @@ type accountFields struct {
 	Value string `json:"value"`
 }
 
-// ToAccount : shared.Account に変換
-func (a *account) ToAccount() *shared.Account {
+// ToShared : shared.Account に変換
+func (a *account) ToShared() *shared.Account {
 	// BIOをプレーンテキストに変換
 	bio, err := html2text.FromString(a.Note)
 	if err != nil {
@@ -86,8 +86,8 @@ type relationship struct {
 	Requested  bool   `json:"requested"`
 }
 
-// ToRelationShip : shared.Relation に変換
-func (r *relationship) ToRelationShip() *shared.RelationShip {
+// ToShared : shared.Relation に変換
+func (r *relationship) ToShared() *shared.RelationShip {
 	return &shared.RelationShip{
 		ID:         r.ID,
 		Following:  r.Following,
@@ -110,7 +110,7 @@ func (m *Mastodon) Follow(id string) (*shared.RelationShip, error) {
 		return nil, err
 	}
 
-	return res.ToRelationShip(), nil
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) UnFollow(id string) (*shared.RelationShip, error) {
@@ -124,5 +124,5 @@ func (m *Mastodon) UnFollow(id string) (*shared.RelationShip, error) {
 		return nil, err
 	}
 
-	return res.ToRelationShip(), nil
+	return res.ToShared(), nil
 }
