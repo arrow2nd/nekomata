@@ -13,16 +13,30 @@ import (
 
 const mockRelationship = `
 {
-  "id": "id",
-  "isFollowing": true,
-  "isFollowed": false,
-  "hasPendingFollowRequestFromYou": false,
-  "hasPendingFollowRequestToYou": false,
-  "isBlocking": false,
-  "isBlocked": false,
-  "isMuted": false,
-  "isRenoteMuted": false
-}`
+  "id": "0",
+  "following": true,
+  "showing_reblogs": false,
+  "notifying": false,
+  "followed_by": false,
+  "blocking": false,
+  "blocked_by": false,
+  "muting": false,
+  "muting_notifications": false,
+  "requested": false,
+  "domain_blocking": false,
+  "endorsed": false
+}
+`
+
+var wantRelationship = shared.Relationship{
+	ID:         "0",
+	Following:  true,
+	FollowedBy: false,
+	Blocking:   false,
+	BlockedBy:  false,
+	Muting:     false,
+	Requested:  false,
+}
 
 func createMockServer(t *testing.T, id string) *httptest.Server {
 	isError := false
@@ -37,7 +51,7 @@ func createMockServer(t *testing.T, id string) *httptest.Server {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, mockRelationship)
+		fmt.Fprint(w, mockRelationship)
 		isError = true
 	}))
 }
@@ -103,7 +117,8 @@ func TestFollow(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		_, err := m.Follow(id)
+		r, err := m.Follow(id)
+		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
 	})
 
@@ -122,7 +137,8 @@ func TestUnFollow(t *testing.T) {
 
 	t.Run("成功", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		_, err := m.UnFollow(id)
+		r, err := m.UnFollow(id)
+		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
 	})
 
