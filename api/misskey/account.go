@@ -19,3 +19,11 @@ func (m *Misskey) Block(id string) (*shared.Relationship, error) {
 func (m *Misskey) Unblock(id string) (*shared.Relationship, error) {
 	return nil, nil
 }
+
+func (m *Misskey) Mute(id string) (*shared.Relationship, error) {
+	return nil, nil
+}
+
+func (m *Misskey) Unmute(id string) (*shared.Relationship, error) {
+	return nil, nil
+}
