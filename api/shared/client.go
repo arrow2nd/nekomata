@@ -28,9 +28,9 @@ type Client interface {
 	// UnBookmark : ブックマークを解除
 	UnBookmark(id string) (*Post, error)
 	// Follow : ユーザーをフォロー
-	Follow(id string) (*RelationShip, error)
+	Follow(id string) (*Relationship, error)
 	// UnFollow : ユーザーのフォローを解除
-	UnFollow(id string) (*RelationShip, error)
+	UnFollow(id string) (*Relationship, error)
 }
 
 // ClientOpts : クライアントの設定

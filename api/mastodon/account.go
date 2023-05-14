@@ -87,8 +87,8 @@ type relationship struct {
 }
 
 // ToShared : shared.Relation に変換
-func (r *relationship) ToShared() *shared.RelationShip {
-	return &shared.RelationShip{
+func (r *relationship) ToShared() *shared.Relationship {
+	return &shared.Relationship{
 		ID:         r.ID,
 		Following:  r.Following,
 		FollowedBy: r.FollowedBy,
@@ -99,7 +99,7 @@ func (r *relationship) ToShared() *shared.RelationShip {
 	}
 }
 
-func (m *Mastodon) Follow(id string) (*shared.RelationShip, error) {
+func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -113,7 +113,7 @@ func (m *Mastodon) Follow(id string) (*shared.RelationShip, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) UnFollow(id string) (*shared.RelationShip, error) {
+func (m *Mastodon) UnFollow(id string) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 

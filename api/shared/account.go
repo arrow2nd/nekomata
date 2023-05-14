@@ -36,8 +36,8 @@ type Profile struct {
 	Value string
 }
 
-// RelationShip : ユーザーとの関係
-type RelationShip struct {
+// Relationship : ユーザーとの関係
+type Relationship struct {
 	// ID : ユーザーID
 	ID string
 	// Following : フォローしているか
