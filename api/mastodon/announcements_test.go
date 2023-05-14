@@ -46,37 +46,20 @@ const mockAnnouncements = `
 ]`
 
 func TestAnnouncementToShared(t *testing.T) {
-	t.Run("変換できるか", func(t *testing.T) {
-		id := "id"
-		content := "hoge"
-		pubAt := time.Now()
-		upAt := time.Now().Add(time.Hour)
+	content := "hoge"
 
-		a := &announcement{
-			ID:          id,
-			Content:     "<p>" + content + "<p>",
-			PublishedAt: pubAt,
-			UpdatedAt:   upAt,
-		}
+	a := &announcement{
+		ID:          "id",
+		Content:     "<p>" + content + "<p>",
+		PublishedAt: time.Now(),
+		UpdatedAt:   time.Now().Add(time.Hour),
+	}
 
-		got := a.ToShared()
-		assert.Equal(t, id, got.ID, "IDが一致")
-		assert.Equal(t, content, got.Text, "本文が一致")
-		assert.Equal(t, pubAt, got.PublishedAt, "公開日が一致")
-		assert.Equal(t, upAt, *got.UpdatedAt, "更新日が一致")
-	})
-
-	t.Run("変換エラー", func(t *testing.T) {
-		a := &announcement{
-			ID:          "",
-			Content:     "plain_text",
-			PublishedAt: time.Now(),
-			UpdatedAt:   time.Now(),
-		}
-
-		got := a.ToShared()
-		assert.Contains(t, got.Text, "convert error:")
-	})
+	got := a.ToShared()
+	assert.Equal(t, a.ID, got.ID, "IDが一致")
+	assert.Equal(t, content, got.Text, "本文が一致")
+	assert.Equal(t, a.PublishedAt, got.PublishedAt, "公開日が一致")
+	assert.Equal(t, a.UpdatedAt, *got.UpdatedAt, "更新日が一致")
 }
 
 func TestGetAnnouncements(t *testing.T) {

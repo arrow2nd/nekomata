@@ -123,6 +123,7 @@ type status struct {
 }
 
 // ToShared : shared.Post に変換
+// TODO: テスト書く
 func (s *status) ToShared() *shared.Post {
 	text, err := html2text.FromString(s.Content)
 	if err != nil {
