@@ -99,11 +99,11 @@ func (r *relationship) ToShared() *shared.Relationship {
 	}
 }
 
-func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
+func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := endpointFollow.URL(m.opts.Server, p)
+	endpoint := e.URL(m.opts.Server, p)
 
 	res := &relationship{}
 	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
@@ -111,74 +111,28 @@ func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
 	}
 
 	return res.ToShared(), nil
+}
+
+func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
+	return m.doAccountAction(id, endpointFollow)
 }
 
 func (m *Mastodon) Unfollow(id string) (*shared.Relationship, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnfollow.URL(m.opts.Server, p)
-
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doAccountAction(id, endpointUnfollow)
 }
 
 func (m *Mastodon) Block(id string) (*shared.Relationship, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointBlock.URL(m.opts.Server, p)
-
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doAccountAction(id, endpointBlock)
 }
 
 func (m *Mastodon) Unblock(id string) (*shared.Relationship, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnblock.URL(m.opts.Server, p)
-
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doAccountAction(id, endpointUnblock)
 }
 
 func (m *Mastodon) Mute(id string) (*shared.Relationship, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointMute.URL(m.opts.Server, p)
-
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doAccountAction(id, endpointMute)
 }
 
 func (m *Mastodon) Unmute(id string) (*shared.Relationship, error) {
-	p := url.Values{}
-	p.Add(":id", id)
-
-	endpoint := endpointUnmute.URL(m.opts.Server, p)
-
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.doAccountAction(id, endpointUnmute)
 }
