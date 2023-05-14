@@ -35,3 +35,21 @@ type Profile struct {
 	Label string
 	Value string
 }
+
+// RelationShip : ユーザーとの関係
+type RelationShip struct {
+	// ID : ユーザーID
+	ID string
+	// Following : フォローしているか
+	Following bool
+	// FollowedBy : フォローされているか
+	FollowedBy bool
+	// Blocking : ブロックしているか
+	Blocking bool
+	// BlockedBy : ブロックされているか
+	BlockedBy bool
+	// Muting : ミュートしているか
+	Muting bool
+	// Requested : フォロー申請しているか
+	Requested bool
+}
