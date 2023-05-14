@@ -188,3 +188,43 @@ func TestUnblock(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestMute(t *testing.T) {
+	id := "012345"
+
+	ts := createMockServer(t, id)
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		r, err := m.Mute(id)
+		assert.Equal(t, wantRelationship, *r)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.Mute(id)
+		assert.Error(t, err)
+	})
+}
+
+func TestUnmute(t *testing.T) {
+	id := "012345"
+
+	ts := createMockServer(t, id)
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		r, err := m.Unmute(id)
+		assert.Equal(t, wantRelationship, *r)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.Unmute(id)
+		assert.Error(t, err)
+	})
+}
