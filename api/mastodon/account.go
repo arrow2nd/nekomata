@@ -99,7 +99,7 @@ func (r *relationship) ToShared() *shared.Relationship {
 	}
 }
 
-func (m *Mastodon) doAccountAcction(id string, e shared.Endpoint) (*shared.Relationship, error) {
+func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -114,25 +114,25 @@ func (m *Mastodon) doAccountAcction(id string, e shared.Endpoint) (*shared.Relat
 }
 
 func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointFollow)
+	return m.doAccountAction(id, endpointFollow)
 }
 
 func (m *Mastodon) Unfollow(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointUnfollow)
+	return m.doAccountAction(id, endpointUnfollow)
 }
 
 func (m *Mastodon) Block(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointBlock)
+	return m.doAccountAction(id, endpointBlock)
 }
 
 func (m *Mastodon) Unblock(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointUnblock)
+	return m.doAccountAction(id, endpointUnblock)
 }
 
 func (m *Mastodon) Mute(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointMute)
+	return m.doAccountAction(id, endpointMute)
 }
 
 func (m *Mastodon) Unmute(id string) (*shared.Relationship, error) {
-	return m.doAccountAcction(id, endpointUnmute)
+	return m.doAccountAction(id, endpointUnmute)
 }
