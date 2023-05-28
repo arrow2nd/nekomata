@@ -4,6 +4,10 @@ import (
 	"github.com/arrow2nd/nekomata/api/shared"
 )
 
+func (m *Misskey) GetRelationships(ids []string) ([]*shared.Relationship, error) {
+	return nil, nil
+}
+
 func (m *Misskey) Follow(id string) (*shared.Relationship, error) {
 	return nil, nil
 }
