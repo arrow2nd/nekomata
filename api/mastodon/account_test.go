@@ -42,13 +42,13 @@ func createMockServer(t *testing.T, id string) *httptest.Server {
 	isError := false
 
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLにユーザーIDが含まれているか")
-
 		if isError {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintln(w, `{ "error": "Record not found" }`)
 			return
 		}
+
+		assert.Contains(t, r.URL.String(), "/"+id, "パスパラメータにユーザーIDが含まれているか")
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, mockRelationship)
