@@ -99,6 +99,27 @@ func (r *relationship) ToShared() *shared.Relationship {
 	}
 }
 
+func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
+	p := url.Values{}
+	for _, id := range ids {
+		p.Add("id[]", id)
+	}
+
+	endpoint := endpointRelationships.URL(m.opts.Server, nil)
+
+	res := []*relationship{}
+	if err := m.request(http.MethodGet, endpoint, p, true, &res); err != nil {
+		return nil, err
+	}
+
+	relationships := []*shared.Relationship{}
+	for _, raw := range res {
+		relationships = append(relationships, raw.ToShared())
+	}
+
+	return relationships, nil
+}
+
 func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
