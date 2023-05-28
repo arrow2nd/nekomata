@@ -109,6 +109,39 @@ func TestRelationshipToShared(t *testing.T) {
 	assert.False(t, got.Requested)
 }
 
+func TestGetRelationships(t *testing.T) {
+	isError := false
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if isError {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintln(w, `{ "error": "The access token is invalid" }`)
+			return
+		}
+
+		assert.Contains(t, r.URL.String(), "id%5B%5D=1234&id%5B%5D=5678", "クエリパラメータが正しいか")
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "[%s, %s]", mockRelationship, mockRelationship)
+		isError = true
+	}))
+
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		r, err := m.GetRelationships([]string{"1234", "5678"})
+		assert.Equal(t, wantRelationship, *r[0])
+		assert.Equal(t, wantRelationship, *r[1])
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.GetRelationships([]string{""})
+		assert.Error(t, err)
+	})
+}
+
 func TestFollow(t *testing.T) {
 	id := "012345"
 
