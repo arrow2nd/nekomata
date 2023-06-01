@@ -34,7 +34,7 @@ type Client interface {
 	// GetRelationships : ユーザーとの関係を取得
 	GetRelationships(ids []string) ([]*Relationship, error)
 	// GetPosts : アカウントの投稿を取得
-	GetPosts(id string) ([]*Post, error)
+	GetPosts(id string, limit int) ([]*Post, error)
 	// Follow : ユーザーをフォロー
 	Follow(id string) (*Relationship, error)
 	// Unfollow : ユーザーのフォローを解除

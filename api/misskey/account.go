@@ -16,7 +16,7 @@ func (m *Misskey) GetRelationships(ids []string) ([]*shared.Relationship, error)
 	return nil, nil
 }
 
-func (m *Misskey) GetPosts(id string) ([]*shared.Post, error) {
+func (m *Misskey) GetPosts(id string, limit int) ([]*shared.Post, error) {
 	return nil, nil
 }
 

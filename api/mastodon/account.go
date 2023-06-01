@@ -160,8 +160,26 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error
 	return relationships, nil
 }
 
-func (m *Mastodon) GetPosts(id string) ([]*shared.Post, error) {
-	return nil, nil
+func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointAccountsStatuses.URL(m.opts.Server, p)
+
+	q := url.Values{}
+	q.Add("limit", strconv.Itoa(limit))
+
+	res := []*status{}
+	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+		return nil, err
+	}
+
+	posts := []*shared.Post{}
+	for _, status := range res {
+		posts = append(posts, status.ToShared())
+	}
+
+	return posts, nil
 }
 
 func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
