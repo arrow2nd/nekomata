@@ -126,7 +126,17 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 }
 
 func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
-	return nil, nil
+	p := url.Values{}
+	p.Add(":id", id)
+
+	endpoint := endpointAccount.URL(m.opts.Server, p)
+
+	res := &account{}
+	if err := m.request(http.MethodGet, endpoint, nil, true, &res); err != nil {
+		return nil, err
+	}
+
+	return res.ToShared(), nil
 }
 
 func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
