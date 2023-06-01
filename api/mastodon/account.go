@@ -110,7 +110,7 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 	p.Add("q", query)
 	p.Add("limit", strconv.Itoa(limit))
 
-	endpoint := endpointSearchAccounts.URL(m.opts.Server, nil)
+	endpoint := endpointAccountsSearch.URL(m.opts.Server, nil)
 
 	res := []*account{}
 	if err := m.request(http.MethodGet, endpoint, p, true, &res); err != nil {
@@ -129,7 +129,7 @@ func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := endpointAccount.URL(m.opts.Server, p)
+	endpoint := endpointAccounts.URL(m.opts.Server, p)
 
 	res := &account{}
 	if err := m.request(http.MethodGet, endpoint, nil, true, &res); err != nil {
