@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,6 +11,62 @@ import (
 	"github.com/arrow2nd/nekomata/api/shared"
 	"github.com/stretchr/testify/assert"
 )
+
+const mockAccount = `
+{
+  "id": "1",
+  "username": "hoge",
+  "acct": "hoge",
+  "display_name": "hoge",
+  "locked": false,
+  "bot": false,
+  "discoverable": true,
+  "group": false,
+  "created_at": "2020-08-16T00:00:00.000Z",
+  "note": "<p>おもち</p>",
+  "url": "https://example.com/",
+  "avatar": "https://example.com/",
+  "avatar_static": "https://example.com/",
+  "header": "https://example.com/",
+  "header_static": "https://example.com/",
+  "followers_count": 24,
+  "following_count": 22,
+  "statuses_count": 473,
+  "last_status_at": "2023-05-29",
+  "noindex": false,
+  "emojis": [],
+  "fields": [
+    {
+      "name": "first",
+      "value": "<p>1st</p>",
+      "verified_at": null
+    },
+    {
+      "name": "second",
+      "value": "<a href=\"https://example.com/\">hello!</a>",
+      "verified_at": null
+    }
+  ]
+}
+`
+
+var wantAccount = shared.Account{
+	ID:             "1",
+	Username:       "hoge",
+	DisplayName:    "hoge",
+	Private:        false,
+	Bot:            false,
+	Verified:       false,
+	BIO:            "おもち",
+	CreatedAt:      time.Date(2020, time.August, 16, 0, 0, 0, 0, time.UTC),
+	FollowersCount: 24,
+	FollowingCount: 22,
+	PostsCount:     473,
+	Profiles: []shared.Profile{
+		{Label: "first", Value: "1st"},
+		{Label: "second", Value: "hello! ( https://example.com/ )"},
+	},
+}
 
 const mockRelationship = `
 {
@@ -107,6 +164,39 @@ func TestRelationshipToShared(t *testing.T) {
 	assert.False(t, got.BlockedBy)
 	assert.True(t, got.Muting)
 	assert.False(t, got.Requested)
+}
+
+func TestSearchAccounts(t *testing.T) {
+	isError := false
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if isError {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintln(w, `{ "error": "Remote data could not be fetched" }`)
+			return
+		}
+
+		assert.Contains(t, r.URL.String(), "?limit=1&q=hoge", "クエリパラメータが正しいか")
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "[%s]", mockAccount)
+		isError = true
+	}))
+
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		r, err := m.SearchAccounts("hoge", 1)
+		log.Println(r)
+		assert.Equal(t, wantAccount, *r[0])
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.SearchAccounts("hoge", 1)
+		assert.Error(t, err)
+	})
 }
 
 func TestGetRelationships(t *testing.T) {
