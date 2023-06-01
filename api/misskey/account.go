@@ -6,8 +6,12 @@ import (
 
 func (m *Misskey) SearchAccounts(query string, limit int) ([]*shared.Account, error) {
 	return nil, nil
-
 }
+
+func (m *Misskey) GetAccount(id string) (*shared.Account, error) {
+	return nil, nil
+}
+
 func (m *Misskey) GetRelationships(ids []string) ([]*shared.Relationship, error) {
 	return nil, nil
 }

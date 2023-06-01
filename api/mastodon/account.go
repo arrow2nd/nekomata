@@ -125,6 +125,10 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 	return accounts, nil
 }
 
+func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
+	return nil, nil
+}
+
 func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
 	p := url.Values{}
 	for _, id := range ids {
