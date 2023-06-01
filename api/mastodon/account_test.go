@@ -95,7 +95,7 @@ var wantRelationship = shared.Relationship{
 	Requested:  false,
 }
 
-func createMockServer(t *testing.T, id string) *httptest.Server {
+func createMockServer(t *testing.T, id, res string) *httptest.Server {
 	isError := false
 
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +108,7 @@ func createMockServer(t *testing.T, id string) *httptest.Server {
 		assert.Contains(t, r.URL.String(), "/"+id, "パスパラメータにユーザーIDが含まれているか")
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, mockRelationship)
+		fmt.Fprint(w, res)
 		isError = true
 	}))
 }
@@ -199,6 +199,26 @@ func TestSearchAccounts(t *testing.T) {
 	})
 }
 
+func TestGetAccount(t *testing.T) {
+	id := "1"
+
+	ts := createMockServer(t, id, mockAccount)
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		r, err := m.GetAccount(id)
+		assert.Equal(t, wantAccount, *r)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.GetAccount(id)
+		assert.Error(t, err)
+	})
+}
+
 func TestGetRelationships(t *testing.T) {
 	isError := false
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +255,7 @@ func TestGetRelationships(t *testing.T) {
 func TestFollow(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
@@ -255,7 +275,7 @@ func TestFollow(t *testing.T) {
 func TestUnfollow(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
@@ -275,7 +295,7 @@ func TestUnfollow(t *testing.T) {
 func TestBlock(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
@@ -295,7 +315,7 @@ func TestBlock(t *testing.T) {
 func TestUnblock(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
@@ -315,7 +335,7 @@ func TestUnblock(t *testing.T) {
 func TestMute(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
@@ -335,7 +355,7 @@ func TestMute(t *testing.T) {
 func TestUnmute(t *testing.T) {
 	id := "012345"
 
-	ts := createMockServer(t, id)
+	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
 	t.Run("成功", func(t *testing.T) {
