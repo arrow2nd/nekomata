@@ -106,14 +106,14 @@ func (r *relationship) ToShared() *shared.Relationship {
 }
 
 func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, error) {
-	p := url.Values{}
-	p.Add("q", query)
-	p.Add("limit", strconv.Itoa(limit))
-
 	endpoint := endpointAccountsSearch.URL(m.opts.Server, nil)
 
+	q := url.Values{}
+	q.Add("q", query)
+	q.Add("limit", strconv.Itoa(limit))
+
 	res := []*account{}
-	if err := m.request(http.MethodGet, endpoint, p, true, &res); err != nil {
+	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
@@ -140,15 +140,15 @@ func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
 }
 
 func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
-	p := url.Values{}
-	for _, id := range ids {
-		p.Add("id[]", id)
-	}
-
 	endpoint := endpointRelationships.URL(m.opts.Server, nil)
 
+	q := url.Values{}
+	for _, id := range ids {
+		q.Add("id[]", id)
+	}
+
 	res := []*relationship{}
-	if err := m.request(http.MethodGet, endpoint, p, true, &res); err != nil {
+	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
 		return nil, err
 	}
 
