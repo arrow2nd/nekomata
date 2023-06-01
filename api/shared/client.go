@@ -29,10 +29,12 @@ type Client interface {
 	Unbookmark(id string) (*Post, error)
 	// SearchAccounts : アカウントを検索
 	SearchAccounts(query string, limit int) ([]*Account, error)
-  // GetAccount : アカウント情報を取得
-  GetAccount(id string) (*Account, error)
+	// GetAccount : アカウント情報を取得
+	GetAccount(id string) (*Account, error)
 	// GetRelationships : ユーザーとの関係を取得
 	GetRelationships(ids []string) ([]*Relationship, error)
+	// GetPosts : アカウントの投稿を取得
+	GetPosts(id string) ([]*Post, error)
 	// Follow : ユーザーをフォロー
 	Follow(id string) (*Relationship, error)
 	// Unfollow : ユーザーのフォローを解除

@@ -16,6 +16,10 @@ func (m *Misskey) GetRelationships(ids []string) ([]*shared.Relationship, error)
 	return nil, nil
 }
 
+func (m *Misskey) GetPosts(id string) ([]*shared.Post, error) {
+	return nil, nil
+}
+
 func (m *Misskey) Follow(id string) (*shared.Relationship, error) {
 	return nil, nil
 }

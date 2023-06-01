@@ -160,6 +160,10 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error
 	return relationships, nil
 }
 
+func (m *Mastodon) GetPosts(id string) ([]*shared.Post, error) {
+	return nil, nil
+}
+
 func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
