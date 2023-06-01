@@ -27,6 +27,8 @@ type Client interface {
 	Bookmark(id string) (*Post, error)
 	// Unbookmark : ブックマークを解除
 	Unbookmark(id string) (*Post, error)
+	// SearchAccounts : アカウントを検索
+	SearchAccounts(query string, limit int) ([]*Account, error)
 	// GetRelationships : ユーザーとの関係を取得
 	GetRelationships(ids []string) ([]*Relationship, error)
 	// Follow : ユーザーをフォロー

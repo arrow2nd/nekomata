@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/arrow2nd/nekomata/api/shared"
@@ -53,9 +54,14 @@ func (a *account) ToShared() *shared.Account {
 	// フィールドをプロフィールに変換
 	profiles := []shared.Profile{}
 	for _, p := range a.Fields {
+		value, err := html2text.FromString(p.Value)
+		if err != nil {
+			value = fmt.Sprintf("convert error: %s", err)
+		}
+
 		profiles = append(profiles, shared.Profile{
 			Label: p.Name,
-			Value: p.Value,
+			Value: value,
 		})
 	}
 
@@ -97,6 +103,26 @@ func (r *relationship) ToShared() *shared.Relationship {
 		Muting:     r.Muting,
 		Requested:  r.Requested,
 	}
+}
+
+func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, error) {
+	p := url.Values{}
+	p.Add("q", query)
+	p.Add("limit", strconv.Itoa(limit))
+
+	endpoint := endpointSearchAccounts.URL(m.opts.Server, nil)
+
+	res := []*account{}
+	if err := m.request(http.MethodGet, endpoint, p, true, &res); err != nil {
+		return nil, err
+	}
+
+	accounts := []*shared.Account{}
+	for _, account := range res {
+		accounts = append(accounts, account.ToShared())
+	}
+
+	return accounts, nil
 }
 
 func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {

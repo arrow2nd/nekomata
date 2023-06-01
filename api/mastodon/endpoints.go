@@ -13,6 +13,7 @@ const (
 	endpointUnreblog       shared.Endpoint = "/api/v1/statuses/:id/unreblog"
 	endpointBookmark       shared.Endpoint = "/api/v1/statuses/:id/bookmark"
 	endpointUnbookmark     shared.Endpoint = "/api/v1/statuses/:id/unbookmark"
+	endpointSearchAccounts shared.Endpoint = "/api/v1/accounts/search"
 	endpointRelationships  shared.Endpoint = "/api/v1/accounts/relationships"
 	endpointFollow         shared.Endpoint = "/api/v1/accounts/:id/follow"
 	endpointUnfollow       shared.Endpoint = "/api/v1/accounts/:id/unfollow"
