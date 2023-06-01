@@ -252,6 +252,25 @@ func TestGetRelationships(t *testing.T) {
 	})
 }
 
+func TestGetPosts(t *testing.T) {
+	id := "1"
+
+	ts := createMockServer(t, id, "[]")
+	defer ts.Close()
+
+	t.Run("成功", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.GetPosts(id, 0)
+		assert.NoError(t, err)
+	})
+
+	t.Run("失敗", func(t *testing.T) {
+		m := New(&shared.ClientOpts{Server: ts.URL})
+		_, err := m.GetPosts(id, 0)
+		assert.Error(t, err)
+	})
+}
+
 func TestFollow(t *testing.T) {
 	id := "012345"
 
