@@ -40,9 +40,8 @@ type Post struct {
 	Via string
 	// Reference : 引用元
 	Reference *Post
-
 	// Author : 投稿者
-	// Author User
+	Author *Account
 	// Poll : アンケート
 	// Poll Poll
 }
