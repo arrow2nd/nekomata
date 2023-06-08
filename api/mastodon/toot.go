@@ -141,7 +141,10 @@ func (s *status) ToShared() *shared.Post {
 		Reposted:    s.Reblogged,
 		Bookmarked:  s.Bookmarked,
 		Text:        text,
-		Via:         s.Application.Name,
+	}
+
+	if app := s.Application; app != nil {
+		post.Via = app.Name
 	}
 
 	if s.Reblog != nil {
