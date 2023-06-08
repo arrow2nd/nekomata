@@ -23,4 +23,5 @@ const (
 	endpointUnblock          shared.Endpoint = "/api/v1/accounts/:id/unblock"
 	endpointMute             shared.Endpoint = "/api/v1/accounts/:id/mute"
 	endpointUnmute           shared.Endpoint = "/api/v1/accounts/:id/unmute"
+	endpointTimelinePublic   shared.Endpoint = "/api/v1/timelines/public"
 )

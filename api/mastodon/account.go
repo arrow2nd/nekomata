@@ -174,12 +174,7 @@ func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
 		return nil, err
 	}
 
-	posts := []*shared.Post{}
-	for _, status := range res {
-		posts = append(posts, status.ToShared())
-	}
-
-	return posts, nil
+	return statuses2SharedPosts(res), nil
 }
 
 func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
