@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -187,7 +186,6 @@ func TestSearchAccounts(t *testing.T) {
 	t.Run("成功", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
 		r, err := m.SearchAccounts("hoge", 1)
-		log.Println(r)
 		assert.Equal(t, wantAccount, *r[0])
 		assert.NoError(t, err)
 	})
