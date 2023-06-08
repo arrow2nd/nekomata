@@ -60,7 +60,7 @@ type Client interface {
 	// GetHomeTimeline : ホームタイムラインを取得
 	GetHomeTimeline(sinceID string, limit int) ([]*Post, error)
 	// GetListTimeline : リストタイムラインを取得
-	GetListTimeline(sinceID string, limit int) ([]*Post, error)
+	GetListTimeline(listID, sinceID string, limit int) ([]*Post, error)
 }
 
 // ClientOpts : クライアントの設定

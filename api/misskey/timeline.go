@@ -14,6 +14,6 @@ func (m *Misskey) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, er
 	return nil, nil
 }
 
-func (m *Misskey) GetListTimeline(sinceID string, limit int) ([]*shared.Post, error) {
+func (m *Misskey) GetListTimeline(listID, sinceID string, limit int) ([]*shared.Post, error) {
 	return nil, nil
 }
