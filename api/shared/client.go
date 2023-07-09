@@ -61,6 +61,15 @@ type Client interface {
 	GetHomeTimeline(sinceID string, limit int) ([]*Post, error)
 	// GetListTimeline : リストタイムラインを取得
 	GetListTimeline(listID, sinceID string, limit int) ([]*Post, error)
+
+	// StreamingGlobalTimeline : グローバルタイムラインをストリーミング
+	StreamingGlobalTimeline(opts *StreamingTimelineOpts)
+	// StreamingLocalTimeline : ローカルタイムラインをストリーミング
+	StreamingLocalTimeline(opts *StreamingTimelineOpts)
+	// StreamingHomeTimeline : ホームタイムラインをストリーミング
+	StreamingHomeTimeline(opts *StreamingTimelineOpts)
+	// StreamingListTimeline : リストタイムラインをストリーミング
+	StreamingListTimeline(opts *StreamingListTimelineOpts)
 }
 
 // ClientOpts : クライアントの設定
