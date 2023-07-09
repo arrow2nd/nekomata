@@ -76,11 +76,11 @@ const mockStatus = `
   "poll": null
 }`
 
-func createMockServer(t *testing.T, id string) *httptest.Server {
+func createMockServer(t *testing.T, pathParam string) *httptest.Server {
 	isError := false
 
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
+		assert.Contains(t, r.URL.String(), pathParam, "URLにパスパラメータが含まれているか")
 
 		if isError {
 			w.WriteHeader(http.StatusNotFound)
