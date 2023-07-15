@@ -62,7 +62,7 @@ func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared
 	p := url.Values{}
 	p.Add(":list_id", listID)
 
-	endpoint := endpointTImelineList.URL(m.opts.Server, p)
+	endpoint := endpointTimelineList.URL(m.opts.Server, p)
 
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
