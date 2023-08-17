@@ -63,13 +63,13 @@ type Client interface {
 	GetListTimeline(listID, sinceID string, limit int) ([]*Post, error)
 
 	// StreamingGlobalTimeline : グローバルタイムラインをストリーミング
-	StreamingGlobalTimeline(opts *StreamingTimelineOpts)
+	StreamingGlobalTimeline(opts *StreamingTimelineOpts) error
 	// StreamingLocalTimeline : ローカルタイムラインをストリーミング
-	StreamingLocalTimeline(opts *StreamingTimelineOpts)
+	StreamingLocalTimeline(opts *StreamingTimelineOpts) error
 	// StreamingHomeTimeline : ホームタイムラインをストリーミング
-	StreamingHomeTimeline(opts *StreamingTimelineOpts)
+	StreamingHomeTimeline(opts *StreamingTimelineOpts) error
 	// StreamingListTimeline : リストタイムラインをストリーミング
-	StreamingListTimeline(opts *StreamingListTimelineOpts)
+	StreamingListTimeline(opts *StreamingListTimelineOpts) error
 }
 
 // ClientOpts : クライアントの設定
