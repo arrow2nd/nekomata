@@ -24,43 +24,44 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *shared.StreamingTimelineO
 
 	url.RawQuery = q.Encode()
 
-	ws, err := websocket.Dial(url.String(), "", m.opts.Server)
+	conn, err := websocket.Dial(url.String(), "", m.opts.Server)
 	if err != nil {
 		return err
 	}
 
 	go func() {
-		defer ws.Close()
-
-		var res event
-
-		for {
-			select {
-			case <-opts.Context.Done():
-				// 終了
-				return
-			default:
-			}
-
-			if err := websocket.JSON.Receive(ws, &res); err != nil {
-				opts.OnError(err)
-				return
-			}
-
-			switch res.Event {
-			case "update":
-				var status status
-				if err := json.Unmarshal([]byte(res.Payload), &status); err != nil {
-					opts.OnError(err)
-					return
-				}
-				opts.OnUpdate(status.ToShared())
-
-			case "delete":
-				opts.OnDelete(strings.TrimSpace(res.Payload))
-			}
-		}
+		<-opts.Context.Done()
+		conn.Close()
 	}()
+
+	for {
+		var res event
+		err := websocket.JSON.Receive(conn, &res)
+
+		select {
+		case <-opts.Context.Done():
+			return opts.Context.Err() // 終了
+		default:
+		}
+
+		if err != nil {
+			opts.OnError(err)
+			break // 再接続
+		}
+
+		switch res.Event {
+		case "update":
+			var status status
+			if err := json.Unmarshal([]byte(res.Payload), &status); err != nil {
+				opts.OnError(err)
+				continue // 継続
+			}
+			opts.OnUpdate(status.ToShared())
+
+		case "delete":
+			opts.OnDelete(strings.TrimSpace(res.Payload))
+		}
+	}
 
 	return nil
 }
