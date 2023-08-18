@@ -22,6 +22,7 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *shared.StreamingTimelineO
 		return err
 	}
 
+	q.Add("access_token", m.opts.UserToken)
 	url.RawQuery = q.Encode()
 
 	conn, err := websocket.Dial(url.String(), "", m.opts.Server)
@@ -68,20 +69,29 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *shared.StreamingTimelineO
 
 func (m *Mastodon) StreamingGlobalTimeline(opts *shared.StreamingTimelineOpts) error {
 	q := url.Values{}
-	q.Add("access_token", m.opts.UserToken)
 	q.Add("stream", "public")
 
 	return m.handleWebSocket(q, opts)
 }
 
 func (m *Mastodon) StreamingLocalTimeline(opts *shared.StreamingTimelineOpts) error {
-	return nil
+	q := url.Values{}
+	q.Add("stream", "public:local")
+
+	return m.handleWebSocket(q, opts)
 }
 
 func (m *Mastodon) StreamingHomeTimeline(opts *shared.StreamingTimelineOpts) error {
-	return nil
+	q := url.Values{}
+	q.Add("stream", "user")
+
+	return m.handleWebSocket(q, opts)
 }
 
 func (m *Mastodon) StreamingListTimeline(opts *shared.StreamingListTimelineOpts) error {
-	return nil
+	q := url.Values{}
+	q.Add("stream", "list")
+	q.Add("list", opts.ListID)
+
+	return m.handleWebSocket(q, opts.StreamingTimelineOpts)
 }
