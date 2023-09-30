@@ -48,36 +48,6 @@ type pollOption struct {
 	VotesCount int `json:"votes_count"`
 }
 
-// mediaAttachment : 添付メディア
-type mediaAttachment struct {
-	// ID : メディアID
-	ID string `json:"id"`
-	// Type : 種類 (unknown, image, gifv, video, audio)
-	Type string `json:"type"`
-	// URL : オリジナルのメディアを指すURL
-	URL string `json:"url"`
-	// PreviewURL : スケールダウンされたメディアを指すURL
-	PreviewURL string `json:"preview_url"`
-	// Meta : メタ情報
-	Meta mediaMeta `json:"meta"`
-}
-
-// mediaMeta : メディアのメタ情報
-type mediaMeta struct {
-	// Original : オリジナルサイズ
-	Original mediaSize `json:"original"`
-	// Small : 縮小サイズ
-	Small mediaSize `json:"small"`
-}
-
-// mediaSize : メディアサイズ
-type mediaSize struct {
-	// Width : 幅
-	Width int `json:"width"`
-	// Height : 高さ
-	Height int `json:"height"`
-}
-
 // status : 投稿
 type status struct {
 	// ID : 投稿ID
@@ -111,7 +81,7 @@ type status struct {
 	// Account : 投稿ユーザー
 	Account account `json:"account"`
 	// MediaAttachments : 添付メディア
-	MediaAttachments []mediaAttachment `json:"media_attachments"`
+	MediaAttachments []media `json:"media_attachments"`
 	// Mentions : メンション先
 	Mentions []mentionAttribute `json:"mentions"`
 	// Tags : タグ
@@ -164,9 +134,8 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 		q.Add("sensitive", "true")
 	}
 
-	// TODO: 未検証。もしかするとカンマ区切りじゃないかも
 	if len(opts.MediaIDs) > 0 {
-		q.Add("media_ids", strings.Join(opts.MediaIDs, ","))
+		q.Add("media_ids[]", strings.Join(opts.MediaIDs, ","))
 	}
 
 	return q

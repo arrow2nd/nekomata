@@ -27,4 +27,6 @@ const (
 	endpointTimelineHome     shared.Endpoint = "/api/v1/timelines/home"
 	endpointTimelineList     shared.Endpoint = "/api/v1/timelines/list/:list_id"
 	endpointStreaming        shared.Endpoint = "/api/v1/streaming"
+	endpointMedia            shared.Endpoint = "/api/v1/media/:id"
+	endpointMediaUploadAsync shared.Endpoint = "/api/v2/media"
 )

@@ -18,6 +18,9 @@ type Client interface {
 	// DeletePost : 投稿を削除
 	DeletePost(id string) (*Post, error)
 
+	// UploadMedia : メディアをアップロード (画像のみ対応)
+	UploadMedia(filename string, src io.Reader) (string, error)
+
 	// Reaction : 投稿にリアクション
 	Reaction(id string, reactionName string) (*Post, error)
 	// Unreaction : リアクションを削除
