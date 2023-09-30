@@ -41,7 +41,7 @@ func (m *Mastodon) UploadMedia(filename string, src io.Reader) (string, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("file", "image")
+	part, err := writer.CreateFormFile("file", filename)
 	if err != nil {
 		return "", err
 	}
