@@ -120,7 +120,7 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 	}
 
 	res := []*account{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -165,7 +165,7 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error
 	}
 
 	res := []*relationship{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -192,7 +192,7 @@ func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
 	}
 
 	res := []*status{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 

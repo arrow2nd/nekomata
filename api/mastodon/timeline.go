@@ -30,7 +30,7 @@ func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*
 	}
 
 	res := []*status{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, e
 	}
 
 	res := []*status{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -87,7 +87,7 @@ func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared
 	}
 
 	res := []*status{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 

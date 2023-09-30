@@ -86,18 +86,34 @@ func TestRequest(t *testing.T) {
 
 	t.Run("認証情報がヘッダーにあるか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		res := &r{}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(opts, nil)
+
+		opts := &requestOpts{
+			method: http.MethodPost,
+			url:    endpointAnnouncements.URL(m.opts.Server, nil),
+			q:      nil,
+			isAuth: true,
+		}
+
+		res := r{}
+		err := m.request(opts, &res)
+
 		assert.NoError(t, err)
 		assert.Equal(t, "authorization", res.S)
 	})
 
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		res := &r{}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(opts, nil)
+
+		opts := &requestOpts{
+			method: http.MethodGet,
+			url:    endpointAnnouncements.URL(m.opts.Server, nil),
+			q:      nil,
+			isAuth: false,
+		}
+
+		res := r{}
+		err := m.request(opts, &res)
+
 		assert.NoError(t, err)
 		assert.Equal(t, http.MethodGet, res.S)
 	})

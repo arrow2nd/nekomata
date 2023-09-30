@@ -51,7 +51,7 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	}
 
 	res := []*announcement{}
-	if err := m.request(opts, res); err != nil {
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
