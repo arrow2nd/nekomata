@@ -136,7 +136,6 @@ func TestCreatePost(t *testing.T) {
 
 func TestReplyPost(t *testing.T) {
 	serverReceivedId := make(chan string, 1)
-
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serverReceivedId <- r.URL.Query().Get("in_reply_to_id")
 		w.WriteHeader(http.StatusOK)
@@ -147,6 +146,7 @@ func TestReplyPost(t *testing.T) {
 
 	replyToId := "012345"
 	opts := &shared.CreatePostOpts{Text: "a", Visibility: "public"}
+
 	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 	_, err := m.ReplyPost(replyToId, opts)
 
@@ -156,7 +156,6 @@ func TestReplyPost(t *testing.T) {
 
 func TestDeletePost(t *testing.T) {
 	id := "012345"
-
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Contains(t, r.URL.String(), id, "URLに投稿IDが含まれているか")
 		w.WriteHeader(http.StatusOK)
@@ -173,114 +172,125 @@ func TestDeletePost(t *testing.T) {
 
 func TestReaction(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("リアクションできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Reaction(id, "")
+		res, err := m.Reaction(id, "")
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Reaction(id, "")
+
 		assert.Error(t, err)
 	})
 }
 
 func TestUnreaction(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンリアクションできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Unreaction(id)
+		res, err := m.Unreaction(id)
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Unreaction(id)
 		assert.Error(t, err)
 	})
 }
 
-func TestReblog(t *testing.T) {
+func TestRepost(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("リポストできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Repost(id)
+		res, err := m.Repost(id)
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Repost(id)
+
 		assert.Error(t, err)
 	})
 }
 
 func TestUnrepost(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンリポストできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Unrepost(id)
+		res, err := m.Unrepost(id)
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Unrepost(id)
+
 		assert.Error(t, err)
 	})
 }
 
 func TestBookmark(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("ブックマークできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Bookmark(id)
+		res, err := m.Bookmark(id)
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Bookmark(id)
+
 		assert.Error(t, err)
 	})
 }
 
-func TestUnbookmarked(t *testing.T) {
+func TestUnbookmark(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンブックマークできる", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
-		_, err := m.Unbookmark(id)
+		res, err := m.Unbookmark(id)
+
 		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
 		_, err := m.Unbookmark(id)
+
 		assert.Error(t, err)
 	})
 }

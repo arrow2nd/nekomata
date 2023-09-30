@@ -79,14 +79,16 @@ func TestGetAnnouncements(t *testing.T) {
 
 	defer ts.Close()
 
-	t.Run("エラー", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
-	t.Run("内容を取得できるか", func(t *testing.T) {
+	t.Run("取得できる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)

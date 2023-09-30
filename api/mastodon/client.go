@@ -68,6 +68,10 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 		return e
 	}
 
+	if out == nil {
+		return nil
+	}
+
 	if err := decorder.Decode(out); err != nil {
 		return &shared.DecodeError{
 			URL: opts.url,

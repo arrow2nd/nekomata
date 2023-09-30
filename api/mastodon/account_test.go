@@ -131,17 +131,7 @@ func TestAccountToShared(t *testing.T) {
 	}
 
 	got := a.ToShared()
-	assert.Equal(t, a.ID, got.ID)
-	assert.Equal(t, a.Acct, got.Username)
-	assert.Equal(t, a.DisplayName, got.DisplayName)
-	assert.Equal(t, a.Locked, got.Private)
-	assert.Equal(t, a.Bot, got.Bot)
-	assert.Equal(t, a.CreatedAt, got.CreatedAt)
-	assert.Equal(t, note, got.BIO)
-	assert.Equal(t, a.FollowersCount, got.FollowersCount)
-	assert.Equal(t, a.FollowingCount, got.FollowingCount)
-	assert.Equal(t, a.Fields[0].Name, got.Profiles[0].Label)
-	assert.Equal(t, a.Fields[0].Value, got.Profiles[0].Value)
+	assert.ObjectsAreEqualValues(a, got)
 }
 
 func TestRelationshipToShared(t *testing.T) {
@@ -156,13 +146,7 @@ func TestRelationshipToShared(t *testing.T) {
 	}
 
 	got := r.ToShared()
-	assert.Equal(t, r.ID, got.ID)
-	assert.True(t, got.Following)
-	assert.False(t, got.FollowedBy)
-	assert.True(t, got.Blocking)
-	assert.False(t, got.BlockedBy)
-	assert.True(t, got.Muting)
-	assert.False(t, got.Requested)
+	assert.ObjectsExportedFieldsAreEqual(r, got)
 }
 
 func TestSearchAccounts(t *testing.T) {
@@ -178,20 +162,24 @@ func TestSearchAccounts(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "[%s]", mockAccount)
+
 		isError = true
 	}))
 
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("取得できる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.SearchAccounts("hoge", 1)
-		assert.Equal(t, wantAccount, *r[0])
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantAccount, *r[0])
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.SearchAccounts("hoge", 1)
 		assert.Error(t, err)
 	})
@@ -199,19 +187,21 @@ func TestSearchAccounts(t *testing.T) {
 
 func TestGetAccount(t *testing.T) {
 	id := "1"
-
 	ts := createMockServer(t, id, mockAccount)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("取得できる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.GetAccount(id)
-		assert.Equal(t, wantAccount, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantAccount, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.GetAccount(id)
 		assert.Error(t, err)
 	})
@@ -230,21 +220,25 @@ func TestGetRelationships(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "[%s, %s]", mockRelationship, mockRelationship)
+
 		isError = true
 	}))
 
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("取得できる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.GetRelationships([]string{"1234", "5678"})
+		assert.NoError(t, err)
+
 		assert.Equal(t, wantRelationship, *r[0])
 		assert.Equal(t, wantRelationship, *r[1])
-		assert.NoError(t, err)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.GetRelationships([]string{""})
 		assert.Error(t, err)
 	})
@@ -252,18 +246,22 @@ func TestGetRelationships(t *testing.T) {
 
 func TestGetPosts(t *testing.T) {
 	id := "1"
-
-	ts := createMockServer(t, id, "[]")
+	ts := createMockServer(t, id, `[{ "id": "0" }, { "id": "1" }]`)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("取得できる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
-		_, err := m.GetPosts(id, 0)
+
+		res, err := m.GetPosts(id, 0)
 		assert.NoError(t, err)
+
+		assert.Equal(t, "0", res[0].ID)
+		assert.Equal(t, "1", res[1].ID)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.GetPosts(id, 0)
 		assert.Error(t, err)
 	})
@@ -271,19 +269,21 @@ func TestGetPosts(t *testing.T) {
 
 func TestFollow(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("フォローできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Follow(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Follow(id)
 		assert.Error(t, err)
 	})
@@ -291,19 +291,21 @@ func TestFollow(t *testing.T) {
 
 func TestUnfollow(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンフォローできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Unfollow(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Unfollow(id)
 		assert.Error(t, err)
 	})
@@ -311,19 +313,21 @@ func TestUnfollow(t *testing.T) {
 
 func TestBlock(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("ブロックできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Block(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Block(id)
 		assert.Error(t, err)
 	})
@@ -331,19 +335,21 @@ func TestBlock(t *testing.T) {
 
 func TestUnblock(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンブロックできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Unblock(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Unblock(id)
 		assert.Error(t, err)
 	})
@@ -351,19 +357,21 @@ func TestUnblock(t *testing.T) {
 
 func TestMute(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("ミュートできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Mute(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Mute(id)
 		assert.Error(t, err)
 	})
@@ -371,19 +379,21 @@ func TestMute(t *testing.T) {
 
 func TestUnmute(t *testing.T) {
 	id := "012345"
-
 	ts := createMockServer(t, id, mockRelationship)
 	defer ts.Close()
 
-	t.Run("成功", func(t *testing.T) {
+	t.Run("アンミュートできる", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		r, err := m.Unmute(id)
-		assert.Equal(t, wantRelationship, *r)
 		assert.NoError(t, err)
+
+		assert.Equal(t, wantRelationship, *r)
 	})
 
-	t.Run("失敗", func(t *testing.T) {
+	t.Run("エラーが返る", func(t *testing.T) {
 		m := New(&shared.ClientOpts{Server: ts.URL})
+
 		_, err := m.Unmute(id)
 		assert.Error(t, err)
 	})
