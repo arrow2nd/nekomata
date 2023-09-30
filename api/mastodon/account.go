@@ -112,8 +112,15 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 	q.Add("q", query)
 	q.Add("limit", strconv.Itoa(limit))
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpoint,
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*account{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 
@@ -129,10 +136,15 @@ func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := endpointAccounts.URL(m.opts.Server, p)
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointAccounts.URL(m.opts.Server, p),
+		q:      nil,
+		isAuth: true,
+	}
 
-	res := &account{}
-	if err := m.request(http.MethodGet, endpoint, nil, true, &res); err != nil {
+	res := account{}
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -140,15 +152,20 @@ func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
 }
 
 func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
-	endpoint := endpointRelationships.URL(m.opts.Server, nil)
-
 	q := url.Values{}
 	for _, id := range ids {
 		q.Add("id[]", id)
 	}
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointRelationships.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*relationship{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 
@@ -164,13 +181,18 @@ func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := endpointAccountsStatuses.URL(m.opts.Server, p)
-
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointAccountsStatuses.URL(m.opts.Server, p),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*status{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 
@@ -181,10 +203,15 @@ func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relati
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := e.URL(m.opts.Server, p)
+	opts := &requestOpts{
+		method: http.MethodPost,
+		url:    e.URL(m.opts.Server, p),
+		q:      nil,
+		isAuth: true,
+	}
 
-	res := &relationship{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, res); err != nil {
+	res := relationship{}
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 

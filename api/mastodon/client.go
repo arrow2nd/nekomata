@@ -3,6 +3,7 @@ package mastodon
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -19,25 +20,38 @@ func New(c *shared.ClientOpts) *Mastodon {
 	}
 }
 
-func (m *Mastodon) request(method, url string, q url.Values, auth bool, out interface{}) error {
-	req, err := http.NewRequest(method, url, nil)
+type requestOpts struct {
+	method      string
+	contentType string
+	url         string
+	q           url.Values
+	body        io.Reader
+	isAuth      bool
+}
+
+func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
+	req, err := http.NewRequest(opts.method, opts.url, opts.body)
 	if err != nil {
-		return fmt.Errorf("create request error (%s): %w", url, err)
+		return fmt.Errorf("create request error (%s): %w", opts.url, err)
 	}
 
-	if auth {
+	if opts.isAuth {
 		req.Header.Set("Authorization", "Bearer "+m.opts.UserToken)
 	}
 
-	if q != nil {
-		req.URL.RawQuery = q.Encode()
+	if opts.contentType != "" {
+		req.Header.Set("Content-Type", opts.contentType)
+	}
+
+	if opts.q != nil {
+		req.URL.RawQuery = opts.q.Encode()
 	}
 
 	client := http.DefaultClient
 	res, err := client.Do(req)
 	if err != nil {
 		return &shared.RequestError{
-			URL: url,
+			URL: opts.url,
 			Err: err,
 		}
 	}
@@ -56,7 +70,7 @@ func (m *Mastodon) request(method, url string, q url.Values, auth bool, out inte
 
 	if err := decorder.Decode(out); err != nil {
 		return &shared.DecodeError{
-			URL: url,
+			URL: opts.url,
 			Err: err,
 		}
 	}

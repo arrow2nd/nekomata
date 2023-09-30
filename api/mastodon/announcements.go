@@ -43,9 +43,15 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 	q := url.Values{}
 	q.Add("with_dismissed", "false")
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointAnnouncements.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*announcement{}
-	url := endpointAnnouncements.URL(m.opts.Server, nil)
-	if err := m.request(http.MethodGet, url, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 

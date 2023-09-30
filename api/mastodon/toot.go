@@ -173,11 +173,17 @@ func (m *Mastodon) createPostQuery(opts *shared.CreatePostOpts) url.Values {
 }
 
 func (m *Mastodon) CreatePost(opts *shared.CreatePostOpts) (*shared.Post, error) {
-	endpoint := endpointStatuses.URL(m.opts.Server, nil)
 	q := m.createPostQuery(opts)
 
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, q, true, &res); err != nil {
+	requestOpts := &requestOpts{
+		method: http.MethodPost,
+		url:    endpointStatuses.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
+	res := status{}
+	if err := m.request(requestOpts, &res); err != nil {
 		return nil, err
 	}
 
@@ -190,13 +196,18 @@ func (m *Mastodon) QuotePost(id string, opts *shared.CreatePostOpts) (*shared.Po
 }
 
 func (m *Mastodon) ReplyPost(replyToId string, opts *shared.CreatePostOpts) (*shared.Post, error) {
-	endpoint := endpointStatuses.URL(m.opts.Server, nil)
-
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
 
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, q, true, &res); err != nil {
+	requestOpts := &requestOpts{
+		method: http.MethodPost,
+		url:    endpointStatuses.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
+	res := status{}
+	if err := m.request(requestOpts, &res); err != nil {
 		return nil, err
 	}
 
@@ -209,8 +220,15 @@ func (m *Mastodon) DeletePost(id string) (*shared.Post, error) {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
 	}
 
-	res := &status{}
-	if err := m.request(http.MethodDelete, u, nil, true, &res); err != nil {
+	opts := &requestOpts{
+		method: http.MethodDelete,
+		url:    u,
+		q:      nil,
+		isAuth: true,
+	}
+
+	res := status{}
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 
@@ -221,10 +239,15 @@ func (m *Mastodon) doTootAction(id string, e shared.Endpoint) (*shared.Post, err
 	p := url.Values{}
 	p.Add(":id", id)
 
-	endpoint := e.URL(m.opts.Server, p)
+	opts := &requestOpts{
+		method: http.MethodPost,
+		url:    e.URL(m.opts.Server, p),
+		q:      nil,
+		isAuth: true,
+	}
 
-	res := &status{}
-	if err := m.request(http.MethodPost, endpoint, nil, true, &res); err != nil {
+	res := status{}
+	if err := m.request(opts, &res); err != nil {
 		return nil, err
 	}
 

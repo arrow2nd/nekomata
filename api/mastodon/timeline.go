@@ -9,8 +9,6 @@ import (
 )
 
 func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*shared.Post, error) {
-	endpoint := endpointTimelinePublic.URL(m.opts.Server, nil)
-
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -24,8 +22,15 @@ func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*
 		q.Add("since_id", sinceID)
 	}
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointTimelinePublic.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*status{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 
@@ -41,8 +46,6 @@ func (m *Mastodon) GetLocalTimeline(sinceID string, limit int) ([]*shared.Post, 
 }
 
 func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, error) {
-	endpoint := endpointTimelineHome.URL(m.opts.Server, nil)
-
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -50,8 +53,15 @@ func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, e
 		q.Add("since_id", sinceID)
 	}
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointTimelineHome.URL(m.opts.Server, nil),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*status{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 
@@ -62,8 +72,6 @@ func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared
 	p := url.Values{}
 	p.Add(":list_id", listID)
 
-	endpoint := endpointTimelineList.URL(m.opts.Server, p)
-
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -71,8 +79,15 @@ func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared
 		q.Add("since_id", sinceID)
 	}
 
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointTimelineList.URL(m.opts.Server, p),
+		q:      q,
+		isAuth: true,
+	}
+
 	res := []*status{}
-	if err := m.request(http.MethodGet, endpoint, q, true, &res); err != nil {
+	if err := m.request(opts, res); err != nil {
 		return nil, err
 	}
 

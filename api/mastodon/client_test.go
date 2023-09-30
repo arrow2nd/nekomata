@@ -42,34 +42,40 @@ func TestRequest(t *testing.T) {
 
 	defer ts.Close()
 
+	opts := &requestOpts{
+		method: http.MethodPost,
+		q:      nil,
+		isAuth: false,
+	}
+
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: "http://localhost:9999"}}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodPost, u, nil, false, nil)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		e := &shared.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodPost, u, nil, false, nil)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		e := &shared.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodPost, u, nil, false, nil)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		e := &shared.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodPost, u, nil, false, nil)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		e := &errorResponse{}
 		assert.ErrorAs(t, err, &e)
 	})
@@ -81,8 +87,8 @@ func TestRequest(t *testing.T) {
 	t.Run("認証情報がヘッダーにあるか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodPost, u, nil, true, res)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, "authorization", res.S)
 	})
@@ -90,8 +96,8 @@ func TestRequest(t *testing.T) {
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
 		m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
 		res := &r{}
-		u := endpointAnnouncements.URL(m.opts.Server, nil)
-		err := m.request(http.MethodGet, u, nil, false, res)
+		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		err := m.request(opts, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, http.MethodGet, res.S)
 	})
