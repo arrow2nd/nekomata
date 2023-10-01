@@ -5,10 +5,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 )
 
-func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*shared.Post, error) {
+func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*api.Post, error) {
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -37,15 +37,15 @@ func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*
 	return statuses2SharedPosts(res), nil
 }
 
-func (m *Mastodon) GetGlobalTimeline(sinceID string, limit int) ([]*shared.Post, error) {
+func (m *Mastodon) GetGlobalTimeline(sinceID string, limit int) ([]*api.Post, error) {
 	return m.getGlobalTimeline(sinceID, limit, false)
 }
 
-func (m *Mastodon) GetLocalTimeline(sinceID string, limit int) ([]*shared.Post, error) {
+func (m *Mastodon) GetLocalTimeline(sinceID string, limit int) ([]*api.Post, error) {
 	return m.getGlobalTimeline(sinceID, limit, true)
 }
 
-func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, error) {
+func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*api.Post, error) {
 	q := url.Values{}
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -68,7 +68,7 @@ func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*shared.Post, e
 	return statuses2SharedPosts(res), nil
 }
 
-func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared.Post, error) {
+func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*api.Post, error) {
 	p := url.Values{}
 	p.Add(":list_id", listID)
 

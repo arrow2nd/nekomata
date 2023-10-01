@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"jaytaylor.com/html2text"
 )
 
@@ -44,7 +44,7 @@ type accountFields struct {
 }
 
 // ToShared : shared.Account に変換
-func (a *account) ToShared() *shared.Account {
+func (a *account) ToShared() *api.Account {
 	// BIOをプレーンテキストに変換
 	bio, err := html2text.FromString(a.Note)
 	if err != nil {
@@ -52,20 +52,20 @@ func (a *account) ToShared() *shared.Account {
 	}
 
 	// フィールドをプロフィールに変換
-	profiles := []shared.Profile{}
+	profiles := []api.Profile{}
 	for _, p := range a.Fields {
 		value, err := html2text.FromString(p.Value)
 		if err != nil {
 			value = fmt.Sprintf("convert error: %s", err)
 		}
 
-		profiles = append(profiles, shared.Profile{
+		profiles = append(profiles, api.Profile{
 			Label: p.Name,
 			Value: value,
 		})
 	}
 
-	return &shared.Account{
+	return &api.Account{
 		ID:             a.ID,
 		Username:       a.Acct,
 		DisplayName:    a.DisplayName,
@@ -93,8 +93,8 @@ type relationship struct {
 }
 
 // ToShared : shared.Relation に変換
-func (r *relationship) ToShared() *shared.Relationship {
-	return &shared.Relationship{
+func (r *relationship) ToShared() *api.Relationship {
+	return &api.Relationship{
 		ID:         r.ID,
 		Following:  r.Following,
 		FollowedBy: r.FollowedBy,
@@ -105,7 +105,7 @@ func (r *relationship) ToShared() *shared.Relationship {
 	}
 }
 
-func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, error) {
+func (m *Mastodon) SearchAccounts(query string, limit int) ([]*api.Account, error) {
 	endpoint := endpointAccountsSearch.URL(m.opts.Server, nil)
 
 	q := url.Values{}
@@ -124,7 +124,7 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 		return nil, err
 	}
 
-	accounts := []*shared.Account{}
+	accounts := []*api.Account{}
 	for _, account := range res {
 		accounts = append(accounts, account.ToShared())
 	}
@@ -132,7 +132,7 @@ func (m *Mastodon) SearchAccounts(query string, limit int) ([]*shared.Account, e
 	return accounts, nil
 }
 
-func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
+func (m *Mastodon) GetAccount(id string) (*api.Account, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -151,7 +151,7 @@ func (m *Mastodon) GetAccount(id string) (*shared.Account, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error) {
+func (m *Mastodon) GetRelationships(ids []string) ([]*api.Relationship, error) {
 	q := url.Values{}
 	for _, id := range ids {
 		q.Add("id[]", id)
@@ -169,7 +169,7 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error
 		return nil, err
 	}
 
-	relationships := []*shared.Relationship{}
+	relationships := []*api.Relationship{}
 	for _, raw := range res {
 		relationships = append(relationships, raw.ToShared())
 	}
@@ -177,7 +177,7 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*shared.Relationship, error
 	return relationships, nil
 }
 
-func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
+func (m *Mastodon) GetPosts(id string, limit int) ([]*api.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -199,7 +199,7 @@ func (m *Mastodon) GetPosts(id string, limit int) ([]*shared.Post, error) {
 	return statuses2SharedPosts(res), nil
 }
 
-func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relationship, error) {
+func (m *Mastodon) doAccountAction(id string, e api.Endpoint) (*api.Relationship, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -218,26 +218,26 @@ func (m *Mastodon) doAccountAction(id string, e shared.Endpoint) (*shared.Relati
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) Follow(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Follow(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointFollow)
 }
 
-func (m *Mastodon) Unfollow(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Unfollow(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointUnfollow)
 }
 
-func (m *Mastodon) Block(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Block(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointBlock)
 }
 
-func (m *Mastodon) Unblock(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Unblock(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointUnblock)
 }
 
-func (m *Mastodon) Mute(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Mute(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointMute)
 }
 
-func (m *Mastodon) Unmute(id string) (*shared.Relationship, error) {
+func (m *Mastodon) Unmute(id string) (*api.Relationship, error) {
 	return m.doAccountAction(id, endpointUnmute)
 }

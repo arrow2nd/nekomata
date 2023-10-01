@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api"
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api/mastodon"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +26,7 @@ func TestGetGlobalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "false")
 	defer ts.Close()
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	posts, err := m.GetGlobalTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -38,7 +37,7 @@ func TestGetLocalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "true")
 	defer ts.Close()
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	posts, err := m.GetLocalTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -56,7 +55,7 @@ func TestGetHomeTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	posts, err := m.GetHomeTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -75,7 +74,7 @@ func TestGetListTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	posts, err := m.GetListTimeline("12345", "0", 5)
 
 	assert.NoError(t, err)

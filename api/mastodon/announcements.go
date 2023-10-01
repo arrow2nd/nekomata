@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"jaytaylor.com/html2text"
 )
 
@@ -22,15 +22,15 @@ type announcement struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// ToShared : shared.Announcement に変換
-func (a *announcement) ToShared() *shared.Announcement {
+// ToShared : api.Announcement に変換
+func (a *announcement) ToShared() *api.Announcement {
 	// Content は HTML なのでプレーンテキストに変換
 	text, err := html2text.FromString(a.Content, html2text.Options{PrettyTables: true})
 	if err != nil {
 		text = fmt.Sprintf("convert error: %s", err.Error())
 	}
 
-	return &shared.Announcement{
+	return &api.Announcement{
 		ID:          a.ID,
 		PublishedAt: a.PublishedAt,
 		UpdatedAt:   &a.UpdatedAt,
@@ -39,7 +39,7 @@ func (a *announcement) ToShared() *shared.Announcement {
 	}
 }
 
-func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
+func (m *Mastodon) GetAnnouncements() ([]*api.Announcement, error) {
 	q := url.Values{}
 	q.Add("with_dismissed", "false")
 
@@ -55,7 +55,7 @@ func (m *Mastodon) GetAnnouncements() ([]*shared.Announcement, error) {
 		return nil, err
 	}
 
-	results := []*shared.Announcement{}
+	results := []*api.Announcement{}
 	for _, r := range res {
 		results = append(results, r.ToShared())
 	}

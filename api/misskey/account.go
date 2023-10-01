@@ -1,45 +1,45 @@
 package misskey
 
 import (
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 )
 
-func (m *Misskey) SearchAccounts(query string, limit int) ([]*shared.Account, error) {
+func (m *Misskey) SearchAccounts(query string, limit int) ([]*api.Account, error) {
 	return nil, nil
 }
 
-func (m *Misskey) GetAccount(id string) (*shared.Account, error) {
+func (m *Misskey) GetAccount(id string) (*api.Account, error) {
 	return nil, nil
 }
 
-func (m *Misskey) GetRelationships(ids []string) ([]*shared.Relationship, error) {
+func (m *Misskey) GetRelationships(ids []string) ([]*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) GetPosts(id string, limit int) ([]*shared.Post, error) {
+func (m *Misskey) GetPosts(id string, limit int) ([]*api.Post, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Follow(id string) (*shared.Relationship, error) {
+func (m *Misskey) Follow(id string) (*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unfollow(id string) (*shared.Relationship, error) {
+func (m *Misskey) Unfollow(id string) (*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Block(id string) (*shared.Relationship, error) {
+func (m *Misskey) Block(id string) (*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unblock(id string) (*shared.Relationship, error) {
+func (m *Misskey) Unblock(id string) (*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Mute(id string) (*shared.Relationship, error) {
+func (m *Misskey) Mute(id string) (*api.Relationship, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unmute(id string) (*shared.Relationship, error) {
+func (m *Misskey) Unmute(id string) (*api.Relationship, error) {
 	return nil, nil
 }

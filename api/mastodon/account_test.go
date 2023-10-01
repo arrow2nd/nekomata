@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,7 +49,7 @@ const mockAccount = `
 }
 `
 
-var wantAccount = shared.Account{
+var wantAccount = api.Account{
 	ID:             "1",
 	Username:       "hoge",
 	DisplayName:    "hoge",
@@ -61,7 +61,7 @@ var wantAccount = shared.Account{
 	FollowersCount: 24,
 	FollowingCount: 22,
 	PostsCount:     473,
-	Profiles: []shared.Profile{
+	Profiles: []api.Profile{
 		{Label: "first", Value: "1st"},
 		{Label: "second", Value: "hello! ( https://example.com/ )"},
 	},
@@ -84,7 +84,7 @@ const mockRelationship = `
 }
 `
 
-var wantRelationship = shared.Relationship{
+var wantRelationship = api.Relationship{
 	ID:         "0",
 	Following:  true,
 	FollowedBy: false,
@@ -169,7 +169,7 @@ func TestSearchAccounts(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.SearchAccounts("hoge", 1)
 		assert.NoError(t, err)
@@ -178,7 +178,7 @@ func TestSearchAccounts(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.SearchAccounts("hoge", 1)
 		assert.Error(t, err)
@@ -191,7 +191,7 @@ func TestGetAccount(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.GetAccount(id)
 		assert.NoError(t, err)
@@ -200,7 +200,7 @@ func TestGetAccount(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.GetAccount(id)
 		assert.Error(t, err)
@@ -227,7 +227,7 @@ func TestGetRelationships(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.GetRelationships([]string{"1234", "5678"})
 		assert.NoError(t, err)
@@ -237,7 +237,7 @@ func TestGetRelationships(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.GetRelationships([]string{""})
 		assert.Error(t, err)
@@ -250,7 +250,7 @@ func TestGetPosts(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		res, err := m.GetPosts(id, 0)
 		assert.NoError(t, err)
@@ -260,7 +260,7 @@ func TestGetPosts(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.GetPosts(id, 0)
 		assert.Error(t, err)
@@ -273,7 +273,7 @@ func TestFollow(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("フォローできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Follow(id)
 		assert.NoError(t, err)
@@ -282,7 +282,7 @@ func TestFollow(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Follow(id)
 		assert.Error(t, err)
@@ -295,7 +295,7 @@ func TestUnfollow(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンフォローできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Unfollow(id)
 		assert.NoError(t, err)
@@ -304,7 +304,7 @@ func TestUnfollow(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Unfollow(id)
 		assert.Error(t, err)
@@ -317,7 +317,7 @@ func TestBlock(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ブロックできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Block(id)
 		assert.NoError(t, err)
@@ -326,7 +326,7 @@ func TestBlock(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Block(id)
 		assert.Error(t, err)
@@ -339,7 +339,7 @@ func TestUnblock(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンブロックできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Unblock(id)
 		assert.NoError(t, err)
@@ -348,7 +348,7 @@ func TestUnblock(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Unblock(id)
 		assert.Error(t, err)
@@ -361,7 +361,7 @@ func TestMute(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ミュートできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Mute(id)
 		assert.NoError(t, err)
@@ -370,7 +370,7 @@ func TestMute(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Mute(id)
 		assert.Error(t, err)
@@ -383,7 +383,7 @@ func TestUnmute(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンミュートできる", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		r, err := m.Unmute(id)
 		assert.NoError(t, err)
@@ -392,7 +392,7 @@ func TestUnmute(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&shared.ClientOpts{Server: ts.URL})
+		m := New(&api.ClientOpts{Server: ts.URL})
 
 		_, err := m.Unmute(id)
 		assert.Error(t, err)

@@ -7,12 +7,12 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateAuthorizeURL(t *testing.T) {
-	m := &Misskey{opts: &shared.ClientOpts{Name: "test_app", Server: "https://example.com"}}
+	m := &Misskey{opts: &api.ClientOpts{Name: "test_app", Server: "https://example.com"}}
 
 	u, sessionID := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 	assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
@@ -45,13 +45,13 @@ func TestRecieveToken(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("URL期限切れ", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
+		m := &Misskey{opts: &api.ClientOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
 		assert.ErrorContains(t, err, "get token error")
 	})
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
-		m := &Misskey{opts: &shared.ClientOpts{Server: ts.URL}}
+		m := &Misskey{opts: &api.ClientOpts{Server: ts.URL}}
 		res, err := m.recieveToken("SESSION_ID")
 		assert.NoError(t, err)
 		assert.Equal(t, "USER_TOKEN", res.Token)

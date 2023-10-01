@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api"
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api/mastodon"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -115,9 +114,9 @@ func TestCreatePost(t *testing.T) {
 
 	postText := "Hello!"
 	postVisibility := "public"
-	opts := &shared.CreatePostOpts{Text: postText, Visibility: postVisibility}
+	opts := &api.CreatePostOpts{Text: postText, Visibility: postVisibility}
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	res, err := m.CreatePost(opts)
 
 	assert.NoError(t, err)
@@ -145,9 +144,9 @@ func TestReplyPost(t *testing.T) {
 	defer ts.Close()
 
 	replyToId := "012345"
-	opts := &shared.CreatePostOpts{Text: "a", Visibility: "public"}
+	opts := &api.CreatePostOpts{Text: "a", Visibility: "public"}
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	_, err := m.ReplyPost(replyToId, opts)
 
 	assert.NoError(t, err)
@@ -164,7 +163,7 @@ func TestDeletePost(t *testing.T) {
 
 	defer ts.Close()
 
-	m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 	_, err := m.DeletePost(id)
 
 	assert.NoError(t, err)
@@ -176,7 +175,7 @@ func TestReaction(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リアクションできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Reaction(id, "")
 
 		assert.NoError(t, err)
@@ -184,7 +183,7 @@ func TestReaction(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Reaction(id, "")
 
 		assert.Error(t, err)
@@ -197,7 +196,7 @@ func TestUnreaction(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンリアクションできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Unreaction(id)
 
 		assert.NoError(t, err)
@@ -205,7 +204,7 @@ func TestUnreaction(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Unreaction(id)
 		assert.Error(t, err)
 	})
@@ -217,7 +216,7 @@ func TestRepost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リポストできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Repost(id)
 
 		assert.NoError(t, err)
@@ -225,7 +224,7 @@ func TestRepost(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Repost(id)
 
 		assert.Error(t, err)
@@ -238,7 +237,7 @@ func TestUnrepost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンリポストできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Unrepost(id)
 
 		assert.NoError(t, err)
@@ -246,7 +245,7 @@ func TestUnrepost(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Unrepost(id)
 
 		assert.Error(t, err)
@@ -259,7 +258,7 @@ func TestBookmark(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ブックマークできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Bookmark(id)
 
 		assert.NoError(t, err)
@@ -267,7 +266,7 @@ func TestBookmark(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Bookmark(id)
 
 		assert.Error(t, err)
@@ -280,7 +279,7 @@ func TestUnbookmark(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンブックマークできる", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.Unbookmark(id)
 
 		assert.NoError(t, err)
@@ -288,7 +287,7 @@ func TestUnbookmark(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMastodon, &shared.ClientOpts{Server: ts.URL})
+		m := mastodon.New(&api.ClientOpts{Server: ts.URL})
 		_, err := m.Unbookmark(id)
 
 		assert.Error(t, err)

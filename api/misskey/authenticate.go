@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/google/uuid"
 )
 
@@ -17,7 +17,7 @@ type miAuthResponse struct {
 	Token string `json:"token"`
 }
 
-func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
+func (m *Misskey) Authenticate(w io.Writer) (*api.User, error) {
 	permissions := []string{
 		"read:account",
 		"read:blocks",
@@ -37,7 +37,7 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 
 	// 認証URL組み立て
 	url, sessionID := m.createAuthorizeURL(permissions)
-	shared.PrintAuthenticateURL(w, url)
+	api.PrintAuthenticateURL(w, url)
 
 	// セッションIDを受け取る
 	id, err := m.recieveSessionID(sessionID)
@@ -51,7 +51,7 @@ func (m *Misskey) Authenticate(w io.Writer) (*shared.User, error) {
 func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 	q := url.Values{}
 	q.Add("name", m.opts.Name)
-	q.Add("callback", shared.AuthCallbackURL)
+	q.Add("callback", api.AuthCallbackURL)
 	q.Add("permission", strings.Join(permissions, ","))
 
 	sessionID, _ := uuid.NewUUID()
@@ -63,19 +63,19 @@ func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 }
 
 func (m *Misskey) recieveSessionID(id string) (string, error) {
-	return shared.RecieveAuthenticateCode("session", func(sessionID string) bool {
+	return api.RecieveAuthenticateCode("session", func(sessionID string) bool {
 		return sessionID == id
 	})
 }
 
-func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
+func (m *Misskey) recieveToken(sessionID string) (*api.User, error) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID)
 
 	endpoint := endpointMiAuthCheck.URL(m.opts.Server, p)
 	res, err := http.Post(endpoint, "text/plain", nil)
 	if err != nil {
-		return nil, &shared.RequestError{
+		return nil, &api.RequestError{
 			URL: endpoint,
 			Err: err,
 		}
@@ -84,13 +84,13 @@ func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, shared.NewHTTPError(res)
+		return nil, api.NewHTTPError(res)
 	}
 
 	authRes := &miAuthResponse{}
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(authRes); err != nil {
-		return nil, &shared.DecodeError{
+		return nil, &api.DecodeError{
 			URL: endpoint,
 			Err: err,
 		}
@@ -100,7 +100,7 @@ func (m *Misskey) recieveToken(sessionID string) (*shared.User, error) {
 		return nil, fmt.Errorf("get token error: invalid authentication URL")
 	}
 
-	return &shared.User{
+	return &api.User{
 		Token: authRes.Token,
 	}, nil
 }

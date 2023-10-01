@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateAuthorizeURL(t *testing.T) {
-	m := &Mastodon{opts: &shared.ClientOpts{Server: "https://example.com", ID: "hoge"}}
+	m := &Mastodon{opts: &api.ClientOpts{Server: "https://example.com", ID: "hoge"}}
 	u := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 
 	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
@@ -27,7 +27,7 @@ func TestRecieveToken(t *testing.T) {
 
 	defer ts.Close()
 
-	m := &Mastodon{opts: &shared.ClientOpts{Server: ts.URL}}
+	m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
 	res, err := m.recieveToken("CODE")
 	assert.NoError(t, err)
 	assert.Equal(t, "USER_TOKEN", res.Token)

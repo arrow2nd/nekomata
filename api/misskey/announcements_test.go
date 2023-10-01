@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api"
-	"github.com/arrow2nd/nekomata/api/shared"
+	"github.com/arrow2nd/nekomata/api/misskey"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,14 +58,14 @@ func TestGetAnnouncements(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("nullのフィールドに対応できるか", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMisskey, &shared.ClientOpts{Server: ts.URL})
+		m := misskey.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Nil(t, res[0].UpdatedAt)
 	})
 
 	t.Run("内容を取得できるか", func(t *testing.T) {
-		m, _ := api.NewClient(os.Stdout, api.ServiceMisskey, &shared.ClientOpts{Server: ts.URL})
+		m := misskey.New(&api.ClientOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)
