@@ -18,31 +18,6 @@ func TestOpenExternalEditor(t *testing.T) {
 	})
 }
 
-func TestMD5(t *testing.T) {
-	tests := []struct {
-		name string
-		arg  string
-		want string
-	}{
-		{
-			name: "ハッシュ値が計算できる(A)",
-			arg:  "HotaHota",
-			want: "40f593f4a80645bb25e82c3fcb06c304",
-		},
-		{
-			name: "ハッシュ値が計算できる(B)",
-			arg:  "ほたほた",
-			want: "b220b84063e671b9a7a4f622c6a6364f",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := getMD5(tt.arg)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
 func TestGetStringDisplayRow(t *testing.T) {
 	tests := []struct {
 		name string

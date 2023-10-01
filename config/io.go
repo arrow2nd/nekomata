@@ -61,7 +61,7 @@ func (c *Config) LoadCred() error {
 		return c.SaveCred()
 	}
 
-	return c.load(FileNameCred, &c.Creds)
+	return c.load(FileNameCred, c.Creds)
 }
 
 // LoadPreferences : 環境設定を読込む

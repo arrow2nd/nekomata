@@ -108,7 +108,7 @@ func (v *view) AddPage(p page, focus bool) error {
 	defer v.mu.Unlock()
 
 	newTab := &tab{
-		id:   getMD5(p.GetName()),
+		id:   p.GetName(),
 		name: p.GetName(),
 	}
 

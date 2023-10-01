@@ -1,9 +1,7 @@
 package app
 
 import (
-	"crypto/md5"
 	"encoding/csv"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"math"
@@ -57,15 +55,6 @@ func getWindowWidth() int {
 	}
 
 	return w - 2
-}
-
-// getMD5 : MD5のハッシュ値を取得
-func getMD5(s string) string {
-	h := md5.New()
-	defer h.Reset()
-
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
 }
 
 // getStringDisplayRow : 文字列の表示行数を取得
