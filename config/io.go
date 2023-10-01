@@ -11,7 +11,7 @@ import (
 
 const (
 	// FileNameCred : 認証情報のファイル名
-	FileNameCred = ".cred.toml"
+	FileNameCred = ".credentials.toml"
 	// FileNamePref: 環境設定のファイル名
 	FileNamePref = "preferences.toml"
 )

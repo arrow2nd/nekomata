@@ -3,7 +3,7 @@ package config
 // Config : 設定
 type Config struct {
 	// Cred : 認証情報
-	Creds Credentials
+	Creds *Credentials
 	// Pref : 環境設定
 	Pref *Preferences
 	// Style : スタイル定義
@@ -19,7 +19,7 @@ func New() (*Config, error) {
 	}
 
 	return &Config{
-		Creds:   Credentials{},
+		Creds:   &Credentials{},
 		Pref:    defaultPreferences(),
 		Style:   defaultStyle(),
 		DirPath: path,
