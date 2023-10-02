@@ -15,7 +15,7 @@ func (a *App) newEditCmd() *cli.Command {
 		Name:      "edit",
 		Shorthand: "e",
 		Short:     "Edit configuration file",
-		Hidden:    !shared.isCommandLineMode,
+		Hidden:    !shared.isCLI,
 		Validate:  cli.NoArgs(),
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")

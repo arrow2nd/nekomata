@@ -13,7 +13,7 @@ func (a *App) newDocsCmd() *cli.Command {
 		Name:      "docs",
 		Shorthand: "d",
 		Short:     "Show documentation",
-		Hidden:    shared.isCommandLineMode,
+		Hidden:    shared.isCLI,
 		Validate:  cli.NoArgs(),
 	}
 

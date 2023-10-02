@@ -9,7 +9,7 @@ import (
 type Shared struct {
 	// client                *shared.Client
 	conf                  *config.Config
-	isCommandLineMode     bool
+	isCLI                 bool
 	chStatus              chan string
 	chIndicator           chan string
 	chPopupModal          chan *ModalOpt
@@ -22,7 +22,7 @@ type Shared struct {
 
 var shared = Shared{
 	conf:                  nil,
-	isCommandLineMode:     false,
+	isCLI:                 false,
 	chStatus:              make(chan string, 1),
 	chIndicator:           make(chan string, 1),
 	chPopupModal:          make(chan *ModalOpt, 1),
@@ -37,7 +37,7 @@ var shared = Shared{
 func (s *Shared) SetStatus(label, status string) {
 	message := createStatusMessage(label, status)
 
-	if s.isCommandLineMode {
+	if s.isCLI {
 		exit(message)
 	}
 
@@ -48,7 +48,7 @@ func (s *Shared) SetStatus(label, status string) {
 
 // SetErrorStatus : エラーメッセージを設定
 func (s *Shared) SetErrorStatus(label, errStatus string) {
-	if s.isCommandLineMode {
+	if s.isCLI {
 		exitError(createStatusMessage(label, errStatus), exitCodeErr)
 	}
 

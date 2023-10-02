@@ -18,7 +18,7 @@ func newCmd() *cli.Command {
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// コマンドラインからの実行ならバージョンを表示
-			if ver, _ := f.GetBool("version"); shared.isCommandLineMode && ver {
+			if ver, _ := f.GetBool("version"); shared.isCLI && ver {
 				exit(fmt.Sprintf("🐈 nekome for v.%s", version))
 			}
 

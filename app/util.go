@@ -29,7 +29,7 @@ func (a *App) openExternalEditor(editor string, args ...string) error {
 
 	var err error
 
-	if shared.isCommandLineMode {
+	if shared.isCLI {
 		err = cmd.Run()
 	} else {
 		a.app.Suspend(func() {

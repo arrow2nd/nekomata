@@ -44,7 +44,7 @@ func (a *App) Init() error {
 	a.initCommands()
 
 	// コマンドラインモードならUIの初期化をスキップ
-	if shared.isCommandLineMode {
+	if shared.isCLI {
 		return nil
 	}
 
@@ -131,7 +131,7 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
 
 	// コマンドラインモードか
-	shared.isCommandLineMode = f.NArg() > 0 || isSkipLogin
+	shared.isCLI = f.NArg() > 0 || isSkipLogin
 
 	if isSkipLogin {
 		return true, "", nil
@@ -244,7 +244,7 @@ func (a *App) initCommands() {
 		a.newEditCmd(),
 	)
 
-	if shared.isCommandLineMode {
+	if shared.isCLI {
 		return
 	}
 
@@ -285,7 +285,7 @@ func (a *App) ExecCommnad(cmd string) error {
 // Run : アプリを実行
 func (a *App) Run() error {
 	// コマンドラインモード
-	if shared.isCommandLineMode {
+	if shared.isCLI {
 		return a.cmd.Execute(os.Args[1:])
 	}
 
