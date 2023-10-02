@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
@@ -216,8 +215,6 @@ func (v *view) MoveTab(move int) {
 	if nextTabIndex == prevTabIndex {
 		return
 	}
-
-	log.Fatalln(nextTabIndex, len(v.tabs))
 
 	v.currentTabIndex = nextTabIndex
 	v.tabBar.Highlight(v.tabs[nextTabIndex].id)
