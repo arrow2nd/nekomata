@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
@@ -30,27 +31,27 @@ type tab struct {
 
 // view : ページの表示域
 type view struct {
-	flex      *tview.Flex
-	pages     *tview.Pages
-	tabBar    *tview.TextView
-	textArea  *tview.TextArea
-	modal     *tview.Modal
-	pageItems map[string]page
-	tabItems  []*tab
-	tabIndex  int
-	mu        sync.Mutex
+	flex            *tview.Flex
+	pages           *tview.Pages
+	tabBar          *tview.TextView
+	textArea        *tview.TextArea
+	modal           *tview.Modal
+	pageItems       map[string]page
+	tabs            []*tab
+	currentTabIndex int
+	mu              sync.Mutex
 }
 
 func newView() *view {
 	v := &view{
-		flex:      tview.NewFlex(),
-		pages:     tview.NewPages(),
-		tabBar:    tview.NewTextView(),
-		textArea:  tview.NewTextArea(),
-		modal:     tview.NewModal(),
-		pageItems: map[string]page{},
-		tabItems:  []*tab{},
-		tabIndex:  0,
+		flex:            tview.NewFlex(),
+		pages:           tview.NewPages(),
+		tabBar:          tview.NewTextView(),
+		textArea:        tview.NewTextArea(),
+		modal:           tview.NewModal(),
+		pageItems:       map[string]page{},
+		tabs:            []*tab{},
+		currentTabIndex: 0,
 	}
 
 	v.flex.
@@ -87,11 +88,11 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabBar.Clear()
 
-	for i, tab := range v.tabItems {
+	for i, tab := range v.tabs {
 		fmt.Fprintf(v.tabBar, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
 
 		// タブが2個以上あるならセパレータを挿入
-		if i < len(v.tabItems)-1 {
+		if i < len(v.tabs)-1 {
 			fmt.Fprint(v.tabBar, shared.conf.Pref.Appearance.TabSeparator)
 		}
 	}
@@ -114,13 +115,13 @@ func (v *view) AddPage(p page, focus bool) error {
 
 	// ページが重複する場合、既にあるページに移動
 	if _, ok := v.pageItems[newTab.id]; ok {
-		tabIndex, found := find(v.tabItems, func(e *tab) bool { return e.id == newTab.id })
+		tabIndex, found := find(v.tabs, func(e *tab) bool { return e.id == newTab.id })
 		if !found {
 			return fmt.Errorf("Failed to add page (%s)", newTab.name)
 		}
 
 		v.tabBar.Highlight(newTab.id)
-		v.tabIndex = tabIndex
+		v.currentTabIndex = tabIndex
 
 		return fmt.Errorf("This page already exists (%s)", newTab.name)
 	}
@@ -132,11 +133,11 @@ func (v *view) AddPage(p page, focus bool) error {
 	// フォーカスが当たっているならタブをハイライト
 	if focus {
 		v.tabBar.Highlight(newTab.id)
-		v.tabIndex = v.pages.GetPageCount() - 1
+		v.currentTabIndex = v.pages.GetPageCount() - 1
 	}
 
 	// タブを追加
-	v.tabItems = append(v.tabItems, newTab)
+	v.tabs = append(v.tabs, newTab)
 	v.drawTab()
 
 	return nil
@@ -151,9 +152,9 @@ func (v *view) Reset() {
 	v.pageItems = map[string]page{}
 
 	// タブを削除
-	v.tabItems = []*tab{}
+	v.tabs = []*tab{}
 	v.tabBar.SetText("")
-	v.tabIndex = 0
+	v.currentTabIndex = 0
 }
 
 // CloseCurrentPage : 現在のページを削除
@@ -170,13 +171,13 @@ func (v *view) CloseCurrentPage() {
 	newTabs := []*tab{}
 
 	// タブを削除
-	for _, tab := range v.tabItems {
+	for _, tab := range v.tabs {
 		if tab.name != name {
 			newTabs = append(newTabs, tab)
 		}
 	}
 
-	v.tabItems = newTabs
+	v.tabs = newTabs
 
 	// 再描画して反映
 	v.drawTab()
@@ -187,31 +188,39 @@ func (v *view) CloseCurrentPage() {
 	delete(v.pageItems, id)
 
 	// 前のタブを選択
-	if v.tabIndex--; v.tabIndex < 0 {
-		v.tabIndex = 0
+	if v.currentTabIndex--; v.currentTabIndex < 0 {
+		v.currentTabIndex = 0
 	}
 
-	v.tabBar.Highlight(v.tabItems[v.tabIndex].id)
+	v.tabBar.Highlight(v.tabs[v.currentTabIndex].id)
 }
 
 // MoveTab : タブを移動する
 func (v *view) MoveTab(move int) {
-	prevTabIndex := v.tabIndex
-	v.tabIndex += int(move)
-
-	// 範囲内に丸める
-	if max := v.pages.GetPageCount(); v.tabIndex < 0 {
-		v.tabIndex = max - 1
-	} else if v.tabIndex >= max {
-		v.tabIndex = 0
-	}
-
-	// 移動前と同じなら中断
-	if v.tabIndex == prevTabIndex {
+	maxTabIndex := v.pages.GetPageCount()
+	if maxTabIndex == 0 {
 		return
 	}
 
-	v.tabBar.Highlight(v.tabItems[v.tabIndex].id)
+	prevTabIndex := v.currentTabIndex
+	nextTabIndex := v.currentTabIndex + move
+
+	// 範囲内に丸める
+	if nextTabIndex < 0 {
+		nextTabIndex = maxTabIndex - 1
+	} else if nextTabIndex >= maxTabIndex {
+		nextTabIndex = 0
+	}
+
+	// 移動前と同じなら中断
+	if nextTabIndex == prevTabIndex {
+		return
+	}
+
+	log.Fatalln(nextTabIndex, len(v.tabs))
+
+	v.currentTabIndex = nextTabIndex
+	v.tabBar.Highlight(v.tabs[nextTabIndex].id)
 }
 
 // handleTabHighlight : タブがハイライトされたときのコールバック
