@@ -12,7 +12,7 @@ type Shared struct {
 	isCLI                 bool
 	chStatus              chan string
 	chIndicator           chan string
-	chPopupModal          chan *ModalOpt
+	chPopupModal          chan *ModalOpts
 	chExecCommand         chan string
 	chInputCommand        chan string
 	chFocusView           chan bool
@@ -25,7 +25,7 @@ var shared = Shared{
 	isCLI:                 false,
 	chStatus:              make(chan string, 1),
 	chIndicator:           make(chan string, 1),
-	chPopupModal:          make(chan *ModalOpt, 1),
+	chPopupModal:          make(chan *ModalOpts, 1),
 	chExecCommand:         make(chan string, 1),
 	chInputCommand:        make(chan string, 1),
 	chFocusView:           make(chan bool, 1),
@@ -70,7 +70,7 @@ func (s *Shared) SetDisableViewKeyEvent(b bool) {
 }
 
 // ReqestPopupModal : モーダルの表示をリクエスト
-func (s *Shared) ReqestPopupModal(o *ModalOpt) {
+func (s *Shared) ReqestPopupModal(o *ModalOpts) {
 	go func() {
 		s.chPopupModal <- o
 	}()

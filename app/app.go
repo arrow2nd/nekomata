@@ -345,7 +345,7 @@ func (a *App) quitApp() {
 		return
 	}
 
-	a.view.PopupModal(&ModalOpt{
+	a.view.PopupModal(&ModalOpts{
 		title:  "Do you want to quit the app?",
 		onDone: a.app.Stop,
 	})
