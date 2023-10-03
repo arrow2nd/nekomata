@@ -118,8 +118,6 @@ type Keybindings struct {
 	View keybinding `toml:"view"`
 	// Page : ページ共通のキーバインド
 	Page keybinding `toml:"page"`
-	// HomeTimeline : ホームタイムラインページのキーバインド
-	HomeTimeline keybinding `toml:"home_timeline"`
 	// TweetView : ツイートビューのキーバインド
 	TweetView keybinding `toml:"tweet"`
 }
@@ -225,10 +223,6 @@ func defaultPreferences() *Preferences {
 			},
 			Page: keybinding{
 				ActionReloadPage: {"."},
-			},
-			HomeTimeline: keybinding{
-				ActionStreamModeStart: {"s"},
-				ActionStreamModeStop:  {"S"},
 			},
 			TweetView: keybinding{
 				ActionScrollUp:       {"ctrl+j", "PageUp"},

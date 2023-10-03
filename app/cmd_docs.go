@@ -59,16 +59,6 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Page.GetString(config.ActionReloadPage),
 	)
 
-	home := fmt.Sprintf(
-		`[Home Timeline Page]
-  %-20s Start stream mode (similar to UserStream)
-  %-20s Stop stream mode
-
-`,
-		k.HomeTimeline.GetString(config.ActionStreamModeStart),
-		k.HomeTimeline.GetString(config.ActionStreamModeStop),
-	)
-
 	tweet := fmt.Sprintf(
 		`[Tweet View]
   %-20s Scroll up
@@ -124,7 +114,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.TweetView.GetString(config.ActionOpenUserLikes),
 	)
 
-	text := global + view + page + home + tweet
+	text := global + view + page + tweet
 
 	return &cli.Command{
 		Name:      "keybindings",

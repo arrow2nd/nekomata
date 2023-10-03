@@ -23,10 +23,6 @@ const (
 	// ページ共通のアクション
 	ActionReloadPage = "reload_page"
 
-	// ホームタイムラインページのアクション
-	ActionStreamModeStart = "stream_mode_start"
-	ActionStreamModeStop  = "stream_mode_stop"
-
 	// ツイートビューのアクション
 	ActionScrollUp       = "scroll_up"
 	ActionScrollDown     = "scroll_down"
