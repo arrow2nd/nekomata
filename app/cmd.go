@@ -17,11 +17,12 @@ func newCmd() *cli.Command {
 			f.BoolP("version", "v", false, "Display version")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			// コマンドラインからの実行ならバージョンを表示
+			// コマンドラインからの実行ならバージョンを表示して終了
 			if ver, _ := f.GetBool("version"); shared.isCLI && ver {
-				exit(fmt.Sprintf("🐈 nekome for v.%s", version))
+				exit(fmt.Sprintf("🐱 %s for v.%s", c.Name, version))
 			}
 
+			// エラーメッセージを組み立てる
 			arg := f.Arg(0)
 			if arg != "" {
 				arg = ": " + arg

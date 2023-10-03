@@ -41,6 +41,11 @@ func (a *App) Init() error {
 		return err
 	}
 
+	_, _, err := a.parseRuntimeArgs()
+	if err != nil {
+		return err
+	}
+
 	a.initCommands()
 
 	// コマンドラインモードならUIの初期化をスキップ
@@ -133,12 +138,8 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 	// コマンドラインモードか
 	shared.isCLI = f.NArg() > 0 || isSkipLogin
 
-	if isSkipLogin {
-		return true, "", nil
-	}
-
 	user, _ := f.GetString("user")
-	return false, user, nil
+	return isSkipLogin, user, nil
 }
 
 // setAppStyles : アプリ全体のスタイルを設定
