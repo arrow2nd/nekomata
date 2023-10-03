@@ -36,8 +36,3 @@ func newCmd() *cli.Command {
 func setUnfocusFlag(f *pflag.FlagSet) {
 	f.BoolP("unfocus", "u", false, "no focus on page")
 }
-
-func setTimelineFlags(f *pflag.FlagSet) {
-	f.BoolP("stream", "s", false, "start stream mode")
-	setUnfocusFlag(f)
-}
