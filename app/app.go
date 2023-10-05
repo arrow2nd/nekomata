@@ -240,6 +240,7 @@ func (a *App) warpKeyEventHandler(c *cbind.Configuration) func(*tcell.EventKey) 
 // initCommands : コマンドを初期化
 func (a *App) initCommands() {
 	a.cmd.AddCommand(
+		a.newAccountCmd(),
 		a.newQuitCmd(),
 		a.newDocsCmd(),
 		a.newEditCmd(),
