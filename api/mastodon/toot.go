@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"jaytaylor.com/html2text"
 )
 
@@ -94,19 +94,19 @@ type status struct {
 
 // ToShared : api.Post に変換
 // TODO: テスト書く
-func (s *status) ToShared() *api.Post {
+func (s *status) ToShared() *sharedapi.Post {
 	text, err := html2text.FromString(s.Content)
 	if err != nil {
 		text = fmt.Sprintf("convert error: %s", err.Error())
 	}
 
-	post := &api.Post{
+	post := &sharedapi.Post{
 		ID:          s.ID,
 		CreatedAt:   s.CreatedAt,
 		Visibility:  s.Visibility,
 		Sensitive:   s.Sensitive,
 		RepostCount: s.ReblogsCount,
-		Reactions:   []api.Reaction{{Name: "Fav", Count: s.FavouritesCount}},
+		Reactions:   []sharedapi.Reaction{{Name: "Fav", Count: s.FavouritesCount}},
 		Reacted:     s.Favourited,
 		Reposted:    s.Reblogged,
 		Bookmarked:  s.Bookmarked,
@@ -125,7 +125,7 @@ func (s *status) ToShared() *api.Post {
 	return post
 }
 
-func (m *Mastodon) createPostQuery(opts *api.CreatePostOpts) url.Values {
+func (m *Mastodon) createPostQuery(opts *sharedapi.CreatePostOpts) url.Values {
 	q := url.Values{}
 	q.Add("status", opts.Text)
 	q.Add("visibility", opts.Visibility)
@@ -141,7 +141,7 @@ func (m *Mastodon) createPostQuery(opts *api.CreatePostOpts) url.Values {
 	return q
 }
 
-func (m *Mastodon) CreatePost(opts *api.CreatePostOpts) (*api.Post, error) {
+func (m *Mastodon) CreatePost(opts *sharedapi.CreatePostOpts) (*sharedapi.Post, error) {
 	q := m.createPostQuery(opts)
 
 	requestOpts := &requestOpts{
@@ -159,12 +159,12 @@ func (m *Mastodon) CreatePost(opts *api.CreatePostOpts) (*api.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) QuotePost(id string, opts *api.CreatePostOpts) (*api.Post, error) {
+func (m *Mastodon) QuotePost(id string, opts *sharedapi.CreatePostOpts) (*sharedapi.Post, error) {
 	// NOTE: 引用する機能が公式の手段では存在しないので実装しない
 	return nil, errors.New("quote is not available on Mastodon")
 }
 
-func (m *Mastodon) ReplyPost(replyToId string, opts *api.CreatePostOpts) (*api.Post, error) {
+func (m *Mastodon) ReplyPost(replyToId string, opts *sharedapi.CreatePostOpts) (*sharedapi.Post, error) {
 	q := m.createPostQuery(opts)
 	q.Add("in_reply_to_id", replyToId)
 
@@ -183,7 +183,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *api.CreatePostOpts) (*api.P
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) DeletePost(id string) (*api.Post, error) {
+func (m *Mastodon) DeletePost(id string) (*sharedapi.Post, error) {
 	u, err := url.JoinPath(endpointStatuses.URL(m.opts.Server, nil), id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
@@ -204,7 +204,7 @@ func (m *Mastodon) DeletePost(id string) (*api.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) doTootAction(id string, e api.Endpoint) (*api.Post, error) {
+func (m *Mastodon) doTootAction(id string, e sharedapi.Endpoint) (*sharedapi.Post, error) {
 	p := url.Values{}
 	p.Add(":id", id)
 
@@ -223,26 +223,26 @@ func (m *Mastodon) doTootAction(id string, e api.Endpoint) (*api.Post, error) {
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) Reaction(id, reaction string) (*api.Post, error) {
+func (m *Mastodon) Reaction(id, reaction string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointFavourite)
 }
 
-func (m *Mastodon) Unreaction(id string) (*api.Post, error) {
+func (m *Mastodon) Unreaction(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnfavourite)
 }
 
-func (m *Mastodon) Repost(id string) (*api.Post, error) {
+func (m *Mastodon) Repost(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointReblog)
 }
 
-func (m *Mastodon) Unrepost(id string) (*api.Post, error) {
+func (m *Mastodon) Unrepost(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnreblog)
 }
 
-func (m *Mastodon) Bookmark(id string) (*api.Post, error) {
+func (m *Mastodon) Bookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointBookmark)
 }
 
-func (m *Mastodon) Unbookmark(id string) (*api.Post, error) {
+func (m *Mastodon) Unbookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnbookmark)
 }

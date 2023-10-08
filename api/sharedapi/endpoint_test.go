@@ -1,10 +1,10 @@
-package api_test
+package sharedapi_test
 
 import (
 	"net/url"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +13,7 @@ func TestEnpoint(t *testing.T) {
 
 	tests := []struct {
 		name string
-		e    api.Endpoint
+		e    sharedapi.Endpoint
 		p    url.Values
 		want string
 	}{

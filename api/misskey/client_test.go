@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,23 +32,23 @@ func TestPost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Misskey{opts: &api.ClientOpts{Server: "http://localhost:9999"}}
+		m := &Misskey{opts: &sharedapi.ClientOpts{Server: "http://localhost:9999"}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
-		e := &api.RequestError{}
+		e := &sharedapi.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Misskey{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
-		e := &api.HTTPError{}
+		e := &sharedapi.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Misskey{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
-		e := &api.DecodeError{}
+		e := &sharedapi.DecodeError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
@@ -57,7 +57,7 @@ func TestPost(t *testing.T) {
 			OK bool `json:"ok"`
 		}
 
-		m := &Misskey{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 
 		res := &r{}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &res)

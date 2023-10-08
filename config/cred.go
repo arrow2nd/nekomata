@@ -3,13 +3,13 @@ package config
 import (
 	"fmt"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
-type Credentials map[string]*api.ClientOpts
+type Credentials map[string]*sharedapi.ClientOpts
 
 // Get : 取得
-func (c Credentials) Get(username string) (*api.ClientOpts, error) {
+func (c Credentials) Get(username string) (*sharedapi.ClientOpts, error) {
 	for u, cred := range c {
 		if u == username {
 			return cred, nil
@@ -31,7 +31,7 @@ func (c Credentials) GetAllUsernames() []string {
 }
 
 // Add : 追加
-func (c *Credentials) Add(username string, opts *api.ClientOpts) {
+func (c *Credentials) Add(username string, opts *sharedapi.ClientOpts) {
 	(*c)[username] = opts
 }
 

@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,27 +56,27 @@ func TestRequest(t *testing.T) {
 	}
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: "http://localhost:9999"}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: "http://localhost:9999"}}
 		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
 
 		err := m.request(opts, nil)
-		e := &api.RequestError{}
+		e := &sharedapi.RequestError{}
 
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
 
 		err := m.request(opts, nil)
-		e := &api.HTTPError{}
+		e := &sharedapi.HTTPError{}
 
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
 
 		type a struct {
@@ -85,13 +85,13 @@ func TestRequest(t *testing.T) {
 
 		res := &a{}
 		err := m.request(opts, &res)
-		e := &api.DecodeError{}
+		e := &sharedapi.DecodeError{}
 
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
 
 		err := m.request(opts, nil)
@@ -101,7 +101,7 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("指定した内容がヘッダーにあるか", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 
 		opts := &requestOpts{
 			method:      http.MethodPost,
@@ -116,7 +116,7 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
-		m := &Mastodon{opts: &api.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
 
 		opts := &requestOpts{
 			method: http.MethodGet,

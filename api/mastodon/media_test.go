@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/mastodon"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +34,7 @@ func TestUploadMedia(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(&api.ClientOpts{Server: ts.URL})
+	m := mastodon.New(&sharedapi.ClientOpts{Server: ts.URL})
 	id, err := m.UploadMedia(filepath.Base(raw.Name()), raw)
 
 	assert.NoError(t, err)

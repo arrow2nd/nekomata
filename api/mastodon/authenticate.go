@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
 type authenticateResponse struct {
@@ -16,12 +16,12 @@ type authenticateResponse struct {
 	CreatedAt   int64  `json:"created_at"`
 }
 
-func (m *Mastodon) Authenticate(w io.Writer) (*api.User, error) {
+func (m *Mastodon) Authenticate(w io.Writer) (*sharedapi.User, error) {
 	permissions := []string{"read", "write", "follow"}
 
 	// 認証URL組み立て
 	url := m.createAuthorizeURL(permissions)
-	api.PrintAuthenticateURL(w, url)
+	sharedapi.PrintAuthenticateURL(w, url)
 
 	// 認証コードを受け取る
 	code, err := m.recieveCode()
@@ -37,7 +37,7 @@ func (m *Mastodon) createAuthorizeURL(permissions []string) string {
 
 	q.Add("response_type", "code")
 	q.Add("client_id", m.opts.ID)
-	q.Add("redirect_uri", api.AuthCallbackURL)
+	q.Add("redirect_uri", sharedapi.AuthCallbackURL)
 	q.Add("scope", strings.Join(permissions, " "))
 
 	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
@@ -45,19 +45,18 @@ func (m *Mastodon) createAuthorizeURL(permissions []string) string {
 }
 
 func (m *Mastodon) recieveCode() (string, error) {
-	return api.RecieveAuthenticateCode("code", func(code string) bool {
+	return sharedapi.RecieveAuthenticateCode("code", func(code string) bool {
 		return code != ""
 	})
 }
 
-func (m *Mastodon) recieveToken(code string) (*api.User, error) {
+func (m *Mastodon) recieveToken(code string) (*sharedapi.User, error) {
 	q := url.Values{}
 
 	q.Add("grant_type", "authorization_code")
 	q.Add("code", code)
 	q.Add("client_id", m.opts.ID)
 	q.Add("client_secret", m.opts.Secret)
-	q.Add("redirect_uri", api.AuthCallbackURL)
 
 	opts := &requestOpts{
 		method: http.MethodPost,
@@ -71,5 +70,5 @@ func (m *Mastodon) recieveToken(code string) (*api.User, error) {
 		return nil, err
 	}
 
-	return &api.User{Token: res.AccessToken}, nil
+	return &sharedapi.User{Token: res.AccessToken}, nil
 }

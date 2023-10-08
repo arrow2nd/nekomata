@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
 type Mastodon struct {
-	opts *api.ClientOpts
+	opts *sharedapi.ClientOpts
 }
 
-func New(c *api.ClientOpts) *Mastodon {
+func New(c *sharedapi.ClientOpts) *Mastodon {
 	return &Mastodon{
 		opts: c,
 	}
@@ -50,7 +50,7 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 	client := http.DefaultClient
 	res, err := client.Do(req)
 	if err != nil {
-		return &api.RequestError{
+		return &sharedapi.RequestError{
 			URL: opts.url,
 			Err: err,
 		}
@@ -63,7 +63,7 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 	if res.StatusCode != http.StatusOK {
 		e := &errorResponse{}
 		if err := decorder.Decode(e); err != nil {
-			return api.NewHTTPError(res)
+			return sharedapi.NewHTTPError(res)
 		}
 		return e
 	}
@@ -73,7 +73,7 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 	}
 
 	if err := decorder.Decode(out); err != nil {
-		return &api.DecodeError{
+		return &sharedapi.DecodeError{
 			URL: opts.url,
 			Err: err,
 		}

@@ -1,12 +1,10 @@
 package mastodon
 
-import (
-	"github.com/arrow2nd/nekomata/api"
-)
+import "github.com/arrow2nd/nekomata/api/sharedapi"
 
 // statuses2SharedPosts : []*statuseを[]*api.Postに変換
-func statuses2SharedPosts(raw []*status) []*api.Post {
-	posts := []*api.Post{}
+func statuses2SharedPosts(raw []*status) []*sharedapi.Post {
+	posts := []*sharedapi.Post{}
 
 	for _, status := range raw {
 		posts = append(posts, status.ToShared())

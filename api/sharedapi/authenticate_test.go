@@ -1,4 +1,4 @@
-package api_test
+package sharedapi_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +14,7 @@ func TestRecieveAuthenticateCode(t *testing.T) {
 	lazyPost := func(t *testing.T, code string) {
 		time.Sleep(1 * time.Second)
 
-		req, _ := http.NewRequest(http.MethodPost, api.AuthCallbackURL, nil)
+		req, _ := http.NewRequest(http.MethodPost, sharedapi.AuthCallbackURL, nil)
 		req.URL.RawQuery += "code=" + code
 
 		_, err := http.DefaultClient.Do(req)
@@ -24,7 +24,7 @@ func TestRecieveAuthenticateCode(t *testing.T) {
 	t.Run("正しく認証コードを受け取れるか", func(t *testing.T) {
 		go lazyPost(t, "hoge")
 
-		code, err := api.RecieveAuthenticateCode("code", func(s string) bool {
+		code, err := sharedapi.RecieveAuthenticateCode("code", func(s string) bool {
 			return s != ""
 		})
 
@@ -35,7 +35,7 @@ func TestRecieveAuthenticateCode(t *testing.T) {
 	t.Run("受け取った認証コードが空文字の場合エラーになるか", func(t *testing.T) {
 		go lazyPost(t, "")
 
-		_, err := api.RecieveAuthenticateCode("code", func(s string) bool {
+		_, err := sharedapi.RecieveAuthenticateCode("code", func(s string) bool {
 			return s != ""
 		})
 
@@ -45,6 +45,6 @@ func TestRecieveAuthenticateCode(t *testing.T) {
 
 func TestPrintAuthenticateURL(t *testing.T) {
 	buf := &bytes.Buffer{}
-	api.PrintAuthenticateURL(buf, "hoge")
+	sharedapi.PrintAuthenticateURL(buf, "hoge")
 	assert.Contains(t, buf.String(), "hoge", "渡した文字列が含まれているか")
 }

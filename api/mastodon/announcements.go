@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"jaytaylor.com/html2text"
 )
 
@@ -23,14 +23,14 @@ type announcement struct {
 }
 
 // ToShared : api.Announcement に変換
-func (a *announcement) ToShared() *api.Announcement {
+func (a *announcement) ToShared() *sharedapi.Announcement {
 	// Content は HTML なのでプレーンテキストに変換
 	text, err := html2text.FromString(a.Content, html2text.Options{PrettyTables: true})
 	if err != nil {
 		text = fmt.Sprintf("convert error: %s", err.Error())
 	}
 
-	return &api.Announcement{
+	return &sharedapi.Announcement{
 		ID:          a.ID,
 		PublishedAt: a.PublishedAt,
 		UpdatedAt:   &a.UpdatedAt,
@@ -39,7 +39,7 @@ func (a *announcement) ToShared() *api.Announcement {
 	}
 }
 
-func (m *Mastodon) GetAnnouncements() ([]*api.Announcement, error) {
+func (m *Mastodon) GetAnnouncements() ([]*sharedapi.Announcement, error) {
 	q := url.Values{}
 	q.Add("with_dismissed", "false")
 
@@ -55,7 +55,7 @@ func (m *Mastodon) GetAnnouncements() ([]*api.Announcement, error) {
 		return nil, err
 	}
 
-	results := []*api.Announcement{}
+	results := []*sharedapi.Announcement{}
 	for _, r := range res {
 		results = append(results, r.ToShared())
 	}

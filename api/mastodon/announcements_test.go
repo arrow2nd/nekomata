@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -80,14 +80,14 @@ func TestGetAnnouncements(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&api.ClientOpts{Server: ts.URL})
+		m := New(&sharedapi.ClientOpts{Server: ts.URL})
 
 		_, err := m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&api.ClientOpts{Server: ts.URL})
+		m := New(&sharedapi.ClientOpts{Server: ts.URL})
 
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)

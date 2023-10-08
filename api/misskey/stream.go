@@ -1,19 +1,19 @@
 package misskey
 
-import "github.com/arrow2nd/nekomata/api"
+import "github.com/arrow2nd/nekomata/api/sharedapi"
 
-func (m *Misskey) StreamingGlobalTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Misskey) StreamingGlobalTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	return nil
 }
 
-func (m *Misskey) StreamingLocalTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Misskey) StreamingLocalTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	return nil
 }
 
-func (m *Misskey) StreamingHomeTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Misskey) StreamingHomeTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	return nil
 }
 
-func (m *Misskey) StreamingListTimeline(opts *api.StreamingListTimelineOpts) error {
+func (m *Misskey) StreamingListTimeline(opts *sharedapi.StreamingListTimelineOpts) error {
 	return nil
 }

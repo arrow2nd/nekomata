@@ -3,21 +3,21 @@ package config_test
 import (
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func newTestCredentials() config.Credentials {
 	return config.Credentials{
-		"test_1": &api.ClientOpts{
+		"test_1": &sharedapi.ClientOpts{
 			Server:    "https://example.com",
 			Name:      "nekomata",
 			ID:        "id_1",
 			Secret:    "secret_1",
 			UserToken: "user_token_1",
 		},
-		"test_2": &api.ClientOpts{
+		"test_2": &sharedapi.ClientOpts{
 			Server:    "https://example.com",
 			Name:      "nekomata",
 			ID:        "id_2",
@@ -58,7 +58,7 @@ func TestWrite(t *testing.T) {
 	t.Run("追加できる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &api.ClientOpts{
+		want := &sharedapi.ClientOpts{
 			Server:    "test",
 			Name:      "hoge",
 			ID:        "fuga",
@@ -75,7 +75,7 @@ func TestWrite(t *testing.T) {
 	t.Run("同じIDを持つユーザを上書きできる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &api.ClientOpts{
+		want := &sharedapi.ClientOpts{
 			Server:    "test",
 			Name:      "hoge",
 			ID:        "fuga",

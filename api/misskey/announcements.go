@@ -3,7 +3,7 @@ package misskey
 import (
 	"time"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
 type announcementsOpts struct {
@@ -18,7 +18,7 @@ type announcementsResponse struct {
 	Title     string     `json:"title"`
 }
 
-func (m *Misskey) GetAnnouncements() ([]*api.Announcement, error) {
+func (m *Misskey) GetAnnouncements() ([]*sharedapi.Announcement, error) {
 	req := &announcementsOpts{
 		WithUnreads: false,
 	}
@@ -28,9 +28,9 @@ func (m *Misskey) GetAnnouncements() ([]*api.Announcement, error) {
 		return nil, err
 	}
 
-	results := []*api.Announcement{}
+	results := []*sharedapi.Announcement{}
 	for _, r := range res {
-		results = append(results, &api.Announcement{
+		results = append(results, &sharedapi.Announcement{
 			ID:          r.ID,
 			PublishedAt: r.CreatedAt,
 			UpdatedAt:   r.UpdatedAt,

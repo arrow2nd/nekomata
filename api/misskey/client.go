@@ -6,21 +6,21 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
 type Misskey struct {
-	opts *api.ClientOpts
+	opts *sharedapi.ClientOpts
 }
 
 // New : 新しいクライアントを生成
-func New(c *api.ClientOpts) *Misskey {
+func New(c *sharedapi.ClientOpts) *Misskey {
 	return &Misskey{
 		opts: c,
 	}
 }
 
-func (m *Misskey) post(endpoint api.Endpoint, in, out interface{}) error {
+func (m *Misskey) post(endpoint sharedapi.Endpoint, in, out interface{}) error {
 	payload, err := json.Marshal(in)
 	if err != nil {
 		return fmt.Errorf("create payload error (%s): %w", endpoint, err)
@@ -36,7 +36,7 @@ func (m *Misskey) post(endpoint api.Endpoint, in, out interface{}) error {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return &api.RequestError{
+		return &sharedapi.RequestError{
 			URL: endpointURL,
 			Err: err,
 		}
@@ -46,12 +46,12 @@ func (m *Misskey) post(endpoint api.Endpoint, in, out interface{}) error {
 
 	// TODO: 200以外も返ってきてた気がするので修正する
 	if res.StatusCode != http.StatusOK {
-		return api.NewHTTPError(res)
+		return sharedapi.NewHTTPError(res)
 	}
 
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(out); err != nil {
-		return &api.DecodeError{
+		return &sharedapi.DecodeError{
 			URL: endpointURL,
 			Err: err,
 		}

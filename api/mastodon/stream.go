@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"golang.org/x/net/websocket"
 )
 
@@ -15,9 +15,9 @@ type event struct {
 	Payload string
 }
 
-func (m *Mastodon) handleWebSocket(q url.Values, opts *api.StreamingTimelineOpts) error {
+func (m *Mastodon) handleWebSocket(q url.Values, opts *sharedapi.StreamingTimelineOpts) error {
 	endpoint := endpointStreaming.URL(m.opts.Server, nil)
-	url, err := api.ConvertHttpToWebsocket(endpoint)
+	url, err := sharedapi.ConvertHttpToWebsocket(endpoint)
 	if err != nil {
 		return err
 	}
@@ -67,28 +67,28 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *api.StreamingTimelineOpts
 	return nil
 }
 
-func (m *Mastodon) StreamingGlobalTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Mastodon) StreamingGlobalTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	q := url.Values{}
 	q.Add("stream", "public")
 
 	return m.handleWebSocket(q, opts)
 }
 
-func (m *Mastodon) StreamingLocalTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Mastodon) StreamingLocalTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	q := url.Values{}
 	q.Add("stream", "public:local")
 
 	return m.handleWebSocket(q, opts)
 }
 
-func (m *Mastodon) StreamingHomeTimeline(opts *api.StreamingTimelineOpts) error {
+func (m *Mastodon) StreamingHomeTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	q := url.Values{}
 	q.Add("stream", "user")
 
 	return m.handleWebSocket(q, opts)
 }
 
-func (m *Mastodon) StreamingListTimeline(opts *api.StreamingListTimelineOpts) error {
+func (m *Mastodon) StreamingListTimeline(opts *sharedapi.StreamingListTimelineOpts) error {
 	q := url.Values{}
 	q.Add("stream", "list")
 	q.Add("list", opts.ListID)

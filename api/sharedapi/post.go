@@ -1,4 +1,4 @@
-package api
+package sharedapi
 
 import "time"
 
