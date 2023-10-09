@@ -1,8 +1,13 @@
 package app
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"strings"
 
+	"github.com/arrow2nd/nekomata/api"
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/cli"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/pflag"
@@ -34,8 +39,63 @@ func (a *App) newAccountAddCmd() *cli.Command {
 		Hidden:    !shared.isCLI,
 		Validate:  cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			// TODO: 新規追加
-			return nil
+			// ログインするサービスを選択
+			servicePrompt := promptui.Select{
+				Label: "Service",
+				Items: api.GetAllServices(),
+			}
+
+			_, service, err := servicePrompt.Run()
+			if err != nil {
+				return err
+			}
+
+			// サービスのドメインを入力
+			domainPrompt := promptui.Prompt{
+				Label:     "Domain",
+				Default:   "https://",
+				AllowEdit: true,
+				Validate: func(u string) error {
+					if !strings.HasPrefix(u, "http") {
+						return errors.New("must begin with http")
+					}
+					return nil
+				},
+			}
+
+			server, err := domainPrompt.Run()
+			if err != nil {
+				return err
+			}
+
+			// クライアントを作成
+			clientOpts := &sharedapi.ClientOpts{
+				Server: server,
+			}
+
+			client, err := api.NewClient(api.Service(service), clientOpts)
+			if err != nil {
+				return nil
+			}
+
+			// アプリケーション認証
+			userToken, err := client.Authenticate(os.Stdout)
+			if err != nil {
+				return err
+			}
+
+			// ログインユーザーを取得
+			clientOpts.UserToken = userToken
+			user, err := client.GetLoginAccount()
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
+
+			// 保存
+			shared.conf.Creds.Add(user.Username, clientOpts)
+			return shared.conf.SaveCred()
 		},
 	}
 }
