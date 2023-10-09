@@ -36,7 +36,7 @@ func (a *App) newAccountAddCmd() *cli.Command {
 		Name:      "add",
 		Shorthand: "a",
 		Short:     "Add account",
-		Hidden:    !shared.isCLI,
+		Hidden:    !global.isCLI,
 		Validate:  cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// ログインするサービスを選択
@@ -73,7 +73,7 @@ func (a *App) newAccountAddCmd() *cli.Command {
 				Server: server,
 			}
 
-			client, err := api.NewClient(service, shared.conf.Creds.Clients[service], userOpts)
+			client, err := api.NewClient(service, global.conf.Creds.Clients[service], userOpts)
 			if err != nil {
 				return nil
 			}
@@ -94,8 +94,8 @@ func (a *App) newAccountAddCmd() *cli.Command {
 			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
 
 			// 保存
-			shared.conf.Creds.Add(user.Username, userOpts)
-			return shared.conf.SaveCred()
+			global.conf.Creds.Add(user.Username, userOpts)
+			return global.conf.SaveCred()
 		},
 	}
 }
@@ -109,7 +109,7 @@ func (a *App) newAccountDeleteCmd() *cli.Command {
 If you do not specify an account name, you can select it interactively.`,
 		UsageArgs: "[user name]",
 		Example:   "delete arrow2nd",
-		Hidden:    !shared.isCLI,
+		Hidden:    !global.isCLI,
 		Validate:  cli.RangeArgs(0, 1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			target := f.Arg(0)
@@ -118,7 +118,7 @@ If you do not specify an account name, you can select it interactively.`,
 			if target == "" {
 				prompt := promptui.Select{
 					Label: "Account to delete",
-					Items: shared.conf.Creds.GetAllUsernames(),
+					Items: global.conf.Creds.GetAllUsernames(),
 				}
 
 				_, seletecd, err := prompt.Run()
@@ -129,11 +129,11 @@ If you do not specify an account name, you can select it interactively.`,
 				target = seletecd
 			}
 
-			if err := shared.conf.Creds.Delete(target); err != nil {
+			if err := global.conf.Creds.Delete(target); err != nil {
 				return err
 			}
 
-			if err := shared.conf.SaveCred(); err != nil {
+			if err := global.conf.SaveCred(); err != nil {
 				return err
 			}
 
@@ -148,10 +148,10 @@ func (a *App) newAccountListCmd() *cli.Command {
 		Name:      "list",
 		Shorthand: "l",
 		Short:     "Show accounts that have been added",
-		Hidden:    !shared.isCLI,
+		Hidden:    !global.isCLI,
 		Validate:  cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			for _, u := range shared.conf.Creds.GetAllUsernames() {
+			for _, u := range global.conf.Creds.GetAllUsernames() {
 				current := " "
 
 				// TODO: メインユーザーなら * を付ける
@@ -174,7 +174,7 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 		Short:     "Switch the account to be used",
 		UsageArgs: "[user name]",
 		Example:   "switch arrow2nd",
-		Hidden:    shared.isCLI,
+		Hidden:    global.isCLI,
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// TODO: 既にログイン中なら切り替えない

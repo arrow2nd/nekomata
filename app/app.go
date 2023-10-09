@@ -49,7 +49,7 @@ func (a *App) Init() error {
 	a.initCommands()
 
 	// コマンドラインモードならUIの初期化をスキップ
-	if shared.isCLI {
+	if global.isCLI {
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func (a *App) Init() error {
 
 	// 日本語環境等での罫線の乱れ対策
 	// LINK: https://github.com/mattn/go-runewidth/issues/14
-	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Pref.Feature.IsLocaleCJK
+	runewidth.DefaultCondition.EastAsianWidth = !global.conf.Pref.Feature.IsLocaleCJK
 
 	// Ctrl+K/Jの再マッピングを無効化
 	cbind.UnifyEnterKeys = false
@@ -105,20 +105,20 @@ func (a *App) loadConfig() error {
 		return err
 	}
 
-	shared.conf = conf
+	global.conf = conf
 
 	// 環境設定
-	if err := shared.conf.LoadPreferences(); err != nil {
+	if err := global.conf.LoadPreferences(); err != nil {
 		return err
 	}
 
 	// スタイル定義
-	if err := shared.conf.LoadStyle(); err != nil {
+	if err := global.conf.LoadStyle(); err != nil {
 		return err
 	}
 
 	// 認証情報
-	return shared.conf.LoadCred()
+	return global.conf.LoadCred()
 }
 
 // parseRuntimeArgs : 実行時の引数をパースして、ログインユーザを返す
@@ -136,7 +136,7 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
 
 	// コマンドラインモードか
-	shared.isCLI = f.NArg() > 0 || isSkipLogin
+	global.isCLI = f.NArg() > 0 || isSkipLogin
 
 	user, _ := f.GetString("user")
 	return isSkipLogin, user, nil
@@ -144,7 +144,7 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 
 // setAppStyles : アプリ全体のスタイルを設定
 func (a *App) setAppStyles() {
-	app := shared.conf.Style.App
+	app := global.conf.Style.App
 
 	bgColor := app.BackgroundColor.ToColor()
 	textColor := app.TextColor.ToColor()
@@ -182,7 +182,7 @@ func (a *App) setGlobalKeybindings() error {
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.Global.MappingEventHandler(handlers)
+	c, err := global.conf.Pref.Keybindings.Global.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
@@ -208,14 +208,14 @@ func (a *App) setViewKeybindings() error {
 			a.app.SetFocus(a.commandLine.inputField)
 		},
 		config.ActionShowHelp: func() {
-			shared.RequestExecCommand("docs keybindings")
+			global.RequestExecCommand("docs keybindings")
 		},
 		config.ActionClosePage: func() {
 			a.view.CloseCurrentPage()
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.View.MappingEventHandler(handlers)
+	c, err := global.conf.Pref.Keybindings.View.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
@@ -246,7 +246,7 @@ func (a *App) initCommands() {
 		a.newEditCmd(),
 	)
 
-	if shared.isCLI {
+	if global.isCLI {
 		return
 	}
 
@@ -261,15 +261,15 @@ func (a *App) initAutocomplate() {
 	cmds := a.cmd.GetChildrenNames(true)
 
 	if err := a.commandLine.SetAutocompleteItems(cmds); err != nil {
-		shared.SetErrorStatus("Init - CommandLine", err.Error())
+		global.SetErrorStatus("Init - CommandLine", err.Error())
 	}
 }
 
 // execStartupCommands : 起動時に実行するコマンドを一括で実行
 func (a *App) execStartupCommands() {
-	for _, c := range shared.conf.Pref.Feature.StartupCmds {
+	for _, c := range global.conf.Pref.Feature.StartupCmds {
 		if err := a.ExecCommnad(c); err != nil {
-			shared.SetErrorStatus("Command", err.Error())
+			global.SetErrorStatus("Command", err.Error())
 		}
 	}
 }
@@ -287,7 +287,7 @@ func (a *App) ExecCommnad(cmd string) error {
 // Run : アプリを実行
 func (a *App) Run() error {
 	// コマンドラインモード
-	if shared.isCLI {
+	if global.isCLI {
 		return a.cmd.Execute(os.Args[1:])
 	}
 
@@ -300,38 +300,38 @@ func (a *App) Run() error {
 func (a *App) eventReciever() {
 	for {
 		select {
-		case status := <-shared.chStatus:
+		case status := <-global.chStatus:
 			// ステータスメッセージを表示
 			a.commandLine.UpdateStatusMessage(status)
 			a.app.Draw()
-		case indicator := <-shared.chIndicator:
+		case indicator := <-global.chIndicator:
 			// インジケータを更新
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
-		case b := <-shared.chDisableViewKeyEvent:
+		case b := <-global.chDisableViewKeyEvent:
 			// ビューのキー操作ロック状態を更新
 			a.isDisablePageKeyEvent = b
-		case opt := <-shared.chPopupModal:
+		case opt := <-global.chPopupModal:
 			// モーダルを表示
 			a.view.PopupModal(opt)
 			a.app.Draw()
-		case cmd := <-shared.chExecCommand:
+		case cmd := <-global.chExecCommand:
 			// コマンドを実行`
 			if err := a.ExecCommnad(cmd); err != nil {
-				shared.SetErrorStatus("Command", err.Error())
+				global.SetErrorStatus("Command", err.Error())
 			}
-		case cmd := <-shared.chInputCommand:
+		case cmd := <-global.chInputCommand:
 			// コマンドを入力
 			a.app.SetFocus(a.commandLine.inputField)
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
-		case <-shared.chFocusView:
+		case <-global.chFocusView:
 			// ビューにフォーカス
 			if a.app.GetFocus() != a.view.textArea {
 				a.app.SetFocus(a.view.flex)
 			}
 			a.app.Draw()
-		case p := <-shared.chFocusPrimitive:
+		case p := <-global.chFocusPrimitive:
 			// 任意のプリミティブにフォーカス
 			a.app.SetFocus(*p)
 			a.app.Draw()
@@ -342,7 +342,7 @@ func (a *App) eventReciever() {
 // quitApp : アプリを終了
 func (a *App) quitApp() {
 	// 確認画面が不要ならそのまま終了
-	if !shared.conf.Pref.Confirm["quit"] {
+	if !global.conf.Pref.Confirm["quit"] {
 		a.app.Stop()
 		return
 	}

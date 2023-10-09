@@ -23,7 +23,7 @@ func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, 
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.Page.MappingEventHandler(handler)
+	c, err := global.conf.Pref.Keybindings.Page.MappingEventHandler(handler)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ type basePage struct {
 
 func newBasePage(name string) *basePage {
 	return &basePage{
-		name:      truncate(name, shared.conf.Pref.Appearance.TabMaxWidth),
+		name:      truncate(name, global.conf.Pref.Appearance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
 		isActive:  false,
@@ -72,7 +72,7 @@ func (b *basePage) OnActive() {
 	b.isActive = true
 
 	// 以前のインジケータの内容を反映
-	shared.SetIndicator(b.indicator)
+	global.SetIndicator(b.indicator)
 }
 
 // OnInactive : ページが非アクティブになった

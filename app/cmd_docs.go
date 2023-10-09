@@ -13,7 +13,7 @@ func (a *App) newDocsCmd() *cli.Command {
 		Name:      "docs",
 		Shorthand: "d",
 		Short:     "Show documentation",
-		Hidden:    shared.isCLI,
+		Hidden:    global.isCLI,
 		Validate:  cli.NoArgs(),
 	}
 
@@ -23,7 +23,7 @@ func (a *App) newDocsCmd() *cli.Command {
 }
 
 func (a *App) newDocsKeybindingsCmd() *cli.Command {
-	k := shared.conf.Pref.Keybindings
+	k := global.conf.Pref.Keybindings
 
 	global := fmt.Sprintf(
 		`[Global]

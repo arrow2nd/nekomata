@@ -29,7 +29,7 @@ func newCommandLine() *commandLine {
 
 // Init : 初期化
 func (c *commandLine) Init() {
-	style := shared.conf.Style
+	style := global.conf.Style
 	acTextColor := style.Autocomplate.TextColor.ToColor()
 
 	c.inputField.
@@ -81,7 +81,7 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 	// }
 
 	// ユーザ指定済みのaccount switchコマンドを追加
-	for _, u := range shared.conf.Creds.GetAllUsernames() {
+	for _, u := range global.conf.Creds.GetAllUsernames() {
 		cmd := fmt.Sprintf("account switch %s", u)
 		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
@@ -111,8 +111,8 @@ func (c *commandLine) UpdateStatusMessage(s string) {
 func (c *commandLine) Blur() {
 	c.inputField.SetLabel("").SetText("")
 
-	shared.RequestFocusView()
-	shared.SetDisableViewKeyEvent(false)
+	global.RequestFocusView()
+	global.SetDisableViewKeyEvent(false)
 }
 
 // getAutocompleteItems : 入力補完の候補を取得
@@ -161,7 +161,7 @@ func (c *commandLine) handleDone(key tcell.Key) {
 	c.Blur()
 
 	if text != "" {
-		shared.RequestExecCommand(text)
+		global.RequestExecCommand(text)
 	}
 }
 
@@ -171,7 +171,7 @@ func (c *commandLine) handleFocus() {
 		SetLabel(":").
 		SetPlaceholder("")
 
-	shared.SetDisableViewKeyEvent(true)
+	global.SetDisableViewKeyEvent(true)
 }
 
 // handleKeyEvent : キーイベントハンドラ

@@ -61,11 +61,11 @@ func (v *view) drawTab() {
 	v.tabBar.Clear()
 
 	for i, tab := range v.tabs {
-		fmt.Fprintf(v.tabBar, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab, tab)
+		fmt.Fprintf(v.tabBar, `[%s]["%s"] %s [""][-:-:-]`, global.conf.Style.Tab.Text, tab, tab)
 
 		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabs)-1 {
-			fmt.Fprint(v.tabBar, shared.conf.Pref.Appearance.TabSeparator)
+			fmt.Fprint(v.tabBar, global.conf.Pref.Appearance.TabSeparator)
 		}
 	}
 }

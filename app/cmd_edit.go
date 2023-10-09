@@ -15,7 +15,7 @@ func (a *App) newEditCmd() *cli.Command {
 		Name:      "edit",
 		Shorthand: "e",
 		Short:     "Edit configuration file",
-		Hidden:    !shared.isCLI,
+		Hidden:    !global.isCLI,
 		Validate:  cli.NoArgs(),
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
@@ -37,7 +37,7 @@ func (a *App) newEditCmd() *cli.Command {
 				return err
 			}
 
-			dir := shared.conf.DirPath
+			dir := global.conf.DirPath
 			editor, _ := f.GetString("editor")
 			return a.openExternalEditor(editor, path.Join(dir, file))
 		},

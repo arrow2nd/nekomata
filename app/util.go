@@ -29,7 +29,7 @@ func (a *App) openExternalEditor(editor string, args ...string) error {
 
 	var err error
 
-	if shared.isCLI {
+	if global.isCLI {
 		err = cmd.Run()
 	} else {
 		a.app.Suspend(func() {
@@ -156,7 +156,7 @@ func isSameDate(t time.Time) bool {
 
 // convertDateString : 日付文字列を変換
 func convertDateString(createAt string) string {
-	pref := shared.conf.Pref.Appearance
+	pref := global.conf.Pref.Appearance
 
 	t, _ := time.Parse(time.RFC3339, createAt)
 	format := ""
@@ -179,7 +179,7 @@ func createStyledText(style, text string) string {
 // createSeparator : 指定幅のセパレータ文字列を作成
 func createSeparator(s string, width int) string {
 	return createStyledText(
-		shared.conf.Style.Tweet.Separator,
+		global.conf.Style.Tweet.Separator,
 		strings.Repeat(s, width),
 	)
 }

@@ -1,13 +1,14 @@
 package app
 
 import (
+	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/rivo/tview"
 )
 
-// Shared : 全体共有
-type Shared struct {
-	// client                *shared.Client
+// Global : 全体共有
+type Global struct {
+	client                *sharedapi.Client
 	conf                  *config.Config
 	isCLI                 bool
 	chStatus              chan string
@@ -20,7 +21,7 @@ type Shared struct {
 	chDisableViewKeyEvent chan bool
 }
 
-var shared = Shared{
+var global = Global{
 	conf:                  nil,
 	isCLI:                 false,
 	chStatus:              make(chan string, 1),
@@ -34,72 +35,72 @@ var shared = Shared{
 }
 
 // SetStatus : ステータスメッセージを設定
-func (s *Shared) SetStatus(label, status string) {
+func (g *Global) SetStatus(label, status string) {
 	message := createStatusMessage(label, status)
 
-	if s.isCLI {
+	if g.isCLI {
 		exit(message)
 	}
 
 	go func() {
-		s.chStatus <- message
+		g.chStatus <- message
 	}()
 }
 
 // SetErrorStatus : エラーメッセージを設定
-func (s *Shared) SetErrorStatus(label, errStatus string) {
-	if s.isCLI {
+func (g *Global) SetErrorStatus(label, errStatus string) {
+	if g.isCLI {
 		exitError(createStatusMessage(label, errStatus), exitCodeErr)
 	}
 
-	s.SetStatus("ERR: "+label, errStatus)
+	g.SetStatus("ERR: "+label, errStatus)
 }
 
 // SetIndicator : インジケータを設定
-func (s *Shared) SetIndicator(indicator string) {
+func (g *Global) SetIndicator(indicator string) {
 	go func() {
-		s.chIndicator <- indicator
+		g.chIndicator <- indicator
 	}()
 }
 
 // SetDisableViewKeyEvent : ビューのキーイベントを無効化
-func (s *Shared) SetDisableViewKeyEvent(b bool) {
+func (g *Global) SetDisableViewKeyEvent(b bool) {
 	go func() {
-		s.chDisableViewKeyEvent <- b
+		g.chDisableViewKeyEvent <- b
 	}()
 }
 
 // ReqestPopupModal : モーダルの表示をリクエスト
-func (s *Shared) ReqestPopupModal(o *ModalOpts) {
+func (g *Global) ReqestPopupModal(o *ModalOpts) {
 	go func() {
-		s.chPopupModal <- o
+		g.chPopupModal <- o
 	}()
 }
 
 // RequestExecCommand : コマンドの実行をリクエスト
-func (s *Shared) RequestExecCommand(c string) {
+func (g *Global) RequestExecCommand(c string) {
 	go func() {
-		s.chExecCommand <- c
+		g.chExecCommand <- c
 	}()
 }
 
 // RequestInputCommand : コマンドの入力をリクエスト
-func (s *Shared) RequestInputCommand(c string) {
+func (g *Global) RequestInputCommand(c string) {
 	go func() {
-		s.chInputCommand <- c
+		g.chInputCommand <- c
 	}()
 }
 
 // RequestFocusPrimitive : 指定したプリミティブへのフォーカスを要求
-func (s *Shared) RequestFocusPrimitive(p tview.Primitive) {
+func (g *Global) RequestFocusPrimitive(p tview.Primitive) {
 	go func() {
-		s.chFocusPrimitive <- &p
+		g.chFocusPrimitive <- &p
 	}()
 }
 
 // RequestFocusView : ビューへのフォーカスを要求
-func (s *Shared) RequestFocusView() {
+func (g *Global) RequestFocusView() {
 	go func() {
-		s.chFocusView <- true
+		g.chFocusView <- true
 	}()
 }

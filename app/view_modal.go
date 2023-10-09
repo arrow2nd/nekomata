@@ -28,7 +28,7 @@ func (v *view) PopupModal(opts *ModalOpts) {
 		}
 
 		v.pages.RemovePage("modal")
-		shared.SetDisableViewKeyEvent(false)
+		global.SetDisableViewKeyEvent(false)
 	}
 
 	v.modal.
@@ -38,8 +38,8 @@ func (v *view) PopupModal(opts *ModalOpts) {
 
 	v.pages.AddPage("modal", v.modal, true, true)
 
-	shared.RequestFocusPrimitive(v.modal)
-	shared.SetDisableViewKeyEvent(true)
+	global.RequestFocusPrimitive(v.modal)
+	global.SetDisableViewKeyEvent(true)
 }
 
 // handleModalKeyEvent : モーダルのキーイベントハンドラ

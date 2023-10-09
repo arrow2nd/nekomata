@@ -314,7 +314,7 @@ func TestIsSameDate(t *testing.T) {
 }
 
 func TestCreateSeparator(t *testing.T) {
-	shared = Shared{
+	global = Global{
 		conf: &config.Config{
 			Style: &config.Style{
 				Tweet: config.TweetStyle{

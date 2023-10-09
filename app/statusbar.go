@@ -23,7 +23,7 @@ func newStatusBar() *statusBar {
 
 // Init : 初期化
 func (s *statusBar) Init() {
-	bgColor := shared.conf.Style.StatusBar.BackgroundColor.ToColor()
+	bgColor := global.conf.Style.StatusBar.BackgroundColor.ToColor()
 
 	s.leftView.
 		SetDynamicColors(true).
@@ -48,7 +48,7 @@ func (s *statusBar) DrawAccountInfo() {
 	fmt.Fprintf(
 		s.leftView,
 		" [%s]@%s[-:-:-]",
-		shared.conf.Style.StatusBar.Text,
+		global.conf.Style.StatusBar.Text,
 		"",
 		// shared.api.CurrentUser.UserName,
 	)
@@ -61,7 +61,7 @@ func (s *statusBar) DrawPageIndicator(d string) {
 	fmt.Fprintf(
 		s.rightView,
 		"[%s]%s[-:-:-] ",
-		shared.conf.Style.StatusBar.Text,
+		global.conf.Style.StatusBar.Text,
 		d,
 	)
 }

@@ -13,12 +13,12 @@ func newCmd() *cli.Command {
 		Short: "🐱 Multi-SNS client with TUI",
 		Long:  "TUI social networking client for multiple services",
 		SetFlag: func(f *pflag.FlagSet) {
-			f.StringP("user", "u", shared.conf.Pref.Feature.MainUser, "username of the account to log in to")
+			f.StringP("user", "u", global.conf.Pref.Feature.MainUser, "username of the account to log in to")
 			f.BoolP("version", "v", false, "Display version")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// コマンドラインからの実行ならバージョンを表示して終了
-			if ver, _ := f.GetBool("version"); shared.isCLI && ver {
+			if ver, _ := f.GetBool("version"); global.isCLI && ver {
 				exit(fmt.Sprintf("🐱 %s for v.%s", c.Name, version))
 			}
 

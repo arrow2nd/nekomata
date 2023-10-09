@@ -38,7 +38,7 @@ func newView() *view {
 		AddItem(v.pages, 0, 1, true).
 		AddItem(v.textArea, 0, 0, false)
 
-	tabBgColor := shared.conf.Style.Tab.BackgroundColor.ToColor()
+	tabBgColor := global.conf.Style.Tab.BackgroundColor.ToColor()
 	v.tabBar.
 		SetDynamicColors(true).
 		SetRegions(true).
@@ -115,7 +115,7 @@ func (v *view) Reset() {
 func (v *view) CloseCurrentPage() {
 	// ページが1つのみなら削除しない
 	if v.pages.GetPageCount() == 1 {
-		shared.SetErrorStatus("App", "last page cannot be closed")
+		global.SetErrorStatus("App", "last page cannot be closed")
 		return
 	}
 
@@ -168,14 +168,14 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 
 	v.flex.ResizeItem(v.textArea, 0, 1)
 
-	shared.RequestFocusPrimitive(v.textArea)
-	shared.SetDisableViewKeyEvent(true)
+	global.RequestFocusPrimitive(v.textArea)
+	global.SetDisableViewKeyEvent(true)
 }
 
 // HiddenTextArea : テキストエリアを非表示
 func (v *view) HiddenTextArea() {
 	v.flex.ResizeItem(v.textArea, 0, 0)
 
-	shared.RequestFocusPrimitive(v.pages)
-	shared.SetDisableViewKeyEvent(false)
+	global.RequestFocusPrimitive(v.pages)
+	global.SetDisableViewKeyEvent(false)
 }
