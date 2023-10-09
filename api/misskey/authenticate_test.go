@@ -52,8 +52,8 @@ func TestRecieveToken(t *testing.T) {
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
 		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
-		res, err := m.recieveToken("SESSION_ID")
+		token, err := m.recieveToken("SESSION_ID")
 		assert.NoError(t, err)
-		assert.Equal(t, "USER_TOKEN", res.Token)
+		assert.Equal(t, "USER_TOKEN", token)
 	})
 }

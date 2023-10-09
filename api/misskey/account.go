@@ -10,6 +10,10 @@ func (m *Misskey) GetAccount(id string) (*sharedapi.Account, error) {
 	return nil, nil
 }
 
+func (m *Misskey) GetLoginAccount() (*sharedapi.Account, error) {
+	return nil, nil
+}
+
 func (m *Misskey) GetRelationships(ids []string) ([]*sharedapi.Relationship, error) {
 	return nil, nil
 }

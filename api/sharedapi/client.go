@@ -4,7 +4,7 @@ import "io"
 
 type Client interface {
 	// Authenticate : アプリケーション認証を行なってアクセストークンを取得
-	Authenticate(w io.Writer) (*User, error)
+	Authenticate(w io.Writer) (string, error)
 
 	// GetAnnouncements : サーバーからのお知らせを取得
 	GetAnnouncements() ([]*Announcement, error)
@@ -38,6 +38,8 @@ type Client interface {
 	SearchAccounts(query string, limit int) ([]*Account, error)
 	// GetAccount : アカウント情報を取得
 	GetAccount(id string) (*Account, error)
+	// GetLoginAccount : ログイン中のアカウント情報を取得
+	GetLoginAccount() (*Account, error)
 	// GetRelationships : ユーザーとの関係を取得
 	GetRelationships(ids []string) ([]*Relationship, error)
 	// GetPosts : アカウントの投稿を取得

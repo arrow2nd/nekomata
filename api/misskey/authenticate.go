@@ -17,7 +17,7 @@ type miAuthResponse struct {
 	Token string `json:"token"`
 }
 
-func (m *Misskey) Authenticate(w io.Writer) (*sharedapi.User, error) {
+func (m *Misskey) Authenticate(w io.Writer) (string, error) {
 	permissions := []string{
 		"read:account",
 		"read:blocks",
@@ -42,7 +42,7 @@ func (m *Misskey) Authenticate(w io.Writer) (*sharedapi.User, error) {
 	// セッションIDを受け取る
 	id, err := m.recieveSessionID(sessionID)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	return m.recieveToken(id)
@@ -68,14 +68,14 @@ func (m *Misskey) recieveSessionID(id string) (string, error) {
 	})
 }
 
-func (m *Misskey) recieveToken(sessionID string) (*sharedapi.User, error) {
+func (m *Misskey) recieveToken(sessionID string) (string, error) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID)
 
 	endpoint := endpointMiAuthCheck.URL(m.opts.Server, p)
 	res, err := http.Post(endpoint, "text/plain", nil)
 	if err != nil {
-		return nil, &sharedapi.RequestError{
+		return "", &sharedapi.RequestError{
 			URL: endpoint,
 			Err: err,
 		}
@@ -84,23 +84,21 @@ func (m *Misskey) recieveToken(sessionID string) (*sharedapi.User, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, sharedapi.NewHTTPError(res)
+		return "", sharedapi.NewHTTPError(res)
 	}
 
 	authRes := &miAuthResponse{}
 	decorder := json.NewDecoder(res.Body)
 	if err := decorder.Decode(authRes); err != nil {
-		return nil, &sharedapi.DecodeError{
+		return "", &sharedapi.DecodeError{
 			URL: endpoint,
 			Err: err,
 		}
 	}
 
 	if !authRes.OK {
-		return nil, fmt.Errorf("get token error: invalid authentication URL")
+		return "", fmt.Errorf("get token error: invalid authentication URL")
 	}
 
-	return &sharedapi.User{
-		Token: authRes.Token,
-	}, nil
+	return authRes.Token, nil
 }
