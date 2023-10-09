@@ -10,14 +10,34 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
+var (
+	defaultName   = ""
+	defaultID     = ""
+	defaultSecret = ""
+)
+
 type Mastodon struct {
 	opts *sharedapi.ClientOpts
 }
 
 func New(c *sharedapi.ClientOpts) *Mastodon {
-	return &Mastodon{
+	client := &Mastodon{
 		opts: c,
 	}
+
+	if c.Name == "" {
+		client.opts.Name = defaultName
+	}
+
+	if c.ID == "" {
+		client.opts.ID = defaultID
+	}
+
+	if c.Secret == "" {
+		client.opts.Secret = defaultSecret
+	}
+
+	return client
 }
 
 type requestOpts struct {

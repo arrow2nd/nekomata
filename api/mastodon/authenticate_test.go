@@ -28,7 +28,7 @@ func TestRecieveToken(t *testing.T) {
 	defer ts.Close()
 
 	m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
-	res, err := m.recieveToken("CODE")
+	token, err := m.recieveToken("CODE")
 	assert.NoError(t, err)
-	assert.Equal(t, "USER_TOKEN", res.Token)
+	assert.Equal(t, "USER_TOKEN", token)
 }

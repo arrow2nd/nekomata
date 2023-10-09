@@ -16,7 +16,7 @@ type authenticateResponse struct {
 	CreatedAt   int64  `json:"created_at"`
 }
 
-func (m *Mastodon) Authenticate(w io.Writer) (*sharedapi.User, error) {
+func (m *Mastodon) Authenticate(w io.Writer) (string, error) {
 	permissions := []string{"read", "write", "follow"}
 
 	// 認証URL組み立て
@@ -26,9 +26,10 @@ func (m *Mastodon) Authenticate(w io.Writer) (*sharedapi.User, error) {
 	// 認証コードを受け取る
 	code, err := m.recieveCode()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
+	// アクセストークンを受け取る
 	return m.recieveToken(code)
 }
 
@@ -50,11 +51,12 @@ func (m *Mastodon) recieveCode() (string, error) {
 	})
 }
 
-func (m *Mastodon) recieveToken(code string) (*sharedapi.User, error) {
+func (m *Mastodon) recieveToken(code string) (string, error) {
 	q := url.Values{}
 
 	q.Add("grant_type", "authorization_code")
 	q.Add("code", code)
+	q.Add("redirect_uri", sharedapi.AuthCallbackURL)
 	q.Add("client_id", m.opts.ID)
 	q.Add("client_secret", m.opts.Secret)
 
@@ -67,8 +69,8 @@ func (m *Mastodon) recieveToken(code string) (*sharedapi.User, error) {
 
 	res := authenticateResponse{}
 	if err := m.request(opts, &res); err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &sharedapi.User{Token: res.AccessToken}, nil
+	return res.AccessToken, nil
 }

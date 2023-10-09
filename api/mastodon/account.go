@@ -151,6 +151,30 @@ func (m *Mastodon) GetAccount(id string) (*sharedapi.Account, error) {
 	return res.ToShared(), nil
 }
 
+func (m *Mastodon) GetLoginAccount() (*sharedapi.Account, error) {
+	opts := &requestOpts{
+		method: http.MethodGet,
+		url:    endpointVerifyCredentials.URL(m.opts.Server, nil),
+		q:      nil,
+		isAuth: true,
+	}
+
+	res := account{}
+	if err := m.request(opts, &res); err != nil {
+		return nil, err
+	}
+
+	// acctに変換
+	u, err := url.Parse(m.opts.Server)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Acct += "@" + u.Host
+
+	return res.ToShared(), nil
+}
+
 func (m *Mastodon) GetRelationships(ids []string) ([]*sharedapi.Relationship, error) {
 	q := url.Values{}
 	for _, id := range ids {
