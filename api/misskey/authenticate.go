@@ -50,7 +50,7 @@ func (m *Misskey) Authenticate(w io.Writer) (string, error) {
 
 func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 	q := url.Values{}
-	q.Add("name", m.opts.Name)
+	q.Add("name", m.client.Name)
 	q.Add("callback", sharedapi.AuthCallbackURL)
 	q.Add("permission", strings.Join(permissions, ","))
 
@@ -58,7 +58,7 @@ func (m *Misskey) createAuthorizeURL(permissions []string) (string, string) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID.String())
 
-	endpoint := endpointMiAuth.URL(m.opts.Server, p)
+	endpoint := endpointMiAuth.URL(m.user.Server, p)
 	return endpoint + "?" + q.Encode(), sessionID.String()
 }
 
@@ -72,7 +72,7 @@ func (m *Misskey) recieveToken(sessionID string) (string, error) {
 	p := url.Values{}
 	p.Add(":session_id", sessionID)
 
-	endpoint := endpointMiAuthCheck.URL(m.opts.Server, p)
+	endpoint := endpointMiAuthCheck.URL(m.user.Server, p)
 	res, err := http.Post(endpoint, "text/plain", nil)
 	if err != nil {
 		return "", &sharedapi.RequestError{

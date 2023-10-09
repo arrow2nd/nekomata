@@ -80,14 +80,14 @@ func TestGetAnnouncements(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(&sharedapi.ClientOpts{Server: ts.URL})
+		m := New(nil, &sharedapi.UserOpts{Server: ts.URL})
 
 		_, err := m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(&sharedapi.ClientOpts{Server: ts.URL})
+		m := New(nil, &sharedapi.UserOpts{Server: ts.URL})
 
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)

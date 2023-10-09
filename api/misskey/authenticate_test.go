@@ -12,14 +12,21 @@ import (
 )
 
 func TestCreateAuthorizeURL(t *testing.T) {
-	m := &Misskey{opts: &sharedapi.ClientOpts{Name: "test_app", Server: "https://example.com"}}
+	m := &Misskey{
+		client: &sharedapi.ClientOpts{
+			Name: "test_app",
+		},
+		user: &sharedapi.UserOpts{
+			Server: "https://example.com",
+		},
+	}
 
 	u, sessionID := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 	assert.NotEqual(t, "", sessionID, "セッションIDがあるか")
 
 	pathParams := url.Values{}
 	pathParams.Add(":session_id", sessionID)
-	endpoint := endpointMiAuth.URL(m.opts.Server, pathParams)
+	endpoint := endpointMiAuth.URL(m.user.Server, pathParams)
 
 	want := endpoint + "?callback=http%3A%2F%2Flocalhost%3A3000%2Fcallback&name=test_app&permission=aaaa%2Cbbbb"
 	assert.Equal(t, want, u, "正しい形式で生成されているか")
@@ -45,13 +52,13 @@ func TestRecieveToken(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("URL期限切れ", func(t *testing.T) {
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
 		assert.ErrorContains(t, err, "get token error")
 	})
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
 		token, err := m.recieveToken("SESSION_ID")
 		assert.NoError(t, err)
 		assert.Equal(t, "USER_TOKEN", token)

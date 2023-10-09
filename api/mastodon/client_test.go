@@ -56,8 +56,13 @@ func TestRequest(t *testing.T) {
 	}
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: "http://localhost:9999"}}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: "http://localhost:9999",
+			},
+		}
+
+		opts.url = endpointAnnouncements.URL(m.user.Server, nil)
 
 		err := m.request(opts, nil)
 		e := &sharedapi.RequestError{}
@@ -66,8 +71,13 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: ts.URL,
+			},
+		}
+
+		opts.url = endpointAnnouncements.URL(m.user.Server, nil)
 
 		err := m.request(opts, nil)
 		e := &sharedapi.HTTPError{}
@@ -76,8 +86,13 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: ts.URL,
+			},
+		}
+
+		opts.url = endpointAnnouncements.URL(m.user.Server, nil)
 
 		type a struct {
 			hoge string
@@ -91,8 +106,13 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
-		opts.url = endpointAnnouncements.URL(m.opts.Server, nil)
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: ts.URL,
+			},
+		}
+
+		opts.url = endpointAnnouncements.URL(m.user.Server, nil)
 
 		err := m.request(opts, nil)
 		e := &errorResponse{}
@@ -101,12 +121,16 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("指定した内容がヘッダーにあるか", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: ts.URL,
+			},
+		}
 
 		opts := &requestOpts{
 			method:      http.MethodPost,
 			contentType: "application/json",
-			url:         endpointAnnouncements.URL(m.opts.Server, nil),
+			url:         endpointAnnouncements.URL(m.user.Server, nil),
 			q:           nil,
 			isAuth:      true,
 		}
@@ -116,11 +140,15 @@ func TestRequest(t *testing.T) {
 	})
 
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
-		m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Mastodon{
+			user: &sharedapi.UserOpts{
+				Server: ts.URL,
+			},
+		}
 
 		opts := &requestOpts{
 			method: http.MethodGet,
-			url:    endpointAnnouncements.URL(m.opts.Server, nil),
+			url:    endpointAnnouncements.URL(m.user.Server, nil),
 			q:      nil,
 			isAuth: false,
 		}

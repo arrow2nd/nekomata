@@ -146,7 +146,7 @@ func (m *Mastodon) CreatePost(opts *sharedapi.CreatePostOpts) (*sharedapi.Post, 
 
 	requestOpts := &requestOpts{
 		method: http.MethodPost,
-		url:    endpointStatuses.URL(m.opts.Server, nil),
+		url:    endpointStatuses.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}
@@ -170,7 +170,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *sharedapi.CreatePostOpts) (
 
 	requestOpts := &requestOpts{
 		method: http.MethodPost,
-		url:    endpointStatuses.URL(m.opts.Server, nil),
+		url:    endpointStatuses.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}
@@ -184,7 +184,7 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *sharedapi.CreatePostOpts) (
 }
 
 func (m *Mastodon) DeletePost(id string) (*sharedapi.Post, error) {
-	u, err := url.JoinPath(endpointStatuses.URL(m.opts.Server, nil), id)
+	u, err := url.JoinPath(endpointStatuses.URL(m.user.Server, nil), id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
 	}
@@ -210,7 +210,7 @@ func (m *Mastodon) doTootAction(id string, e sharedapi.Endpoint) (*sharedapi.Pos
 
 	opts := &requestOpts{
 		method: http.MethodPost,
-		url:    e.URL(m.opts.Server, p),
+		url:    e.URL(m.user.Server, p),
 		q:      nil,
 		isAuth: true,
 	}

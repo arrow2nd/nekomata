@@ -3,6 +3,7 @@ package config_test
 import (
 	"testing"
 
+	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/stretchr/testify/assert"
@@ -10,19 +11,22 @@ import (
 
 func newTestCredentials() config.Credentials {
 	return config.Credentials{
-		"test_1": &sharedapi.ClientOpts{
-			Server:    "https://example.com",
-			Name:      "nekomata",
-			ID:        "id_1",
-			Secret:    "secret_1",
-			UserToken: "user_token_1",
+		Clients: map[string]*sharedapi.ClientOpts{
+			api.ServiceMastodon: {
+				Name:   "nekomata",
+				ID:     "id_1",
+				Secret: "secret_1",
+			},
 		},
-		"test_2": &sharedapi.ClientOpts{
-			Server:    "https://example.com",
-			Name:      "nekomata",
-			ID:        "id_2",
-			Secret:    "secret_2",
-			UserToken: "user_token_2",
+		Users: map[string]*sharedapi.UserOpts{
+			"test_1": {
+				Server: "https://example.com",
+				Token:  "user_token_1",
+			},
+			"test_2": {
+				Server: "https://example.com",
+				Token:  "user_token_2",
+			},
 		},
 	}
 }
@@ -34,7 +38,7 @@ func TestCredentialGet(t *testing.T) {
 		got, err := c.Get("test_1")
 
 		assert.NoError(t, err)
-		assert.Equal(t, c["test_1"], got)
+		assert.Equal(t, c.Users["test_1"], got)
 	})
 
 	t.Run("見つからなかった際にエラーが返る", func(t *testing.T) {
@@ -58,12 +62,9 @@ func TestWrite(t *testing.T) {
 	t.Run("追加できる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &sharedapi.ClientOpts{
-			Server:    "test",
-			Name:      "hoge",
-			ID:        "fuga",
-			Secret:    "piyo",
-			UserToken: "mochi",
+		want := &sharedapi.UserOpts{
+			Server: "test",
+			Token:  "mochi",
 		}
 
 		c.Add("hiori", want)
@@ -75,12 +76,9 @@ func TestWrite(t *testing.T) {
 	t.Run("同じIDを持つユーザを上書きできる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &sharedapi.ClientOpts{
-			Server:    "test",
-			Name:      "hoge",
-			ID:        "fuga",
-			Secret:    "piyo",
-			UserToken: "mochi",
+		want := &sharedapi.UserOpts{
+			Server: "test",
+			Token:  "mochi",
 		}
 
 		c.Add("test_2", want)

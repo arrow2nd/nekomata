@@ -11,10 +11,18 @@ import (
 )
 
 func TestCreateAuthorizeURL(t *testing.T) {
-	m := &Mastodon{opts: &sharedapi.ClientOpts{Server: "https://example.com", ID: "hoge"}}
+	m := &Mastodon{
+		client: &sharedapi.ClientOpts{
+			ID: "hoge",
+		},
+		user: &sharedapi.UserOpts{
+			Server: "https://example.com",
+		},
+	}
+
 	u := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
 
-	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
+	endpoint := endpointOauthAuthorize.URL(m.user.Server, nil)
 	want := endpoint + "?client_id=hoge&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&response_type=code&scope=aaaa+bbbb"
 	assert.Equal(t, want, u)
 }
@@ -27,7 +35,17 @@ func TestRecieveToken(t *testing.T) {
 
 	defer ts.Close()
 
-	m := &Mastodon{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+	m := &Mastodon{
+		client: &sharedapi.ClientOpts{
+			Name:   "test",
+			ID:     "id",
+			Secret: "secret",
+		},
+		user: &sharedapi.UserOpts{
+			Server: ts.URL,
+		},
+	}
+
 	token, err := m.recieveToken("CODE")
 	assert.NoError(t, err)
 	assert.Equal(t, "USER_TOKEN", token)

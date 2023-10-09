@@ -79,14 +79,15 @@ type Client interface {
 
 // ClientOpts : クライアントの設定
 type ClientOpts struct {
-	// Server : 接続先のサーバーのURL
-	Server string
-	// Name : クライアント名
-	Name string
-	// ID : クライアント ID
-	ID string
-	// Secret : クライアントシークレット
+	Name   string
+	ID     string
 	Secret string
-	// UserToken : ユーザーのアクセストークン
-	UserToken string
+}
+
+// UserOpts : ユーザーの設定
+type UserOpts struct {
+	// Server : 接続先サーバーのURL
+	Server string
+	// Token : トークン
+	Token string
 }

@@ -32,21 +32,21 @@ func TestPost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: "http://localhost:9999"}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: "http://localhost:9999"}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &sharedapi.RequestError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("アクセス失敗", func(t *testing.T) {
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &sharedapi.HTTPError{}
 		assert.ErrorAs(t, err, &e)
 	})
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &announcementsResponse{})
 		e := &sharedapi.DecodeError{}
 		assert.ErrorAs(t, err, &e)
@@ -57,7 +57,7 @@ func TestPost(t *testing.T) {
 			OK bool `json:"ok"`
 		}
 
-		m := &Misskey{opts: &sharedapi.ClientOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
 
 		res := &r{}
 		err := m.post(endpointAnnouncements, &announcementsOpts{}, &res)

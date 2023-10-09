@@ -24,7 +24,7 @@ func (m *Mastodon) getGlobalTimeline(sinceID string, limit int, local bool) ([]*
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointTimelinePublic.URL(m.opts.Server, nil),
+		url:    endpointTimelinePublic.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}
@@ -55,7 +55,7 @@ func (m *Mastodon) GetHomeTimeline(sinceID string, limit int) ([]*sharedapi.Post
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointTimelineHome.URL(m.opts.Server, nil),
+		url:    endpointTimelineHome.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}
@@ -81,7 +81,7 @@ func (m *Mastodon) GetListTimeline(listID, sinceID string, limit int) ([]*shared
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointTimelineList.URL(m.opts.Server, p),
+		url:    endpointTimelineList.URL(m.user.Server, p),
 		q:      q,
 		isAuth: true,
 	}

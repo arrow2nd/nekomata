@@ -55,7 +55,7 @@ func (m *Mastodon) UploadMedia(filename string, src io.Reader) (string, error) {
 	opts := &requestOpts{
 		method:      http.MethodPost,
 		contentType: writer.FormDataContentType(),
-		url:         endpointMediaUploadAsync.URL(m.opts.Server, nil),
+		url:         endpointMediaUploadAsync.URL(m.user.Server, nil),
 		q:           nil,
 		body:        body,
 		isAuth:      true,

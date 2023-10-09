@@ -58,14 +58,14 @@ func TestGetAnnouncements(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("nullのフィールドに対応できるか", func(t *testing.T) {
-		m := misskey.New(&sharedapi.ClientOpts{Server: ts.URL})
+		m := misskey.New(nil, &sharedapi.UserOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Nil(t, res[0].UpdatedAt)
 	})
 
 	t.Run("内容を取得できるか", func(t *testing.T) {
-		m := misskey.New(&sharedapi.ClientOpts{Server: ts.URL})
+		m := misskey.New(nil, &sharedapi.UserOpts{Server: ts.URL})
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)

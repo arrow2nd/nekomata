@@ -17,27 +17,25 @@ var (
 )
 
 type Mastodon struct {
-	opts *sharedapi.ClientOpts
+	client *sharedapi.ClientOpts
+	user   *sharedapi.UserOpts
 }
 
-func New(c *sharedapi.ClientOpts) *Mastodon {
-	client := &Mastodon{
-		opts: c,
+func New(c *sharedapi.ClientOpts, u *sharedapi.UserOpts) *Mastodon {
+	mastodon := &Mastodon{
+		client: c,
+		user:   u,
 	}
 
-	if c.Name == "" {
-		client.opts.Name = defaultName
+	if c == nil || c.Name == "" || c.ID == "" || c.Secret == "" {
+		mastodon.client = &sharedapi.ClientOpts{
+			Name:   defaultName,
+			ID:     defaultID,
+			Secret: defaultSecret,
+		}
 	}
 
-	if c.ID == "" {
-		client.opts.ID = defaultID
-	}
-
-	if c.Secret == "" {
-		client.opts.Secret = defaultSecret
-	}
-
-	return client
+	return mastodon
 }
 
 type requestOpts struct {
@@ -56,7 +54,7 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 	}
 
 	if opts.isAuth {
-		req.Header.Set("Authorization", "Bearer "+m.opts.UserToken)
+		req.Header.Set("Authorization", "Bearer "+m.user.Token)
 	}
 
 	if opts.contentType != "" {

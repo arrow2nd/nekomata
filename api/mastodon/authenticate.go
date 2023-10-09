@@ -37,11 +37,11 @@ func (m *Mastodon) createAuthorizeURL(permissions []string) string {
 	q := url.Values{}
 
 	q.Add("response_type", "code")
-	q.Add("client_id", m.opts.ID)
+	q.Add("client_id", m.client.ID)
 	q.Add("redirect_uri", sharedapi.AuthCallbackURL)
 	q.Add("scope", strings.Join(permissions, " "))
 
-	endpoint := endpointOauthAuthorize.URL(m.opts.Server, nil)
+	endpoint := endpointOauthAuthorize.URL(m.user.Server, nil)
 	return endpoint + "?" + q.Encode()
 }
 
@@ -57,12 +57,12 @@ func (m *Mastodon) recieveToken(code string) (string, error) {
 	q.Add("grant_type", "authorization_code")
 	q.Add("code", code)
 	q.Add("redirect_uri", sharedapi.AuthCallbackURL)
-	q.Add("client_id", m.opts.ID)
-	q.Add("client_secret", m.opts.Secret)
+	q.Add("client_id", m.client.ID)
+	q.Add("client_secret", m.client.Secret)
 
 	opts := &requestOpts{
 		method: http.MethodPost,
-		url:    endpointOauthToken.URL(m.opts.Server, nil),
+		url:    endpointOauthToken.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: false,
 	}

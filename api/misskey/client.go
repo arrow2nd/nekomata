@@ -10,13 +10,15 @@ import (
 )
 
 type Misskey struct {
-	opts *sharedapi.ClientOpts
+	client *sharedapi.ClientOpts
+	user   *sharedapi.UserOpts
 }
 
 // New : 新しいクライアントを生成
-func New(c *sharedapi.ClientOpts) *Misskey {
+func New(c *sharedapi.ClientOpts, u *sharedapi.UserOpts) *Misskey {
 	return &Misskey{
-		opts: c,
+		client: c,
+		user:   u,
 	}
 }
 
@@ -26,7 +28,7 @@ func (m *Misskey) post(endpoint sharedapi.Endpoint, in, out interface{}) error {
 		return fmt.Errorf("create payload error (%s): %w", endpoint, err)
 	}
 
-	endpointURL := endpoint.URL(m.opts.Server, nil)
+	endpointURL := endpoint.URL(m.user.Server, nil)
 	req, err := http.NewRequest(http.MethodPost, endpointURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return fmt.Errorf("create request error (%s): %w", endpoint, err)

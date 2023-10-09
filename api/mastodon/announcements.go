@@ -45,7 +45,7 @@ func (m *Mastodon) GetAnnouncements() ([]*sharedapi.Announcement, error) {
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointAnnouncements.URL(m.opts.Server, nil),
+		url:    endpointAnnouncements.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}

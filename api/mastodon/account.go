@@ -106,7 +106,7 @@ func (r *relationship) ToShared() *sharedapi.Relationship {
 }
 
 func (m *Mastodon) SearchAccounts(query string, limit int) ([]*sharedapi.Account, error) {
-	endpoint := endpointAccountsSearch.URL(m.opts.Server, nil)
+	endpoint := endpointAccountsSearch.URL(m.user.Server, nil)
 
 	q := url.Values{}
 	q.Add("q", query)
@@ -138,7 +138,7 @@ func (m *Mastodon) GetAccount(id string) (*sharedapi.Account, error) {
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointAccounts.URL(m.opts.Server, p),
+		url:    endpointAccounts.URL(m.user.Server, p),
 		q:      nil,
 		isAuth: true,
 	}
@@ -154,7 +154,7 @@ func (m *Mastodon) GetAccount(id string) (*sharedapi.Account, error) {
 func (m *Mastodon) GetLoginAccount() (*sharedapi.Account, error) {
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointVerifyCredentials.URL(m.opts.Server, nil),
+		url:    endpointVerifyCredentials.URL(m.user.Server, nil),
 		q:      nil,
 		isAuth: true,
 	}
@@ -165,7 +165,7 @@ func (m *Mastodon) GetLoginAccount() (*sharedapi.Account, error) {
 	}
 
 	// acctに変換
-	u, err := url.Parse(m.opts.Server)
+	u, err := url.Parse(m.user.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func (m *Mastodon) GetRelationships(ids []string) ([]*sharedapi.Relationship, er
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointRelationships.URL(m.opts.Server, nil),
+		url:    endpointRelationships.URL(m.user.Server, nil),
 		q:      q,
 		isAuth: true,
 	}
@@ -210,7 +210,7 @@ func (m *Mastodon) GetPosts(id string, limit int) ([]*sharedapi.Post, error) {
 
 	opts := &requestOpts{
 		method: http.MethodGet,
-		url:    endpointAccountsStatuses.URL(m.opts.Server, p),
+		url:    endpointAccountsStatuses.URL(m.user.Server, p),
 		q:      q,
 		isAuth: true,
 	}
@@ -229,7 +229,7 @@ func (m *Mastodon) doAccountAction(id string, e sharedapi.Endpoint) (*sharedapi.
 
 	opts := &requestOpts{
 		method: http.MethodPost,
-		url:    e.URL(m.opts.Server, p),
+		url:    e.URL(m.user.Server, p),
 		q:      nil,
 		isAuth: true,
 	}

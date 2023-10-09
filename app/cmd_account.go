@@ -69,11 +69,11 @@ func (a *App) newAccountAddCmd() *cli.Command {
 			}
 
 			// クライアントを作成
-			clientOpts := &sharedapi.ClientOpts{
+			userOpts := &sharedapi.UserOpts{
 				Server: server,
 			}
 
-			client, err := api.NewClient(api.Service(service), clientOpts)
+			client, err := api.NewClient(service, shared.conf.Creds.Clients[service], userOpts)
 			if err != nil {
 				return nil
 			}
@@ -85,7 +85,7 @@ func (a *App) newAccountAddCmd() *cli.Command {
 			}
 
 			// ログインユーザーを取得
-			clientOpts.UserToken = userToken
+			userOpts.Token = userToken
 			user, err := client.GetLoginAccount()
 			if err != nil {
 				return err
@@ -94,7 +94,7 @@ func (a *App) newAccountAddCmd() *cli.Command {
 			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
 
 			// 保存
-			shared.conf.Creds.Add(user.Username, clientOpts)
+			shared.conf.Creds.Add(user.Username, userOpts)
 			return shared.conf.SaveCred()
 		},
 	}

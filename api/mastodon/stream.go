@@ -16,16 +16,16 @@ type event struct {
 }
 
 func (m *Mastodon) handleWebSocket(q url.Values, opts *sharedapi.StreamingTimelineOpts) error {
-	endpoint := endpointStreaming.URL(m.opts.Server, nil)
+	endpoint := endpointStreaming.URL(m.user.Server, nil)
 	url, err := sharedapi.ConvertHttpToWebsocket(endpoint)
 	if err != nil {
 		return err
 	}
 
-	q.Add("access_token", m.opts.UserToken)
+	q.Add("access_token", m.user.Token)
 	url.RawQuery = q.Encode()
 
-	conn, err := websocket.Dial(url.String(), "", m.opts.Server)
+	conn, err := websocket.Dial(url.String(), "", m.user.Server)
 	if err != nil {
 		return err
 	}
