@@ -68,9 +68,12 @@ func (a *App) newAccountSetCmd() *cli.Command {
 			}
 
 			global.conf.Pref.Feature.MainAccount = account
-			fmt.Printf("🐱 Main account is set to %s\n", account)
+			if err := global.conf.SavePreferences(); err != nil {
+				return err
+			}
 
-			return global.conf.SavePreferences()
+			fmt.Printf("🐱 Main account is set to %s\n", account)
+			return nil
 		},
 	}
 }
@@ -135,11 +138,13 @@ func (a *App) newAccountAddCmd() *cli.Command {
 				return err
 			}
 
-			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
-
-			// 保存
 			global.conf.Creds.Add(user.Username, userOpts)
-			return global.conf.SaveCred()
+			if err := global.conf.SaveCred(); err != nil {
+				return err
+			}
+
+			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
+			return nil
 		},
 	}
 }
@@ -169,7 +174,7 @@ If you do not specify an account name, you can select it interactively.`,
 				return err
 			}
 
-			fmt.Printf("successfully deleted: %s\n", f.Arg(0))
+			fmt.Printf("🐱 Deleted: %s\n", f.Arg(0))
 			return nil
 		},
 	}
