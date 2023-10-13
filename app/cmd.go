@@ -13,7 +13,7 @@ func newCmd() *cli.Command {
 		Short: "🐱 Multi-SNS client with TUI",
 		Long:  "TUI social networking client for multiple services",
 		SetFlag: func(f *pflag.FlagSet) {
-			f.StringP("user", "u", global.conf.Pref.Feature.MainUser, "username of the account to log in to")
+			f.StringP("account", "a", global.conf.Pref.Feature.MainAccount, "account to login")
 			f.BoolP("version", "v", false, "Display version")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {

@@ -13,6 +13,28 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// getTargetAccount : 操作対象のアカウントを引数 or 入力から取得
+func (a *App) getTargetAccount(label string, f *pflag.FlagSet) (string, error) {
+	target := f.Arg(0)
+
+	// 指定が無い場合選択
+	if target == "" {
+		prompt := promptui.Select{
+			Label: label,
+			Items: global.conf.Creds.GetAllUsernames(),
+		}
+
+		_, seletecd, err := prompt.Run()
+		if err != nil {
+			return "", err
+		}
+
+		return seletecd, nil
+	}
+
+	return target, nil
+}
+
 func (a *App) newAccountCmd() *cli.Command {
 	cmd := &cli.Command{
 		Name:      "account",
@@ -25,10 +47,32 @@ func (a *App) newAccountCmd() *cli.Command {
 		a.newAccountAddCmd(),
 		a.newAccountDeleteCmd(),
 		a.newAccountListCmd(),
+		a.newAccountSetCmd(),
 		a.newAccountSwitchCmd(),
 	)
 
 	return cmd
+}
+
+func (a *App) newAccountSetCmd() *cli.Command {
+	return &cli.Command{
+		Name:      "set",
+		Shorthand: "s",
+		Short:     "Set main account",
+		Hidden:    !global.isCLI,
+		Validate:  cli.NoArgs(),
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			account, err := a.getTargetAccount("Select the account to be set as main", f)
+			if err != nil {
+				return err
+			}
+
+			global.conf.Pref.Feature.MainAccount = account
+			fmt.Printf("🐱 Main account is set to %s\n", account)
+
+			return global.conf.SavePreferences()
+		},
+	}
 }
 
 func (a *App) newAccountAddCmd() *cli.Command {
@@ -112,24 +156,12 @@ If you do not specify an account name, you can select it interactively.`,
 		Hidden:    !global.isCLI,
 		Validate:  cli.RangeArgs(0, 1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			target := f.Arg(0)
-
-			// 指定が無い場合、ユーザを選択
-			if target == "" {
-				prompt := promptui.Select{
-					Label: "Account to delete",
-					Items: global.conf.Creds.GetAllUsernames(),
-				}
-
-				_, seletecd, err := prompt.Run()
-				if err != nil {
-					return err
-				}
-
-				target = seletecd
+			account, err := a.getTargetAccount("Select the account to delete", f)
+			if err != nil {
+				return err
 			}
 
-			if err := global.conf.Creds.Delete(target); err != nil {
+			if err := global.conf.Creds.Delete(account); err != nil {
 				return err
 			}
 
