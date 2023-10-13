@@ -8,6 +8,7 @@ import (
 
 // Global : 全体共有
 type Global struct {
+	loginUsername         string
 	client                *sharedapi.Client
 	conf                  *config.Config
 	isCLI                 bool

@@ -191,10 +191,9 @@ func (a *App) newAccountListCmd() *cli.Command {
 			for _, u := range global.conf.Creds.GetAllUsernames() {
 				current := " "
 
-				// TODO: メインユーザーなら * を付ける
-				// if u == shared.api.CurrentUser.UserName {
-				// 	current = "*"
-				// }
+				if u == global.loginUsername {
+					current = "*"
+				}
 
 				fmt.Printf(" %s %s\n", current, u)
 			}
