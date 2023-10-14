@@ -10,11 +10,10 @@ import (
 
 func (a *App) newDocsCmd() *cli.Command {
 	cmd := &cli.Command{
-		Name:      "docs",
-		Shorthand: "d",
-		Short:     "Show documentation",
-		Hidden:    global.isCLI,
-		Validate:  cli.NoArgs(),
+		Name:     "docs",
+		Short:    "Show documentation",
+		Hidden:   global.isCLI,
+		Validate: cli.NoArgs(),
 	}
 
 	cmd.AddCommand(a.newDocsKeybindingsCmd())
@@ -117,11 +116,10 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 	text := global + view + page + tweet
 
 	return &cli.Command{
-		Name:      "keybindings",
-		Shorthand: "k",
-		Short:     "Documentation for keybindings",
-		Validate:  cli.NoArgs(),
-		SetFlag:   setUnfocusFlag,
+		Name:     "keybindings",
+		Short:    "Documentation for keybindings",
+		Validate: cli.NoArgs(),
+		SetFlag:  setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newDocsPage("Keybindings", text), !unfocus)

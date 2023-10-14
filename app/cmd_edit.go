@@ -12,11 +12,10 @@ import (
 
 func (a *App) newEditCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "edit",
-		Shorthand: "e",
-		Short:     "Edit configuration file",
-		Hidden:    !global.isCLI,
-		Validate:  cli.NoArgs(),
+		Name:     "edit",
+		Short:    "Edit configuration file",
+		Hidden:   !global.isCLI,
+		Validate: cli.NoArgs(),
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
 		},

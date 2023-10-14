@@ -13,8 +13,6 @@ import (
 type Command struct {
 	// Name : コマンド名
 	Name string
-	// Shorthand : ショートハンド
-	Shorthand string
 	// Short : 短いヘルプ文
 	Short string
 	// Long : 長いヘルプ文
@@ -119,7 +117,7 @@ func find(cmd *Command, args []string) (*Command, []string) {
 	}
 
 	for _, c := range cmd.GetChildren() {
-		if args[0] != c.Name && args[0] != c.Shorthand {
+		if args[0] != c.Name {
 			continue
 		}
 

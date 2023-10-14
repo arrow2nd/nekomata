@@ -26,12 +26,6 @@ func (c *Command) GenHelpText() string {
 	}
 	usage += newLine
 
-	// Shorthand
-	alias := ""
-	if c.Shorthand != "" {
-		alias = fmt.Sprintf("Shorthand:\n  %s%s", c.Shorthand, newLine)
-	}
-
 	// Example
 	example := ""
 	if c.Example != "" {
@@ -60,7 +54,7 @@ func (c *Command) GenHelpText() string {
 	fs := c.NewFlagSet().FlagUsages()
 	flags := fmt.Sprintf("Flags:\n%s", fs)
 
-	return desc + usage + alias + example + cmds + flags
+	return desc + usage + example + cmds + flags
 }
 
 // help : ヘルプを表示

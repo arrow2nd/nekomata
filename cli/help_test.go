@@ -17,7 +17,6 @@ func TestHelp(t *testing.T) {
 	}
 
 	r := newCmd("root")
-	r.Shorthand = "r"
 	r.Short = "root command"
 	r.Example = "example"
 	r.Help = func(c *cli.Command, h string) {
@@ -25,9 +24,6 @@ func TestHelp(t *testing.T) {
 
 Usage:
   root [flags] [command]
-
-Shorthand:
-  r
 
 Example:
   example
