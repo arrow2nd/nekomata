@@ -7,8 +7,8 @@ import (
 
 // Config : 設定
 type Config struct {
-	// Cred : 認証情報
-	Creds *Credentials
+	// Cred : 資格情報
+	Creds *Credential
 	// Pref : 環境設定
 	Pref *Preferences
 	// Style : スタイル定義
@@ -23,15 +23,15 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
-	defaultClients := map[string]*sharedapi.ClientOpts{}
+	defaultClients := map[string]*sharedapi.ClientCredential{}
 	for _, s := range api.GetAllServices() {
-		defaultClients[s] = &sharedapi.ClientOpts{}
+		defaultClients[s] = &sharedapi.ClientCredential{}
 	}
 
 	return &Config{
-		Creds: &Credentials{
+		Creds: &Credential{
 			Clients: defaultClients,
-			Users:   map[string]*sharedapi.UserOpts{},
+			Users:   map[string]*sharedapi.UserCredential{},
 		},
 		Pref:    defaultPreferences(),
 		Style:   defaultStyle(),

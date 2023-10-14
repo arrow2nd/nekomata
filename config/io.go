@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	// FileNameCred : 認証情報のファイル名
+	// FileNameCred : 資格情報のファイル名
 	FileNameCred = ".credentials.toml"
 	// FileNamePref: 環境設定のファイル名
 	FileNamePref = "preferences.toml"
@@ -55,7 +55,7 @@ func GetConfigFileNames() ([]string, error) {
 	return fileNames, nil
 }
 
-// LoadCred : 認証情報を読込む
+// LoadCred : 資格情報を読込む
 func (c *Config) LoadCred() error {
 	if !c.hasFileExists(FileNameCred) {
 		return c.SaveCred()
@@ -88,7 +88,7 @@ func (c *Config) LoadStyle() error {
 	return c.load(fileName, c.Style)
 }
 
-// SaveCred : 認証情報を保存
+// SaveCred : 資格情報を保存
 func (c *Config) SaveCred() error {
 	return c.save(FileNameCred, c.Creds)
 }

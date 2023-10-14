@@ -77,15 +77,17 @@ type Client interface {
 	StreamingListTimeline(opts *StreamingListTimelineOpts) error
 }
 
-// ClientOpts : クライアントの設定
-type ClientOpts struct {
+// ClientCredential : クライアントの資格情報
+type ClientCredential struct {
 	Name   string
 	ID     string
 	Secret string
 }
 
-// UserOpts : ユーザーの設定
-type UserOpts struct {
+// UserCredential : ユーザーの資格情報
+type UserCredential struct {
+	// Server : サービス名
+	Service string
 	// Server : 接続先サーバーのURL
 	Server string
 	// Token : トークン

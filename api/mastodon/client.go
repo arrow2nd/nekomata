@@ -17,18 +17,18 @@ var (
 )
 
 type Mastodon struct {
-	client *sharedapi.ClientOpts
-	user   *sharedapi.UserOpts
+	client *sharedapi.ClientCredential
+	user   *sharedapi.UserCredential
 }
 
-func New(c *sharedapi.ClientOpts, u *sharedapi.UserOpts) *Mastodon {
+func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) *Mastodon {
 	mastodon := &Mastodon{
 		client: c,
 		user:   u,
 	}
 
 	if c == nil || c.Name == "" || c.ID == "" || c.Secret == "" {
-		mastodon.client = &sharedapi.ClientOpts{
+		mastodon.client = &sharedapi.ClientCredential{
 			Name:   defaultName,
 			ID:     defaultID,
 			Secret: defaultSecret,

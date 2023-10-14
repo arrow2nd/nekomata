@@ -37,10 +37,9 @@ func (a *App) getTargetUsername(label string, f *pflag.FlagSet) (string, error) 
 
 func (a *App) newAccountCmd() *cli.Command {
 	cmd := &cli.Command{
-		Name:      "account",
-		Shorthand: "a",
-		Short:     "Manage your account",
-		Validate:  cli.NoArgs(),
+		Name:     "account",
+		Short:    "Manage your account",
+		Validate: cli.NoArgs(),
 	}
 
 	cmd.AddCommand(
@@ -56,11 +55,10 @@ func (a *App) newAccountCmd() *cli.Command {
 
 func (a *App) newAccountAddCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "add",
-		Shorthand: "a",
-		Short:     "Add account",
-		Hidden:    !global.isCLI,
-		Validate:  cli.NoArgs(),
+		Name:     "add",
+		Short:    "Add account",
+		Hidden:   !global.isCLI,
+		Validate: cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// ログインするサービスを選択
 			servicePrompt := promptui.Select{
@@ -91,12 +89,19 @@ func (a *App) newAccountAddCmd() *cli.Command {
 				return err
 			}
 
-			// クライアントを作成
-			userOpts := &sharedapi.UserOpts{
-				Server: server,
+			// クライアントの資格情報を取得
+			clientCred, err := global.conf.Creds.GetClient(service)
+			if err != nil {
+				return err
 			}
 
-			client, err := api.NewClient(service, global.conf.Creds.Clients[service], userOpts)
+			userCred := &sharedapi.UserCredential{
+				Service: service,
+				Server:  server,
+			}
+
+			// クライアントを作成
+			client, err := api.NewClient(clientCred, userCred)
 			if err != nil {
 				return nil
 			}
@@ -108,13 +113,13 @@ func (a *App) newAccountAddCmd() *cli.Command {
 			}
 
 			// ログインユーザーを取得
-			userOpts.Token = userToken
+			userCred.Token = userToken
 			account, err := client.GetLoginAccount()
 			if err != nil {
 				return err
 			}
 
-			global.conf.Creds.Add(account.Username, userOpts)
+			global.conf.Creds.AddUser(account.Username, userCred)
 			if err := global.conf.SaveCred(); err != nil {
 				return err
 			}
@@ -127,9 +132,8 @@ func (a *App) newAccountAddCmd() *cli.Command {
 
 func (a *App) newAccountDeleteCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "delete",
-		Shorthand: "d",
-		Short:     "Delete account",
+		Name:  "delete",
+		Short: "Delete account",
 		Long: `Delete account.
 If you do not specify an account name, you can select it interactively.`,
 		UsageArgs: "[user name]",
@@ -142,7 +146,7 @@ If you do not specify an account name, you can select it interactively.`,
 				return err
 			}
 
-			if err := global.conf.Creds.Delete(username); err != nil {
+			if err := global.conf.Creds.DeleteUser(username); err != nil {
 				return err
 			}
 
@@ -158,11 +162,10 @@ If you do not specify an account name, you can select it interactively.`,
 
 func (a *App) newAccountListCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "list",
-		Shorthand: "l",
-		Short:     "Show accounts that have been added",
-		Hidden:    !global.isCLI,
-		Validate:  cli.NoArgs(),
+		Name:     "list",
+		Short:    "Show accounts that have been added",
+		Hidden:   !global.isCLI,
+		Validate: cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			for _, u := range global.conf.Creds.GetAllUsernames() {
 				current := " "
@@ -182,7 +185,6 @@ func (a *App) newAccountListCmd() *cli.Command {
 func (a *App) newAccountSetCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "set",
-		Shorthand: "s",
 		Short:     "Set main account",
 		UsageArgs: "[user name]",
 		Hidden:    !global.isCLI,
@@ -207,7 +209,6 @@ func (a *App) newAccountSetCmd() *cli.Command {
 func (a *App) newAccountSwitchCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "switch",
-		Shorthand: "s",
 		Short:     "Switch the account to be used",
 		UsageArgs: "[user name]",
 		Example:   "switch arrow2nd",

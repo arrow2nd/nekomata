@@ -36,7 +36,7 @@ func TestRequest(t *testing.T) {
 		} else if checkHeaders {
 			// ヘッダーが正しい
 			checkHeaders = false
-			assert.Contains(t, r.Header.Get("Authorization"), "Bearer", "認証情報がある")
+			assert.Contains(t, r.Header.Get("Authorization"), "Bearer", "資格情報がある")
 			assert.Equal(t, r.Header.Get("Content-Type"), "application/json", "Content-Typeがある")
 		} else {
 			// メソッドが正しい
@@ -57,7 +57,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: "http://localhost:9999",
 			},
 		}
@@ -72,7 +72,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
 		}
@@ -87,7 +87,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
 		}
@@ -107,7 +107,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
 		}
@@ -122,7 +122,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("指定した内容がヘッダーにあるか", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
 		}
@@ -141,7 +141,7 @@ func TestRequest(t *testing.T) {
 
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
 		m := &Mastodon{
-			user: &sharedapi.UserOpts{
+			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
 		}

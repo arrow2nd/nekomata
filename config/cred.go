@@ -6,27 +6,36 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
-// Credentials : 認証情報
-type Credentials struct {
-	// Clients : クライアントのカスタム認証情報
-	Clients map[string]*sharedapi.ClientOpts
+// Credential : 資格情報
+type Credential struct {
+	// Clients : クライアントのカスタム資格情報
+	Clients map[string]*sharedapi.ClientCredential `toml:"clients"`
 	// Users : ユーザー
-	Users map[string]*sharedapi.UserOpts
+	Users map[string]*sharedapi.UserCredential `tonl:"users"`
 }
 
-// Get : 取得
-func (c Credentials) Get(username string) (*sharedapi.UserOpts, error) {
-	for u, cred := range c.Users {
-		if u == username {
-			return cred, nil
-		}
+// GetClient : クライアントの資格情報を取得
+func (c *Credential) GetClient(service string) (*sharedapi.ClientCredential, error) {
+	cred, ok := c.Clients[service]
+	if !ok {
+		return nil, fmt.Errorf("service not found: %s", service)
 	}
 
-	return nil, fmt.Errorf("user not found: %s", username)
+	return cred, nil
 }
 
-// GetAllNames : 全てのユーザ名を取得
-func (c Credentials) GetAllUsernames() []string {
+// GetUser : ユーザーの資格情報を取得
+func (c *Credential) GetUser(username string) (*sharedapi.UserCredential, error) {
+	cred, ok := c.Users[username]
+	if !ok {
+		return nil, fmt.Errorf("user not found: %s", username)
+	}
+
+	return cred, nil
+}
+
+// GetAllUsernames : 全てのユーザ名を取得
+func (c *Credential) GetAllUsernames() []string {
 	ls := []string{}
 
 	for username := range c.Users {
@@ -36,13 +45,13 @@ func (c Credentials) GetAllUsernames() []string {
 	return ls
 }
 
-// Add : 追加
-func (c *Credentials) Add(username string, user *sharedapi.UserOpts) {
+// AddUser : ユーザーの資格情報を追加
+func (c *Credential) AddUser(username string, user *sharedapi.UserCredential) {
 	c.Users[username] = user
 }
 
-// Delete : 削除
-func (c *Credentials) Delete(username string) error {
+// DeleteUser : ユーザーの資格情報を削除
+func (c *Credential) DeleteUser(username string) error {
 	if _, ok := c.Users[username]; !ok {
 		return fmt.Errorf("user not found: %s", username)
 	}

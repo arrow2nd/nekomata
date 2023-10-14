@@ -41,11 +41,20 @@ func (a *App) Init() error {
 		return err
 	}
 
-	_, _, err := a.parseRuntimeArgs()
+	// 実行時の引数をパース
+	isSkipLogin, username, err := a.parseRuntimeArgs()
 	if err != nil {
 		return err
 	}
 
+	// アカウントにログイン
+	if !isSkipLogin {
+		if err := login(username); err != nil {
+			return err
+		}
+	}
+
+	// コマンドを初期化
 	a.initCommands()
 
 	// コマンドラインモードならUIの初期化をスキップ
@@ -117,14 +126,13 @@ func (a *App) loadConfig() error {
 		return err
 	}
 
-	// 認証情報
+	// 資格情報
 	return global.conf.LoadCred()
 }
 
 // parseRuntimeArgs : 実行時の引数をパースして、ログインユーザを返す
 func (a *App) parseRuntimeArgs() (bool, string, error) {
 	f := a.cmd.NewFlagSet()
-
 	f.ParseErrorsWhitelist.UnknownFlags = true
 
 	if err := f.Parse(os.Args[1:]); err != nil {
@@ -133,13 +141,14 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 
 	// ログインをスキップするか
 	arg := f.Arg(0)
-	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
+	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "edit"
 
 	// コマンドラインモードか
 	global.isCLI = f.NArg() > 0 || isSkipLogin
 
-	user, _ := f.GetString("user")
-	return isSkipLogin, user, nil
+	username, _ := f.GetString("username")
+
+	return isSkipLogin, username, nil
 }
 
 // setAppStyles : アプリ全体のスタイルを設定

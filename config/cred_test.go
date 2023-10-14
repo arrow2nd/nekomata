@@ -1,24 +1,23 @@
-package config_test
+package config
 
 import (
 	"testing"
 
 	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/sharedapi"
-	"github.com/arrow2nd/nekomata/config"
 	"github.com/stretchr/testify/assert"
 )
 
-func newTestCredentials() config.Credentials {
-	return config.Credentials{
-		Clients: map[string]*sharedapi.ClientOpts{
+func newTestCredentials() Credential {
+	return Credential{
+		Clients: map[string]*sharedapi.ClientCredential{
 			api.ServiceMastodon: {
 				Name:   "nekomata",
 				ID:     "id_1",
 				Secret: "secret_1",
 			},
 		},
-		Users: map[string]*sharedapi.UserOpts{
+		Users: map[string]*sharedapi.UserCredential{
 			"test_1": {
 				Server: "https://example.com",
 				Token:  "user_token_1",
@@ -34,15 +33,15 @@ func newTestCredentials() config.Credentials {
 func TestCredentialGet(t *testing.T) {
 	c := newTestCredentials()
 
-	t.Run("指定したユーザーの認証情報が取得できる", func(t *testing.T) {
-		got, err := c.Get("test_1")
+	t.Run("指定したユーザーの資格情報が取得できる", func(t *testing.T) {
+		got, err := c.GetUser("test_1")
 
 		assert.NoError(t, err)
 		assert.Equal(t, c.Users["test_1"], got)
 	})
 
 	t.Run("見つからなかった際にエラーが返る", func(t *testing.T) {
-		_, err := c.Get("hoge")
+		_, err := c.GetUser("hoge")
 		assert.EqualError(t, err, "user not found: hoge")
 	})
 }
@@ -62,28 +61,28 @@ func TestWrite(t *testing.T) {
 	t.Run("追加できる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &sharedapi.UserOpts{
+		want := &sharedapi.UserCredential{
 			Server: "test",
 			Token:  "mochi",
 		}
 
-		c.Add("hiori", want)
+		c.AddUser("hiori", want)
 
-		got, _ := c.Get("hiori")
+		got, _ := c.GetUser("hiori")
 		assert.Equal(t, want, got)
 	})
 
 	t.Run("同じIDを持つユーザを上書きできる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		want := &sharedapi.UserOpts{
+		want := &sharedapi.UserCredential{
 			Server: "test",
 			Token:  "mochi",
 		}
 
-		c.Add("test_2", want)
+		c.AddUser("test_2", want)
 
-		got, _ := c.Get("test_2")
+		got, _ := c.GetUser("test_2")
 		assert.Equal(t, want, got)
 	})
 }
@@ -92,17 +91,17 @@ func TestDelete(t *testing.T) {
 	t.Run("削除できる", func(t *testing.T) {
 		c := newTestCredentials()
 
-		err := c.Delete("test_1")
+		err := c.DeleteUser("test_1")
 		assert.NoError(t, err)
 
-		_, err = c.Get("test_1")
+		_, err = c.GetUser("test_1")
 		assert.EqualError(t, err, "user not found: test_1")
 	})
 
 	t.Run("見つからない場合にエラーが返る", func(t *testing.T) {
 		c := newTestCredentials()
 
-		err := c.Delete("hoge")
+		err := c.DeleteUser("hoge")
 		assert.EqualError(t, err, "user not found: hoge")
 	})
 }

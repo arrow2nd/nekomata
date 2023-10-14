@@ -22,13 +22,13 @@ func GetAllServices() []string {
 }
 
 // NewClient : サービスを指定してクライアントを作成
-func NewClient(service string, c *sharedapi.ClientOpts, u *sharedapi.UserOpts) (sharedapi.Client, error) {
-	switch service {
+func NewClient(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (sharedapi.Client, error) {
+	switch u.Service {
 	case ServiceMastodon:
 		return mastodon.New(c, u), nil
 	case ServiceMisskey:
 		return misskey.New(c, u), nil
 	}
 
-	return nil, fmt.Errorf("unsupported services: %s", service)
+	return nil, fmt.Errorf("unsupported services: %s", u.Service)
 }
