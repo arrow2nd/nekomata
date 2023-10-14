@@ -2,8 +2,8 @@ package config
 
 // Feature : 機能
 type Feature struct {
-	// MainAccount : メインで使用するアカウント
-	MainAccount string `toml:"main_account"`
+	// MainUser : メインで使用するユーザー
+	MainUser string `toml:"main_user"`
 	// LoadTweetsLimit : 1度に読み込むツイート数
 	LoadTweetsLimit int `toml:"load_tweets_limit"`
 	// AccmulateTweetsLimit : ツイートの最大蓄積数
@@ -137,7 +137,7 @@ type Preferences struct {
 func defaultPreferences() *Preferences {
 	return &Preferences{
 		Feature: Feature{
-			MainAccount:          "",
+			MainUser:             "",
 			LoadTweetsLimit:      25,
 			AccmulateTweetsLimit: 250,
 			UseExternalEditor:    false,

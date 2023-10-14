@@ -13,12 +13,12 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// getTargetAccount : 操作対象のアカウントを引数 or 入力から取得
-func (a *App) getTargetAccount(label string, f *pflag.FlagSet) (string, error) {
-	target := f.Arg(0)
+// getTargetUsername : 対象のユーザー名を引数 or 入力から取得
+func (a *App) getTargetUsername(label string, f *pflag.FlagSet) (string, error) {
+	username := f.Arg(0)
 
 	// 指定が無い場合選択
-	if target == "" {
+	if username == "" {
 		prompt := promptui.Select{
 			Label: label,
 			Items: global.conf.Creds.GetAllUsernames(),
@@ -32,7 +32,7 @@ func (a *App) getTargetAccount(label string, f *pflag.FlagSet) (string, error) {
 		return seletecd, nil
 	}
 
-	return target, nil
+	return username, nil
 }
 
 func (a *App) newAccountCmd() *cli.Command {
@@ -52,30 +52,6 @@ func (a *App) newAccountCmd() *cli.Command {
 	)
 
 	return cmd
-}
-
-func (a *App) newAccountSetCmd() *cli.Command {
-	return &cli.Command{
-		Name:      "set",
-		Shorthand: "s",
-		Short:     "Set main account",
-		Hidden:    !global.isCLI,
-		Validate:  cli.NoArgs(),
-		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			account, err := a.getTargetAccount("Select the account to be set as main", f)
-			if err != nil {
-				return err
-			}
-
-			global.conf.Pref.Feature.MainAccount = account
-			if err := global.conf.SavePreferences(); err != nil {
-				return err
-			}
-
-			fmt.Printf("🐱 Main account is set to %s\n", account)
-			return nil
-		},
-	}
 }
 
 func (a *App) newAccountAddCmd() *cli.Command {
@@ -133,17 +109,17 @@ func (a *App) newAccountAddCmd() *cli.Command {
 
 			// ログインユーザーを取得
 			userOpts.Token = userToken
-			user, err := client.GetLoginAccount()
+			account, err := client.GetLoginAccount()
 			if err != nil {
 				return err
 			}
 
-			global.conf.Creds.Add(user.Username, userOpts)
+			global.conf.Creds.Add(account.Username, userOpts)
 			if err := global.conf.SaveCred(); err != nil {
 				return err
 			}
 
-			fmt.Printf("🐱 Logged in: %s (%s)\n", user.DisplayName, user.Username)
+			fmt.Printf("🐱 Logged in: %s (%s)\n", account.DisplayName, account.Username)
 			return nil
 		},
 	}
@@ -161,12 +137,12 @@ If you do not specify an account name, you can select it interactively.`,
 		Hidden:    !global.isCLI,
 		Validate:  cli.RangeArgs(0, 1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			account, err := a.getTargetAccount("Select the account to delete", f)
+			username, err := a.getTargetUsername("Select the account to delete", f)
 			if err != nil {
 				return err
 			}
 
-			if err := global.conf.Creds.Delete(account); err != nil {
+			if err := global.conf.Creds.Delete(username); err != nil {
 				return err
 			}
 
@@ -198,6 +174,31 @@ func (a *App) newAccountListCmd() *cli.Command {
 				fmt.Printf(" %s %s\n", current, u)
 			}
 
+			return nil
+		},
+	}
+}
+
+func (a *App) newAccountSetCmd() *cli.Command {
+	return &cli.Command{
+		Name:      "set",
+		Shorthand: "s",
+		Short:     "Set main account",
+		UsageArgs: "[user name]",
+		Hidden:    !global.isCLI,
+		Validate:  cli.NoArgs(),
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			username, err := a.getTargetUsername("Select the account to be set as main", f)
+			if err != nil {
+				return err
+			}
+
+			global.conf.Pref.Feature.MainUser = username
+			if err := global.conf.SavePreferences(); err != nil {
+				return err
+			}
+
+			fmt.Printf("🐱 Set up for main account: %s\n", username)
 			return nil
 		},
 	}
