@@ -13,10 +13,10 @@ import (
 
 func TestCreateAuthorizeURL(t *testing.T) {
 	m := &Misskey{
-		client: &sharedapi.ClientOpts{
+		client: &sharedapi.ClientCredential{
 			Name: "test_app",
 		},
-		user: &sharedapi.UserOpts{
+		user: &sharedapi.UserCredential{
 			Server: "https://example.com",
 		},
 	}
@@ -52,13 +52,13 @@ func TestRecieveToken(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("URL期限切れ", func(t *testing.T) {
-		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserCredential{Server: ts.URL}}
 		_, err := m.recieveToken("SESSION_ID")
 		assert.ErrorContains(t, err, "get token error")
 	})
 
 	t.Run("アクセストークンが取得できるか", func(t *testing.T) {
-		m := &Misskey{user: &sharedapi.UserOpts{Server: ts.URL}}
+		m := &Misskey{user: &sharedapi.UserCredential{Server: ts.URL}}
 		token, err := m.recieveToken("SESSION_ID")
 		assert.NoError(t, err)
 		assert.Equal(t, "USER_TOKEN", token)

@@ -12,10 +12,10 @@ import (
 
 func TestCreateAuthorizeURL(t *testing.T) {
 	m := &Mastodon{
-		client: &sharedapi.ClientOpts{
+		client: &sharedapi.ClientCredential{
 			ID: "hoge",
 		},
-		user: &sharedapi.UserOpts{
+		user: &sharedapi.UserCredential{
 			Server: "https://example.com",
 		},
 	}
@@ -36,12 +36,12 @@ func TestRecieveToken(t *testing.T) {
 	defer ts.Close()
 
 	m := &Mastodon{
-		client: &sharedapi.ClientOpts{
+		client: &sharedapi.ClientCredential{
 			Name:   "test",
 			ID:     "id",
 			Secret: "secret",
 		},
-		user: &sharedapi.UserOpts{
+		user: &sharedapi.UserCredential{
 			Server: ts.URL,
 		},
 	}

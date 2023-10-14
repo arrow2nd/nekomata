@@ -26,7 +26,7 @@ func TestGetGlobalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "false")
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserOpts{Server: ts.URL})
+	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
 	posts, err := m.GetGlobalTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -37,7 +37,7 @@ func TestGetLocalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "true")
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserOpts{Server: ts.URL})
+	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
 	posts, err := m.GetLocalTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -55,7 +55,7 @@ func TestGetHomeTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserOpts{Server: ts.URL})
+	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
 	posts, err := m.GetHomeTimeline("0", 5)
 
 	assert.NoError(t, err)
@@ -74,7 +74,7 @@ func TestGetListTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserOpts{Server: ts.URL})
+	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
 	posts, err := m.GetListTimeline("12345", "0", 5)
 
 	assert.NoError(t, err)

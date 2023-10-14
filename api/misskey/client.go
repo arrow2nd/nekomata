@@ -10,12 +10,12 @@ import (
 )
 
 type Misskey struct {
-	client *sharedapi.ClientOpts
-	user   *sharedapi.UserOpts
+	client *sharedapi.ClientCredential
+	user   *sharedapi.UserCredential
 }
 
 // New : 新しいクライアントを生成
-func New(c *sharedapi.ClientOpts, u *sharedapi.UserOpts) *Misskey {
+func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) *Misskey {
 	return &Misskey{
 		client: c,
 		user:   u,
