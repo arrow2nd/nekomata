@@ -1,13 +1,8 @@
 package app
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"strings"
 
-	"github.com/arrow2nd/nekomata/api"
-	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/cli"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/pflag"
@@ -59,69 +54,20 @@ func (a *App) newAccountAddCmd() *cli.Command {
 		Short:    "Add account",
 		Hidden:   !global.isCLI,
 		Validate: cli.NoArgs(),
+		SetFlag: func(f *pflag.FlagSet) {
+			f.BoolP("main", "m", false, "set as main user")
+		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			// ログインするサービスを選択
-			servicePrompt := promptui.Select{
-				Label: "Service",
-				Items: api.GetAllServices(),
-			}
-
-			_, service, err := servicePrompt.Run()
+			account, err := authenticateAndSaveCredential()
 			if err != nil {
 				return err
 			}
 
-			// サービスのドメインを入力
-			domainPrompt := promptui.Prompt{
-				Label:     "Domain",
-				Default:   "https://",
-				AllowEdit: true,
-				Validate: func(u string) error {
-					if !strings.HasPrefix(u, "http") {
-						return errors.New("must begin with http")
-					}
-					return nil
-				},
-			}
-
-			server, err := domainPrompt.Run()
-			if err != nil {
-				return err
-			}
-
-			// クライアントの資格情報を取得
-			clientCred, err := global.conf.Creds.GetClient(service)
-			if err != nil {
-				return err
-			}
-
-			userCred := &sharedapi.UserCredential{
-				Service: service,
-				Server:  server,
-			}
-
-			// クライアントを作成
-			client, err := api.NewClient(clientCred, userCred)
-			if err != nil {
-				return nil
-			}
-
-			// アプリケーション認証
-			userToken, err := client.Authenticate(os.Stdout)
-			if err != nil {
-				return err
-			}
-
-			// ログインユーザーを取得
-			userCred.Token = userToken
-			account, err := client.GetLoginAccount()
-			if err != nil {
-				return err
-			}
-
-			global.conf.Creds.AddUser(account.Username, userCred)
-			if err := global.conf.SaveCred(); err != nil {
-				return err
+			// メインユーザーに設定
+			if main, _ := f.GetBool("main"); main {
+				if err := global.conf.SavePreferences(); err != nil {
+					return err
+				}
 			}
 
 			fmt.Printf("🐱 Logged in: %s (%s)\n", account.DisplayName, account.Username)
