@@ -1,5 +1,7 @@
 package config
 
+const PreferencesVersion = 1
+
 // Feature : 機能
 type Feature struct {
 	// MainUser : メインで使用するユーザー
@@ -70,28 +72,34 @@ type Layout struct {
 
 // Text : 表示テキスト
 type Text struct {
-	// Like : いいねの単位
-	Like string `toml:"like"`
-	// Retweet : リツイートの単位
-	Retweet string `toml:"retweet"`
+	// Repost : リポストの単位
+	Repost string `toml:"repost"`
 	// Loading : 読み込み中
 	Loading string `toml:"loading"`
-	// NoTweets : ツイート無し
-	NoTweets string `toml:"no_tweets"`
-	// TweetTextAreaHint : ツイートエリアのヒント
-	TweetTextAreaHint string `toml:"tweet_textarea_hint"`
-	// TabHome : ホームタブ
+	// NoPosts : ポスト無し
+	NoPosts string `toml:"no_posts"`
+	// PostTextAreaHint : テキストエリアのヒント
+	PostTextAreaHint string `toml:"post_textarea_hint"`
+	// TabHome : ホームタイムラインタブ
 	TabHome string `toml:"tab_home"`
-	// TabMention : メンションタブ
-	TabMention string `toml:"tab_mention"`
+	// TabGlobal : グローバスタイムラインタブ
+	TabGlobal string `toml:"tab_global"`
+	// TabLocal : ローカルタイムラインタブ
+	TabLocal string `toml:"tab_local"`
 	// TabList : リストタブ
 	TabList string `toml:"tab_list"`
+	// TabMention : メンションタブ
+	TabMention string `toml:"tab_mention"`
+	// TabBookmark : ブックマークタブ
+	TabBookmark string `toml:"tab_bookmark"`
 	// TabUser : ユーザタブ
 	TabUser string `toml:"tab_user"`
 	// TabSearch : 検索タブ
 	TabSearch string `toml:"tab_search"`
 	// TabLikes : いいねリストタブ
 	TabLikes string `toml:"tab_likes"`
+	// TabAnnouncement : アナウンスタブ
+	TabAnnouncement string `toml:"announcement_home"`
 	// TabDocs : ドキュメントタブ
 	TabDocs string `toml:"tab_docs"`
 }
@@ -124,6 +132,7 @@ type Keybindings struct {
 
 // Preferences : 環境設定
 type Preferences struct {
+	Version     int             `toml:"version"`
 	Feature     Feature         `toml:"feature"`
 	Confirm     map[string]bool `toml:"comfirm"`
 	Appearance  Appearancene    `toml:"appearance"`
@@ -136,6 +145,7 @@ type Preferences struct {
 // defaultPreferences : デフォルト設定
 func defaultPreferences() *Preferences {
 	return &Preferences{
+		Version: PreferencesVersion,
 		Feature: Feature{
 			MainUser:             "",
 			LoadTweetsLimit:      25,
@@ -144,7 +154,6 @@ func defaultPreferences() *Preferences {
 			IsLocaleCJK:          true,
 			StartupCmds: []string{
 				"home",
-				"mention --unfocus",
 			},
 		},
 		Confirm: map[string]bool{
@@ -189,18 +198,21 @@ func defaultPreferences() *Preferences {
 			UserInfo:        "{name} {username} {badge}",
 		},
 		Text: Text{
-			Like:              "Like",
-			Retweet:           "RT",
-			Loading:           "Loading...",
-			NoTweets:          "No tweets ฅ^-ω-^ฅ",
-			TweetTextAreaHint: "What's happening?",
-			TabHome:           "Home",
-			TabMention:        "Mention",
-			TabList:           "List: {name}",
-			TabUser:           "User: @{name}",
-			TabSearch:         "Search: {query}",
-			TabLikes:          "Likes: @{name}",
-			TabDocs:           "Docs: {name}",
+			Repost:           "RP",
+			Loading:          "Loading...",
+			NoPosts:          "No posts ฅ^-ω-^ฅ",
+			PostTextAreaHint: "Meow",
+			TabHome:          "Home",
+			TabGlobal:        "Global",
+			TabLocal:         "Local",
+			TabList:          "List: {name}",
+			TabMention:       "Mention",
+			TabBookmark:      "Bookmark",
+			TabUser:          "User: @{name}",
+			TabSearch:        "Search: {query}",
+			TabLikes:         "Likes: @{name}",
+			TabAnnouncement:  "Announcement",
+			TabDocs:          "Docs: {name}",
 		},
 		Icon: Icon{
 			Geo:      "📍",

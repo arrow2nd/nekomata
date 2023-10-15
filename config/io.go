@@ -72,7 +72,15 @@ func (c *Config) LoadPreferences() error {
 		}
 	}
 
-	return c.load(FileNamePref, c.Pref)
+	if err := c.load(FileNamePref, c.Pref); err != nil {
+		return err
+	}
+
+	if c.Pref.Version != PreferencesVersion {
+		return c.SavePreferences()
+	}
+
+	return nil
 }
 
 // LoadStyle : スタイル定義を読込む
