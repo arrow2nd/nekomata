@@ -79,15 +79,23 @@ func TestGetAnnouncements(t *testing.T) {
 
 	defer ts.Close()
 
-	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+	clientCred := &sharedapi.ClientCredential{
+		Name:   "hoge",
+		ID:     "huga",
+		Secret: "piyo",
+	}
 
-		_, err := m.GetAnnouncements()
+	t.Run("エラーが返る", func(t *testing.T) {
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
+
+		_, err = m.GetAnnouncements()
 		assert.Error(t, err)
 	})
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		res, err := m.GetAnnouncements()
 		assert.NoError(t, err)

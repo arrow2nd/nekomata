@@ -11,6 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var clientCred = &sharedapi.ClientCredential{
+	Name:   "hoge",
+	ID:     "fuga",
+	Secret: "piyo",
+}
+
 func createTestServer(t *testing.T, local string) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "0", r.FormValue("since_id"))
@@ -26,10 +32,12 @@ func TestGetGlobalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "false")
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	posts, err := m.GetGlobalTimeline("0", 5)
-
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	posts, err := m.GetGlobalTimeline("0", 5)
+	assert.NoError(t, err)
+
 	assert.Len(t, posts, 1)
 }
 
@@ -37,10 +45,12 @@ func TestGetLocalTimeLine(t *testing.T) {
 	ts := createTestServer(t, "true")
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	posts, err := m.GetLocalTimeline("0", 5)
-
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	posts, err := m.GetLocalTimeline("0", 5)
+	assert.NoError(t, err)
+
 	assert.Len(t, posts, 1)
 }
 
@@ -55,10 +65,12 @@ func TestGetHomeTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	posts, err := m.GetHomeTimeline("0", 5)
-
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	posts, err := m.GetHomeTimeline("0", 5)
+	assert.NoError(t, err)
+
 	assert.Len(t, posts, 1)
 }
 
@@ -74,9 +86,11 @@ func TestGetListTimeLine(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	posts, err := m.GetListTimeline("12345", "0", 5)
-
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	posts, err := m.GetListTimeline("12345", "0", 5)
+	assert.NoError(t, err)
+
 	assert.Len(t, posts, 1)
 }

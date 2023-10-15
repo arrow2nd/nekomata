@@ -94,6 +94,12 @@ var wantRelationship = sharedapi.Relationship{
 	Requested:  false,
 }
 
+var clientCred = &sharedapi.ClientCredential{
+	Name:   "hoge",
+	ID:     "fuga",
+	Secret: "piyo",
+}
+
 func createMockServer(t *testing.T, id, res string) *httptest.Server {
 	isError := false
 
@@ -169,7 +175,8 @@ func TestSearchAccounts(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.SearchAccounts("hoge", 1)
 		assert.NoError(t, err)
@@ -178,9 +185,10 @@ func TestSearchAccounts(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.SearchAccounts("hoge", 1)
+		_, err = m.SearchAccounts("hoge", 1)
 		assert.Error(t, err)
 	})
 }
@@ -191,7 +199,8 @@ func TestGetAccount(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.GetAccount(id)
 		assert.NoError(t, err)
@@ -200,9 +209,10 @@ func TestGetAccount(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.GetAccount(id)
+		_, err = m.GetAccount(id)
 		assert.Error(t, err)
 	})
 }
@@ -227,7 +237,8 @@ func TestGetRelationships(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.GetRelationships([]string{"1234", "5678"})
 		assert.NoError(t, err)
@@ -237,9 +248,10 @@ func TestGetRelationships(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.GetRelationships([]string{""})
+		_, err = m.GetRelationships([]string{""})
 		assert.Error(t, err)
 	})
 }
@@ -250,7 +262,8 @@ func TestGetPosts(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("取得できる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		res, err := m.GetPosts(id, 0)
 		assert.NoError(t, err)
@@ -260,9 +273,10 @@ func TestGetPosts(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.GetPosts(id, 0)
+		_, err = m.GetPosts(id, 0)
 		assert.Error(t, err)
 	})
 }
@@ -273,7 +287,8 @@ func TestFollow(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("フォローできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Follow(id)
 		assert.NoError(t, err)
@@ -282,9 +297,10 @@ func TestFollow(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Follow(id)
+		_, err = m.Follow(id)
 		assert.Error(t, err)
 	})
 }
@@ -295,7 +311,8 @@ func TestUnfollow(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンフォローできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Unfollow(id)
 		assert.NoError(t, err)
@@ -304,9 +321,10 @@ func TestUnfollow(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Unfollow(id)
+		_, err = m.Unfollow(id)
 		assert.Error(t, err)
 	})
 }
@@ -317,7 +335,8 @@ func TestBlock(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ブロックできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Block(id)
 		assert.NoError(t, err)
@@ -326,9 +345,10 @@ func TestBlock(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Block(id)
+		_, err = m.Block(id)
 		assert.Error(t, err)
 	})
 }
@@ -339,7 +359,8 @@ func TestUnblock(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンブロックできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Unblock(id)
 		assert.NoError(t, err)
@@ -348,9 +369,10 @@ func TestUnblock(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Unblock(id)
+		_, err = m.Unblock(id)
 		assert.Error(t, err)
 	})
 }
@@ -361,7 +383,8 @@ func TestMute(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ミュートできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Mute(id)
 		assert.NoError(t, err)
@@ -370,9 +393,10 @@ func TestMute(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Mute(id)
+		_, err = m.Mute(id)
 		assert.Error(t, err)
 	})
 }
@@ -383,7 +407,8 @@ func TestUnmute(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンミュートできる", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
 		r, err := m.Unmute(id)
 		assert.NoError(t, err)
@@ -392,9 +417,10 @@ func TestUnmute(t *testing.T) {
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := New(nil, &sharedapi.UserCredential{Server: ts.URL})
+		m, err := New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
-		_, err := m.Unmute(id)
+		_, err = m.Unmute(id)
 		assert.Error(t, err)
 	})
 }

@@ -34,9 +34,17 @@ func TestUploadMedia(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	id, err := m.UploadMedia(filepath.Base(raw.Name()), raw)
+	clientCred := &sharedapi.ClientCredential{
+		Name:   "hoge",
+		ID:     "fuga",
+		Secret: "piyo",
+	}
 
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	id, err := m.UploadMedia(filepath.Base(raw.Name()), raw)
+	assert.NoError(t, err)
+
 	assert.Equal(t, "12345", id)
 }

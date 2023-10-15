@@ -116,9 +116,10 @@ func TestCreatePost(t *testing.T) {
 	postVisibility := "public"
 	opts := &sharedapi.CreatePostOpts{Text: postText, Visibility: postVisibility}
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	res, err := m.CreatePost(opts)
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+	assert.NoError(t, err)
 
+	res, err := m.CreatePost(opts)
 	assert.NoError(t, err)
 
 	t.Run("データを送信できているか", func(t *testing.T) {
@@ -146,10 +147,12 @@ func TestReplyPost(t *testing.T) {
 	replyToId := "012345"
 	opts := &sharedapi.CreatePostOpts{Text: "a", Visibility: "public"}
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	_, err := m.ReplyPost(replyToId, opts)
-
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
+
+	_, err = m.ReplyPost(replyToId, opts)
+	assert.NoError(t, err)
+
 	assert.Equal(t, replyToId, <-serverReceivedId, "返信先のIDがパラメータに含まれているか")
 }
 
@@ -163,9 +166,10 @@ func TestDeletePost(t *testing.T) {
 
 	defer ts.Close()
 
-	m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-	_, err := m.DeletePost(id)
+	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+	assert.NoError(t, err)
 
+	_, err = m.DeletePost(id)
 	assert.NoError(t, err)
 }
 
@@ -175,17 +179,20 @@ func TestReaction(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リアクションできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Reaction(id, "")
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Reaction(id, "")
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Reaction(id, "")
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
+		_, err = m.Reaction(id, "")
 		assert.Error(t, err)
 	})
 }
@@ -196,16 +203,20 @@ func TestUnreaction(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンリアクションできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Unreaction(id)
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Unreaction(id)
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Unreaction(id)
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
+
+		_, err = m.Unreaction(id)
 		assert.Error(t, err)
 	})
 }
@@ -216,17 +227,20 @@ func TestRepost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("リポストできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Repost(id)
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Repost(id)
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Repost(id)
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
+		_, err = m.Repost(id)
 		assert.Error(t, err)
 	})
 }
@@ -237,17 +251,20 @@ func TestUnrepost(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンリポストできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Unrepost(id)
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Unrepost(id)
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Unrepost(id)
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
+		_, err = m.Unrepost(id)
 		assert.Error(t, err)
 	})
 }
@@ -258,17 +275,20 @@ func TestBookmark(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("ブックマークできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Bookmark(id)
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Bookmark(id)
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Bookmark(id)
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
+		_, err = m.Bookmark(id)
 		assert.Error(t, err)
 	})
 }
@@ -279,17 +299,20 @@ func TestUnbookmark(t *testing.T) {
 	defer ts.Close()
 
 	t.Run("アンブックマークできる", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		res, err := m.Unbookmark(id)
-
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
+
+		res, err := m.Unbookmark(id)
+		assert.NoError(t, err)
+
 		assert.NotNil(t, res)
 	})
 
 	t.Run("エラーが返る", func(t *testing.T) {
-		m := mastodon.New(nil, &sharedapi.UserCredential{Server: ts.URL})
-		_, err := m.Unbookmark(id)
+		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
+		assert.NoError(t, err)
 
+		_, err = m.Unbookmark(id)
 		assert.Error(t, err)
 	})
 }
