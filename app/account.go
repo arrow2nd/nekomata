@@ -98,7 +98,7 @@ func authenticateAndSaveCredential() (*sharedapi.Account, error) {
 	// クライアントを作成
 	client, err := api.NewClient(clientCred, userCred)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	// アプリケーション認証

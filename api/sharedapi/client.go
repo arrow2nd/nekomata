@@ -84,6 +84,11 @@ type ClientCredential struct {
 	Secret string
 }
 
+// HasMissingFields : 構造体のフィールドに欠けがあるか
+func (c *ClientCredential) HasMissingFields() bool {
+	return c.Name == "" || c.ID == "" || c.Secret == ""
+}
+
 // UserCredential : ユーザーの資格情報
 type UserCredential struct {
 	// Server : サービス名

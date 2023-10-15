@@ -15,11 +15,11 @@ type Misskey struct {
 }
 
 // New : 新しいクライアントを生成
-func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) *Misskey {
+func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (*Misskey, error) {
 	return &Misskey{
 		client: c,
 		user:   u,
-	}
+	}, nil
 }
 
 func (m *Misskey) post(endpoint sharedapi.Endpoint, in, out interface{}) error {

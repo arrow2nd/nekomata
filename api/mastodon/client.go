@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,9 +12,11 @@ import (
 )
 
 var (
-	defaultName   = ""
-	defaultID     = ""
-	defaultSecret = ""
+	defaultClientCredential = sharedapi.ClientCredential{
+		Name:   "",
+		ID:     "",
+		Secret: "",
+	}
 )
 
 type Mastodon struct {
@@ -21,21 +24,20 @@ type Mastodon struct {
 	user   *sharedapi.UserCredential
 }
 
-func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) *Mastodon {
+func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (*Mastodon, error) {
 	mastodon := &Mastodon{
 		client: c,
 		user:   u,
 	}
 
-	if c == nil || c.Name == "" || c.ID == "" || c.Secret == "" {
-		mastodon.client = &sharedapi.ClientCredential{
-			Name:   defaultName,
-			ID:     defaultID,
-			Secret: defaultSecret,
+	if c == nil || c.HasMissingFields() {
+		if defaultClientCredential.HasMissingFields() {
+			return nil, errors.New("client credentials are missing. please edit `.credentials.toml` with `nekomata edit`")
 		}
+		mastodon.client = &defaultClientCredential
 	}
 
-	return mastodon
+	return mastodon, nil
 }
 
 type requestOpts struct {
