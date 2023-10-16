@@ -29,14 +29,15 @@ func (a *App) newHomeTimelineCmd() *cli.Command {
 				return err
 			}
 
-			// unfocus, _ := f.GetBool("unfocus")
-			if err := a.view.AddPage(page, false); err != nil {
+			unfocus, _ := f.GetBool("unfocus")
+			if err := a.view.AddPage(page, !unfocus); err != nil {
 				return err
 			}
 
-			// go func() {
-			// 	page.Load()
-			// }()
+			go func() {
+				page.Load()
+				a.app.Draw()
+			}()
 
 			return nil
 		},

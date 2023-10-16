@@ -97,7 +97,7 @@ func (a *App) Init() error {
 		SetBorders(false).
 		AddItem(a.view.tabBar, 0, 0, 1, 1, 0, 0, false).
 		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
-		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
+		// AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
 		AddItem(a.view.flex, 1, 0, 1, 1, 0, 0, true)
 
 	a.app.SetRoot(layout, true)

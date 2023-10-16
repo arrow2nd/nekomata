@@ -35,10 +35,6 @@ func newPostsView() (*posts, error) {
 		SetWrap(true).
 		SetRegions(true)
 
-	p.view.SetHighlightedFunc(func(_, _, _ []string) {
-		// p.view.ScrollToHighlight()
-	})
-
 	if err := p.setKeybindings(); err != nil {
 		return nil, err
 	}
@@ -137,6 +133,7 @@ func (p *posts) scrollToPost(i int) {
 	}
 
 	p.view.Highlight(createPostTag(i))
+	p.view.ScrollToHighlight()
 }
 
 // GetPostsCount : ポスト数を取得
@@ -247,7 +244,7 @@ func (p *posts) DeletePost(id string) {
 func (p *posts) draw(cursorPos int) {
 	// icon := global.conf.Pref.Icon
 	appearance := global.conf.Pref.Appearance
-	// width := getWindowWidth()
+	width := getWindowWidth()
 
 	p.view.
 		SetTextAlign(tview.AlignLeft).
@@ -289,6 +286,7 @@ func (p *posts) draw(cursorPos int) {
 		// }
 
 		// fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
+		fmt.Fprintf(p.view, `["%s"]%s[""]`+"\n", createPostTag(i), post.Author.Username)
 		fmt.Fprintf(p.view, "%d : %s\n", i, post.Text)
 
 		// 引用元ツイートを表示
@@ -306,9 +304,9 @@ func (p *posts) draw(cursorPos int) {
 		}
 
 		// 末尾のツイート以外ならセパレータを挿入
-		// if i < t.GetTweetsCount()-1 {
-		// 	fmt.Fprintln(t.view, createSeparator(appearance.TweetSeparator, width))
-		// }
+		if i < p.GetPostsCount()-1 {
+			fmt.Fprintln(p.view, createSeparator(appearance.TweetSeparator, width))
+		}
 	}
 
 	p.scrollToPost(cursorPos)

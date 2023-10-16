@@ -29,11 +29,15 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 		return nil, err
 	}
 
-	return &timelinePage{
+	page := &timelinePage{
 		basePage: newBasePage(tabName),
 		kind:     kind,
 		posts:    postsView,
-	}, nil
+	}
+
+	page.SetFrame(postsView.view)
+
+	return page, nil
 }
 
 func (t *timelinePage) Load() {
