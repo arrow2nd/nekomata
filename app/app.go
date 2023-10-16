@@ -253,6 +253,7 @@ func (a *App) initCommands() {
 		a.newQuitCmd(),
 		a.newDocsCmd(),
 		a.newEditCmd(),
+		a.newTimelineCmd(),
 	)
 
 	if global.isCLI {

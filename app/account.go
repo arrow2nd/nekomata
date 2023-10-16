@@ -43,7 +43,7 @@ func login(username string) error {
 		return err
 	}
 
-	global.client = &client
+	global.client = client
 	global.loginUsername = username
 
 	return nil

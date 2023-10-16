@@ -36,7 +36,7 @@ func newPostsView() (*posts, error) {
 		SetRegions(true)
 
 	p.view.SetHighlightedFunc(func(_, _, _ []string) {
-		p.view.ScrollToHighlight()
+		// p.view.ScrollToHighlight()
 	})
 
 	if err := p.setKeybindings(); err != nil {
@@ -69,60 +69,42 @@ func (p *posts) setKeybindings() error {
 			lastIndex := p.GetPostsCount() - 1
 			p.scrollToPost(lastIndex)
 		},
-		// config.ActionTweetLike: func() {
-		// 	p.actionForTweet(tweetActionLike)
-		// },
-		// config.ActionTweetUnlike: func() {
-		// 	p.actionForTweet(tweetActionUnlike)
-		// },
-		// config.ActionTweetRetweet: func() {
-		// 	p.actionForTweet(tweetActionRetweet)
-		// },
-		// config.ActionTweetUnretweet: func() {
-		// 	p.actionForTweet(tweetActionUnretweet)
-		// },
-		// config.ActionTweetDelete: func() {
-		// 	p.actionForTweet(tweetActionDelete)
-		// },
-		// config.ActionUserFollow: func() {
-		// 	p.actionForUser(userActionFollow)
-		// },
-		// config.ActionUserUnfollow: func() {
-		// 	p.actionForUser(userActionUnfollow)
-		// },
-		// config.ActionUserBlock: func() {
-		// 	p.actionForUser(userActionBlock)
-		// },
-		// config.ActionUserUnblock: func() {
-		// 	p.actionForUser(userActionUnblock)
-		// },
-		// config.ActionUserMute: func() {
-		// 	p.actionForUser(userActionMute)
-		// },
-		// config.ActionUserUnmute: func() {
-		// 	p.actionForUser(userActionUnmute)
-		// },
-		// config.ActionOpenUserPage: func() {
-		// 	p.openUserPage()
-		// },
-		// config.ActionOpenUserLikes: func() {
-		// 	p.openUserLikes()
-		// },
-		// config.ActionTweet: func() {
-		// 	shared.RequestExecCommand("tweet")
-		// },
-		// config.ActionQuote: func() {
-		// 	p.insertQuoteCommand()
-		// },
-		// config.ActionReply: func() {
-		// 	p.insertReplyCommand()
-		// },
-		// config.ActionOpenBrowser: func() {
-		// 	p.openBrower()
-		// },
-		// config.ActionCopyUrl: func() {
-		// 	p.copyLinkToClipBoard()
-		// },
+		config.ActionTweetLike: func() {
+		},
+		config.ActionTweetUnlike: func() {
+		},
+		config.ActionTweetRetweet: func() {
+		},
+		config.ActionTweetUnretweet: func() {
+		},
+		config.ActionTweetDelete: func() {
+		},
+		config.ActionUserFollow: func() {
+		},
+		config.ActionUserUnfollow: func() {
+		},
+		config.ActionUserBlock: func() {
+		},
+		config.ActionUserUnblock: func() {
+		},
+		config.ActionUserMute: func() {
+		},
+		config.ActionUserUnmute: func() {
+		},
+		config.ActionOpenUserPage: func() {
+		},
+		config.ActionOpenUserLikes: func() {
+		},
+		config.ActionTweet: func() {
+		},
+		config.ActionQuote: func() {
+		},
+		config.ActionReply: func() {
+		},
+		config.ActionOpenBrowser: func() {
+		},
+		config.ActionCopyUrl: func() {
+		},
 	}
 
 	c, err := global.conf.Pref.Keybindings.TweetView.MappingEventHandler(handlers)
@@ -168,6 +150,15 @@ func (p *posts) GetPostsCount() int {
 	return c
 }
 
+// GetSinceId : 最新のポストのIDを取得
+func (p *posts) GetSinceId() string {
+	if len(p.contents) == 0 {
+		return ""
+	}
+
+	return p.contents[0].ID
+}
+
 // createPostTag : ポスト追跡用のタグを作成
 func createPostTag(id int) string {
 	return fmt.Sprintf("post_%d", id)
@@ -193,7 +184,7 @@ func (p *posts) Update(posts []*sharedapi.Post) {
 		cursorPos += addedPostsCount
 	}
 
-	// t.draw(cursorPos)
+	p.draw(cursorPos)
 }
 
 // getCurrentCursorPos : 現在のカーソル位置を取得
@@ -249,7 +240,7 @@ func (p *posts) DeletePost(id string) {
 	p.contents = p.contents[:i+copy(p.contents[i:], p.contents[i+1:])]
 
 	// 再描画して反映
-	// t.draw(t.getCurrentCursorPos())
+	p.draw(p.getCurrentCursorPos())
 }
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）

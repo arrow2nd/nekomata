@@ -35,3 +35,12 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 		posts:    postsView,
 	}, nil
 }
+
+func (t *timelinePage) Load() {
+	sinceID := t.posts.GetSinceId()
+	limit := global.conf.Pref.Feature.LoadTweetsLimit
+
+	posts, _ := global.client.GetGlobalTimeline(sinceID, limit)
+
+	t.posts.Update(posts)
+}
