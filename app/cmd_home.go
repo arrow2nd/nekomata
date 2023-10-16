@@ -34,9 +34,12 @@ func (a *App) newHomeTimelineCmd() *cli.Command {
 				return err
 			}
 
+			page.posts.view.SetChangedFunc(func() {
+				a.app.Draw()
+			})
+
 			go func() {
 				page.Load()
-				a.app.Draw()
 			}()
 
 			return nil
