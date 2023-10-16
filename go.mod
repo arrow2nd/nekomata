@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/mattn/go-runewidth v0.0.15
-	github.com/rivo/tview v0.0.0-20230928053139-9bc1d28d88a9
+	github.com/rivo/tview v0.0.0-20231007183732-6c844bdc5f7a
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/net v0.17.0
