@@ -312,7 +312,7 @@ func (a *App) eventReciever() {
 		select {
 		case status := <-global.chStatus:
 			// ステータスメッセージを表示
-			a.commandLine.UpdateStatusMessage(status)
+			a.commandLine.ShowStatusMessage(status)
 			a.app.Draw()
 		case indicator := <-global.chIndicator:
 			// インジケータを更新

@@ -9,7 +9,7 @@ import (
 type page interface {
 	GetName() string
 	GetPrimivite() tview.Primitive
-	Load()
+	Load() error
 	OnActive()
 	OnInactive()
 	OnDelete()
@@ -19,6 +19,7 @@ type page interface {
 func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, error) {
 	handler := map[string]func(){
 		config.ActionReloadPage: func() {
+			// TODO: エラーハンドリングする
 			go p.Load()
 		},
 	}
@@ -65,7 +66,9 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 }
 
 // Load : 読み込み
-func (b *basePage) Load() {}
+func (b *basePage) Load() error {
+	return nil
+}
 
 // OnActive : ページがアクティブになった
 func (b *basePage) OnActive() {

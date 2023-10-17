@@ -93,14 +93,18 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 	return nil
 }
 
-// UpdateStatusMessage : ステータスメッセージを更新
-func (c *commandLine) UpdateStatusMessage(s string) {
+// ShowStatusMessage : ステータスメッセージを表示
+func (c *commandLine) ShowStatusMessage(s string) {
 	color := tview.Styles.PrimaryTextColor
 
-	// エラーステータスなら文字色を赤に
-	if strings.HasPrefix(s, "[ERR") {
-		color = tcell.ColorRed
-	}
+	c.inputField.
+		SetPlaceholderTextColor(color).
+		SetPlaceholder(s)
+}
+
+// ShowErrorMessage : エラーメッセージを表示
+func (c *commandLine) ShowErrorMessage(s string) {
+	color := tcell.ColorRed
 
 	c.inputField.
 		SetPlaceholderTextColor(color).

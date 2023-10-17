@@ -39,7 +39,9 @@ func (a *App) newHomeTimelineCmd() *cli.Command {
 			})
 
 			go func() {
-				page.Load()
+				if err := page.Load(); err != nil {
+					a.commandLine.ShowErrorMessage(err.Error())
+				}
 			}()
 
 			return nil
