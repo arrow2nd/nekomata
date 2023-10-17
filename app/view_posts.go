@@ -287,7 +287,7 @@ func (p *posts) draw(cursorPos int) {
 
 		// fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
 		fmt.Fprintf(p.view, `["%s"]%s[""]`+"\n", createPostTag(i), post.Author.Username)
-		fmt.Fprintf(p.view, "%d : %s\n", i, post.Text)
+		fmt.Fprintf(p.view, "%s\n", post.Text)
 
 		// 引用元ツイートを表示
 		// if quotedTweet != nil {

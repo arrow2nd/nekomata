@@ -40,11 +40,16 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 	return page, nil
 }
 
-func (t *timelinePage) Load() {
+func (t *timelinePage) Load() error {
 	sinceID := t.posts.GetSinceId()
 	limit := global.conf.Pref.Feature.LoadTweetsLimit
 
-	posts, _ := global.client.GetGlobalTimeline(sinceID, limit)
+	posts, err := global.client.GetHomeTimeline(sinceID, limit)
+	if err != nil {
+		return err
+	}
 
 	t.posts.Update(posts)
+
+	return nil
 }
