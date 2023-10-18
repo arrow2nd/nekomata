@@ -40,7 +40,7 @@ func (a *App) newHomeTimelineCmd() *cli.Command {
 
 			go func() {
 				if err := page.Load(); err != nil {
-					a.commandLine.ShowErrorMessage(err.Error())
+					global.SetErrorStatus("timeline", err.Error())
 				}
 			}()
 

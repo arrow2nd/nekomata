@@ -97,14 +97,9 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 func (c *commandLine) ShowStatusMessage(s string) {
 	color := tview.Styles.PrimaryTextColor
 
-	c.inputField.
-		SetPlaceholderTextColor(color).
-		SetPlaceholder(s)
-}
-
-// ShowErrorMessage : エラーメッセージを表示
-func (c *commandLine) ShowErrorMessage(s string) {
-	color := tcell.ColorRed
+	if strings.HasPrefix(s, "[ERR") {
+		color = tcell.ColorRed
+	}
 
 	c.inputField.
 		SetPlaceholderTextColor(color).
