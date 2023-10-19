@@ -43,9 +43,7 @@ func (g *Global) SetStatus(label, status string) {
 		exit(message)
 	}
 
-	go func() {
-		g.chStatus <- message
-	}()
+	g.chStatus <- message
 }
 
 // SetErrorStatus : エラーメッセージを設定
@@ -59,49 +57,35 @@ func (g *Global) SetErrorStatus(label, errStatus string) {
 
 // SetIndicator : インジケータを設定
 func (g *Global) SetIndicator(indicator string) {
-	go func() {
-		g.chIndicator <- indicator
-	}()
+	g.chIndicator <- indicator
 }
 
 // SetDisableViewKeyEvent : ビューのキーイベントを無効化
 func (g *Global) SetDisableViewKeyEvent(b bool) {
-	go func() {
-		g.chDisableViewKeyEvent <- b
-	}()
+	g.chDisableViewKeyEvent <- b
 }
 
 // ReqestPopupModal : モーダルの表示をリクエスト
 func (g *Global) ReqestPopupModal(o *ModalOpts) {
-	go func() {
-		g.chPopupModal <- o
-	}()
+	g.chPopupModal <- o
 }
 
 // RequestExecCommand : コマンドの実行をリクエスト
 func (g *Global) RequestExecCommand(c string) {
-	go func() {
-		g.chExecCommand <- c
-	}()
+	g.chExecCommand <- c
 }
 
 // RequestInputCommand : コマンドの入力をリクエスト
 func (g *Global) RequestInputCommand(c string) {
-	go func() {
-		g.chInputCommand <- c
-	}()
+	g.chInputCommand <- c
 }
 
 // RequestFocusPrimitive : 指定したプリミティブへのフォーカスを要求
 func (g *Global) RequestFocusPrimitive(p tview.Primitive) {
-	go func() {
-		g.chFocusPrimitive <- &p
-	}()
+	g.chFocusPrimitive <- &p
 }
 
 // RequestFocusView : ビューへのフォーカスを要求
 func (g *Global) RequestFocusView() {
-	go func() {
-		g.chFocusView <- true
-	}()
+	g.chFocusView <- true
 }
