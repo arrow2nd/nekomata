@@ -1,5 +1,7 @@
 package app
 
+import "github.com/arrow2nd/nekomata/api/sharedapi"
+
 type timelineKind string
 
 const (
@@ -41,10 +43,22 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 }
 
 func (t *timelinePage) Load() error {
-	sinceID := t.posts.GetSinceId()
-	limit := global.conf.Pref.Feature.LoadTweetsLimit
+	var (
+		sinceID = t.posts.GetSinceId()
+		limit   = global.conf.Pref.Feature.LoadTweetsLimit
+		posts   []*sharedapi.Post
+		err     error
+	)
 
-	posts, err := global.client.GetHomeTimeline(sinceID, limit)
+	switch t.kind {
+	case homeTimeline:
+		posts, err = global.client.GetHomeTimeline(sinceID, limit)
+	case globalTimeline:
+		posts, err = global.client.GetGlobalTimeline(sinceID, limit)
+	case localTimeline:
+		posts, err = global.client.GetLocalTimeline(sinceID, limit)
+	}
+
 	if err != nil {
 		return err
 	}
