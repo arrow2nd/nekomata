@@ -3,6 +3,7 @@ package layout
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"text/template"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
@@ -28,8 +29,11 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 		"author": func() (string, error) {
 			return l.createUserStr(i, p.Author)
 		},
+		"text": func() string {
+			return l.createPostStr(p)
+		},
 		"detail": func() (string, error) {
-			return l.createpostDetail(p)
+			return l.createPostDetail(p)
 		},
 	}
 
@@ -45,7 +49,20 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 	return nil
 }
 
-func (l *Layout) createpostDetail(p *sharedapi.Post) (string, error) {
+func (l *Layout) createPostStr(p *sharedapi.Post) string {
+	text := p.Text
+
+	// ハッシュタグをハイライト
+	for _, tag := range p.Tags {
+		re := regexp.MustCompile(fmt.Sprintf(`[#＃](%s\s|%s$)`, tag.Name, tag.Name))
+		styledTag := createStyledText(l.Style.Tweet.HashTag, "#$1")
+		text = re.ReplaceAllString(text, styledTag)
+	}
+
+	return text
+}
+
+func (l *Layout) createPostDetail(p *sharedapi.Post) (string, error) {
 	funcMap := template.FuncMap{
 		"createdAt": func() string {
 			return l.convertDateString(p.CreatedAt)

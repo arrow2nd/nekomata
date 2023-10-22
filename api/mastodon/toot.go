@@ -86,6 +86,7 @@ type status struct {
 	// Tags : タグ
 	Tags []struct {
 		Name string `json:"name"`
+		URL  string `json:"url"`
 	} `json:"tags"`
 	// Poll : アンケート
 	Poll *poll `json:"poll"`
@@ -105,7 +106,17 @@ func (s *status) ToShared() *sharedapi.Post {
 		Reposted:    s.Reblogged,
 		Bookmarked:  s.Bookmarked,
 		Text:        html2text(s.Content),
+		Tags:        []sharedapi.Tag{},
 		Author:      s.Account.ToShared(),
+	}
+
+	if s.Tags != nil && len(s.Tags) > 0 {
+		for _, tag := range s.Tags {
+			post.Tags = append(post.Tags, sharedapi.Tag{
+				Name: tag.Name,
+				URL:  tag.URL,
+			})
+		}
 	}
 
 	if app := s.Application; app != nil {
