@@ -1,14 +1,12 @@
 package mastodon
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
-	"jaytaylor.com/html2text"
 )
 
 // account : ユーザー情報
@@ -46,22 +44,14 @@ type accountFields struct {
 // ToShared : shared.Account に変換
 func (a *account) ToShared() *sharedapi.Account {
 	// BIOをプレーンテキストに変換
-	bio, err := html2text.FromString(a.Note)
-	if err != nil {
-		bio = fmt.Sprintf("convert error: %s", err)
-	}
+	bio := html2text(a.Note)
 
 	// フィールドをプロフィールに変換
 	profiles := []sharedapi.Profile{}
 	for _, p := range a.Fields {
-		value, err := html2text.FromString(p.Value)
-		if err != nil {
-			value = fmt.Sprintf("convert error: %s", err)
-		}
-
 		profiles = append(profiles, sharedapi.Profile{
 			Label: p.Name,
-			Value: value,
+			Value: html2text(p.Value),
 		})
 	}
 

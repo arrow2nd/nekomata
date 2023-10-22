@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
-	"jaytaylor.com/html2text"
 )
 
 // mentionAttribute : メンション先のユーザー
@@ -95,11 +94,6 @@ type status struct {
 // ToShared : api.Post に変換
 // TODO: テスト書く
 func (s *status) ToShared() *sharedapi.Post {
-	text, err := html2text.FromString(s.Content)
-	if err != nil {
-		text = fmt.Sprintf("convert error: %s", err.Error())
-	}
-
 	post := &sharedapi.Post{
 		ID:          s.ID,
 		CreatedAt:   s.CreatedAt,
@@ -110,7 +104,7 @@ func (s *status) ToShared() *sharedapi.Post {
 		Reacted:     s.Favourited,
 		Reposted:    s.Reblogged,
 		Bookmarked:  s.Bookmarked,
-		Text:        text,
+		Text:        html2text(s.Content),
 		Author:      s.Account.ToShared(),
 	}
 

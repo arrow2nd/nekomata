@@ -1,13 +1,11 @@
 package mastodon
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
-	"jaytaylor.com/html2text"
 )
 
 // announcement : アナウンス
@@ -24,18 +22,12 @@ type announcement struct {
 
 // ToShared : api.Announcement に変換
 func (a *announcement) ToShared() *sharedapi.Announcement {
-	// Content は HTML なのでプレーンテキストに変換
-	text, err := html2text.FromString(a.Content, html2text.Options{PrettyTables: true})
-	if err != nil {
-		text = fmt.Sprintf("convert error: %s", err.Error())
-	}
-
 	return &sharedapi.Announcement{
 		ID:          a.ID,
 		PublishedAt: a.PublishedAt,
 		UpdatedAt:   &a.UpdatedAt,
 		Title:       "",
-		Text:        text,
+		Text:        html2text(a.Content),
 	}
 }
 
