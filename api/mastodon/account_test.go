@@ -63,7 +63,7 @@ var wantAccount = sharedapi.Account{
 	PostsCount:     473,
 	Profiles: []sharedapi.Profile{
 		{Label: "first", Value: "1st"},
-		{Label: "second", Value: "hello! ( https://example.com/ )"},
+		{Label: "second", Value: "hello!"},
 	},
 }
 
