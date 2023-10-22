@@ -10,7 +10,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/term"
@@ -140,35 +139,6 @@ func replaceLayoutTag(l, tag, newStr string) string {
 	}
 
 	return strings.ReplaceAll(l, tag, newStr)
-}
-
-// isSameDate : 同じ日付かどうか
-func isSameDate(t time.Time) bool {
-	now := time.Now()
-	location := now.Location()
-	fixedTime := t.In(location)
-
-	t1 := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, location)
-	t2 := time.Date(fixedTime.Year(), fixedTime.Month(), fixedTime.Day(), 0, 0, 0, 0, location)
-
-	return t1.Equal(t2)
-}
-
-// convertDateString : 日付文字列を変換
-func convertDateString(createAt string) string {
-	pref := global.conf.Pref.Appearance
-
-	t, _ := time.Parse(time.RFC3339, createAt)
-	format := ""
-
-	// 今日の日付なら時刻のみを表示
-	if isSameDate(t) {
-		format = pref.TimeFormat
-	} else {
-		format = fmt.Sprintf("%s %s", pref.DateFormat, pref.TimeFormat)
-	}
-
-	return t.Local().Format(format)
 }
 
 // createStyledText : スタイル適応済みの文字列を作成

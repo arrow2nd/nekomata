@@ -1,6 +1,9 @@
 package app
 
-import "github.com/arrow2nd/nekomata/api/sharedapi"
+import (
+	"github.com/arrow2nd/nekomata/api/sharedapi"
+	"github.com/arrow2nd/nekomata/app/layout"
+)
 
 type timelineKind string
 
@@ -26,7 +29,15 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 		tabName = global.conf.Pref.Text.TabLocal
 	}
 
-	postsView, err := newPostsView()
+	layout := &layout.Layout{
+		Width:        getWindowWidth(),
+		Template:     &global.conf.Pref.Template,
+		Appearancene: &global.conf.Pref.Appearance,
+		Icon:         &global.conf.Pref.Icon,
+		Style:        global.conf.Style,
+	}
+
+	postsView, err := newPostsView(layout)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +74,5 @@ func (t *timelinePage) Load() error {
 		return err
 	}
 
-	t.postList.Update(posts)
-
-	return nil
+	return t.postList.Update(posts)
 }

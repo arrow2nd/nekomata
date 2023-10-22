@@ -50,24 +50,24 @@ type Appearancene struct {
 	TabMaxWidth int `toml:"tab_max_width"`
 }
 
-// Layout : 表示レイアウト
-type Layout struct {
-	// Tweet : ツイート
-	Tweet string `toml:"tweet"`
-	// TweetAnotation : ツイートアノテーション
-	TweetAnotation string `toml:"tweet_anotation"`
-	// TweetDetail : ツイート詳細
-	TweetDetail string `toml:"tweet_detail"`
+// Template : 表示テンプレート
+type Template struct {
+	// Post : 投稿
+	Post string `toml:"post"`
+	// PostAnotation : 投稿のアノテーション
+	PostAnotation string `toml:"post_anotation"`
+	// PostDetail : ツイート詳細
+	PostDetail string `toml:"post_detail"`
 	// TweetPoll : 投票
-	TweetPoll string `toml:"tweet_poll"`
+	TweetPoll string `toml:"post_poll"`
 	// TweetPollGraph : 投票グラフ
-	TweetPollGraph string `toml:"tweet_poll_graph"`
+	TweetPollGraph string `toml:"post_poll_graph"`
 	// TweetPollDetail : 投票詳細
-	TweetPollDetail string `toml:"tweet_poll_detail"`
-	// User : ユーザプロフィール
+	TweetPollDetail string `toml:"post_poll_detail"`
+	// User : ユーザ
 	User string `toml:"user"`
-	// UserInfo : ユーザ情報
-	UserInfo string `toml:"user_info"`
+	// UserDetail : ユーザ詳細
+	UserDetail string `toml:"user_detail"`
 }
 
 // Text : 表示テキスト
@@ -136,7 +136,7 @@ type Preferences struct {
 	Feature     Feature         `toml:"feature"`
 	Confirm     map[string]bool `toml:"comfirm"`
 	Appearance  Appearancene    `toml:"appearance"`
-	Layout      Layout          `toml:"layout"`
+	Template    Template        `toml:"template"`
 	Text        Text            `toml:"text"`
 	Icon        Icon            `toml:"icon"`
 	Keybindings Keybindings     `toml:"keybinding"`
@@ -187,15 +187,18 @@ func defaultPreferences() *Preferences {
 			TabSeparator:            "|",
 			TabMaxWidth:             20,
 		},
-		Layout: Layout{
-			Tweet:           "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}",
-			TweetAnotation:  "{text} {author_name} {author_username}",
-			TweetDetail:     "{created_at} | via {via}\n{metrics}",
-			TweetPoll:       "{graph}\n{detail}",
-			TweetPollGraph:  "{label}\n{graph} {per} {votes}",
-			TweetPollDetail: "{status} | {all_votes} votes | ends on {end_date}",
-			User:            "{user_info}\n{bio}\n{user_detail}",
-			UserInfo:        "{name} {username} {badge}",
+		Template: Template{
+			Post: `{{ author }}
+{{ .Text }}
+{{ detail }}
+`,
+			PostAnotation:   "{text} {author_name} {author_username}",
+			PostDetail:      "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
+			TweetPoll:       "",
+			TweetPollGraph:  "",
+			TweetPollDetail: "",
+			User:            "{{ displayName }} {{ username }} {{ badges }}",
+			UserDetail:      "",
 		},
 		Text: Text{
 			Repost:           "RP",

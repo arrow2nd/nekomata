@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
+	"github.com/arrow2nd/nekomata/app/layout"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/rivo/tview"
 )
@@ -19,15 +20,19 @@ type postList struct {
 	textView    *tview.TextView
 	pinnedPosts []*sharedapi.Post
 	posts       []*sharedapi.Post
+	layout      *layout.Layout
 	mu          sync.Mutex
 }
 
-func newPostsView() (*postList, error) {
+func newPostsView(l *layout.Layout) (*postList, error) {
 	p := &postList{
 		textView:    tview.NewTextView(),
 		pinnedPosts: []*sharedapi.Post{},
 		posts:       []*sharedapi.Post{},
+		layout:      l,
 	}
+
+	p.layout.Writer = p.textView
 
 	p.textView.
 		SetDynamicColors(true).
@@ -132,7 +137,7 @@ func (p *postList) scrollToPost(i int) {
 		i = max - 1
 	}
 
-	p.textView.Highlight(createPostTag(i))
+	p.textView.Highlight(layout.CreatePostHighlightTag(i))
 	p.textView.ScrollToHighlight()
 }
 
@@ -156,11 +161,6 @@ func (p *postList) GetSinceId() string {
 	return p.posts[0].ID
 }
 
-// createPostTag : ポスト追跡用のタグを作成
-func createPostTag(id int) string {
-	return fmt.Sprintf("post_%d", id)
-}
-
 // SetPinned : ピン留めを登録
 func (p *postList) SetPinned(pinned []*sharedapi.Post) {
 	p.pinnedPosts = []*sharedapi.Post{}
@@ -171,7 +171,7 @@ func (p *postList) SetPinned(pinned []*sharedapi.Post) {
 }
 
 // Update : ポストを更新
-func (p *postList) Update(posts []*sharedapi.Post) {
+func (p *postList) Update(posts []*sharedapi.Post) error {
 	addedPostsCount := p.addPosts(posts)
 	cursorPos := p.getCurrentCursorPos()
 
@@ -181,7 +181,7 @@ func (p *postList) Update(posts []*sharedapi.Post) {
 		cursorPos += addedPostsCount
 	}
 
-	p.draw(cursorPos)
+	return p.draw(cursorPos)
 }
 
 // getCurrentCursorPos : 現在のカーソル位置を取得
@@ -216,7 +216,7 @@ func (p *postList) addPosts(posts []*sharedapi.Post) int {
 }
 
 // DeletePost : ポストを削除
-func (p *postList) DeletePost(id string) {
+func (p *postList) DeletePost(id string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -230,18 +230,18 @@ func (p *postList) DeletePost(id string) {
 	})
 
 	if !ok {
-		return
+		return nil
 	}
 
 	// i番目の要素を削除
 	p.posts = p.posts[:i+copy(p.posts[i:], p.posts[i+1:])]
 
 	// 再描画して反映
-	p.draw(p.getCurrentCursorPos())
+	return p.draw(p.getCurrentCursorPos())
 }
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
-func (p *postList) draw(cursorPos int) {
+func (p *postList) draw(cursorPos int) error {
 	// icon := global.conf.Pref.Icon
 	appearance := global.conf.Pref.Appearance
 	width := getWindowWidth()
@@ -253,7 +253,7 @@ func (p *postList) draw(cursorPos int) {
 	// 表示するポストが無いなら描画を中断
 	if p.GetPostsCount() == 0 {
 		p.DrawMessage(global.conf.Pref.Text.NoPosts)
-		return
+		return nil
 	}
 
 	contents := p.posts
@@ -284,10 +284,11 @@ func (p *postList) draw(cursorPos int) {
 		// if i == 0 && t.pinned != nil {
 		// 	annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", icon.Pinned)
 		// }
+		if err := p.layout.Post(i, post); err != nil {
+			return err
+		}
 
-		// fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
-		fmt.Fprintf(p.textView, `["%s"]%s[""]`+"\n", createPostTag(i), post.Author.Username)
-		fmt.Fprintf(p.textView, "%s\n", post.Text)
+		// fmt.Fprintf(p.textView, "%s\n", post.Text)
 
 		// 引用元ツイートを表示
 		// if quotedTweet != nil {
@@ -310,6 +311,8 @@ func (p *postList) draw(cursorPos int) {
 	}
 
 	p.scrollToPost(cursorPos)
+
+	return nil
 }
 
 // DrawMessage : ビューにメッセージを表示
