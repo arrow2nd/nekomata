@@ -116,7 +116,7 @@ func (a *App) newAccountListCmd() *cli.Command {
 			for _, u := range global.conf.Creds.GetAllUsernames() {
 				current := " "
 
-				if u == global.loginUsername {
+				if u == global.currentUsername {
 					current = "*"
 				}
 

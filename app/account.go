@@ -44,7 +44,7 @@ func login(username string) error {
 	}
 
 	global.client = client
-	global.loginUsername = username
+	global.currentUsername = username
 
 	return nil
 }
