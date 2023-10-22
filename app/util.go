@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/arrow2nd/nekomata/app/exit"
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/term"
 )
@@ -50,7 +51,7 @@ func getWindowWidth() int {
 
 	w, _, err := term.GetSize(fd)
 	if err != nil {
-		exitError(err.Error(), exitCodeErrTerm)
+		exit.Error(err.Error(), exit.CodeErrTerm)
 	}
 
 	return w - 2

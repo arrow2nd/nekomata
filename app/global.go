@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
+	"github.com/arrow2nd/nekomata/app/exit"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/rivo/tview"
 )
@@ -40,7 +41,7 @@ func (g *Global) SetStatus(label, status string) {
 	message := createStatusMessage(label, status)
 
 	if g.isCLI {
-		exit(message)
+		exit.OK(message)
 	}
 
 	g.chStatus <- message
@@ -49,7 +50,7 @@ func (g *Global) SetStatus(label, status string) {
 // SetErrorStatus : エラーメッセージを設定
 func (g *Global) SetErrorStatus(label, errStatus string) {
 	if g.isCLI {
-		exitError(createStatusMessage(label, errStatus), exitCodeErr)
+		exit.Error(createStatusMessage(label, errStatus), exit.CodeErr)
 	}
 
 	g.SetStatus("ERR: "+label, errStatus)

@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 
+	"github.com/arrow2nd/nekomata/app/exit"
 	"github.com/arrow2nd/nekomata/cli"
 	"github.com/spf13/pflag"
 )
@@ -19,7 +20,7 @@ func newCmd() *cli.Command {
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// コマンドラインからの実行ならバージョンを表示して終了
 			if ver, _ := f.GetBool("version"); global.isCLI && ver {
-				exit(fmt.Sprintf("🐱 %s for v.%s", c.Name, version))
+				exit.OK(fmt.Sprintf("🐱 %s for v.%s", c.Name, version))
 			}
 
 			// エラーメッセージを組み立てる
