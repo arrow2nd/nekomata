@@ -15,21 +15,21 @@ const (
 	cursorMoveDown int = 1
 )
 
-type posts struct {
-	view     *tview.TextView
-	pinned   []*sharedapi.Post
-	contents []*sharedapi.Post
-	mu       sync.Mutex
+type postList struct {
+	textView    *tview.TextView
+	pinnedPosts []*sharedapi.Post
+	posts       []*sharedapi.Post
+	mu          sync.Mutex
 }
 
-func newPostsView() (*posts, error) {
-	p := &posts{
-		view:     tview.NewTextView(),
-		pinned:   []*sharedapi.Post{},
-		contents: []*sharedapi.Post{},
+func newPostsView() (*postList, error) {
+	p := &postList{
+		textView:    tview.NewTextView(),
+		pinnedPosts: []*sharedapi.Post{},
+		posts:       []*sharedapi.Post{},
 	}
 
-	p.view.
+	p.textView.
 		SetDynamicColors(true).
 		SetScrollable(true).
 		SetWrap(true).
@@ -42,15 +42,15 @@ func newPostsView() (*posts, error) {
 	return p, nil
 }
 
-func (p *posts) setKeybindings() error {
+func (p *postList) setKeybindings() error {
 	handlers := map[string]func(){
 		config.ActionScrollUp: func() {
-			r, c := p.view.GetScrollOffset()
-			p.view.ScrollTo(r+1, c)
+			r, c := p.textView.GetScrollOffset()
+			p.textView.ScrollTo(r+1, c)
 		},
 		config.ActionScrollDown: func() {
-			r, c := p.view.GetScrollOffset()
-			p.view.ScrollTo(r-1, c)
+			r, c := p.textView.GetScrollOffset()
+			p.textView.ScrollTo(r-1, c)
 		},
 		config.ActionCursorUp: func() {
 			p.moveCursor(cursorMoveUp)
@@ -108,14 +108,14 @@ func (p *posts) setKeybindings() error {
 		return err
 	}
 
-	p.view.SetInputCapture(c.Capture)
+	p.textView.SetInputCapture(c.Capture)
 
 	return nil
 }
 
 // moveCursor : カーソルを移動
-func (p *posts) moveCursor(c int) {
-	idx := getHighlightId(p.view.GetHighlights())
+func (p *postList) moveCursor(c int) {
+	idx := getHighlightId(p.textView.GetHighlights())
 	if idx == -1 {
 		return
 	}
@@ -124,7 +124,7 @@ func (p *posts) moveCursor(c int) {
 }
 
 // scrollToPost : 指定したポストまでスクロール
-func (p *posts) scrollToPost(i int) {
+func (p *postList) scrollToPost(i int) {
 	// 範囲内に丸める
 	if max := p.GetPostsCount(); i < 0 {
 		i = 0
@@ -132,15 +132,15 @@ func (p *posts) scrollToPost(i int) {
 		i = max - 1
 	}
 
-	p.view.Highlight(createPostTag(i))
-	p.view.ScrollToHighlight()
+	p.textView.Highlight(createPostTag(i))
+	p.textView.ScrollToHighlight()
 }
 
 // GetPostsCount : ポスト数を取得
-func (p *posts) GetPostsCount() int {
-	c := len(p.contents)
+func (p *postList) GetPostsCount() int {
+	c := len(p.posts)
 
-	if l := len(p.pinned); l > 0 {
+	if l := len(p.pinnedPosts); l > 0 {
 		c += l
 	}
 
@@ -148,12 +148,12 @@ func (p *posts) GetPostsCount() int {
 }
 
 // GetSinceId : 最新のポストのIDを取得
-func (p *posts) GetSinceId() string {
-	if len(p.contents) == 0 {
+func (p *postList) GetSinceId() string {
+	if len(p.posts) == 0 {
 		return ""
 	}
 
-	return p.contents[0].ID
+	return p.posts[0].ID
 }
 
 // createPostTag : ポスト追跡用のタグを作成
@@ -162,16 +162,16 @@ func createPostTag(id int) string {
 }
 
 // SetPinned : ピン留めを登録
-func (p *posts) SetPinned(pinned []*sharedapi.Post) {
-	p.pinned = []*sharedapi.Post{}
+func (p *postList) SetPinned(pinned []*sharedapi.Post) {
+	p.pinnedPosts = []*sharedapi.Post{}
 
 	for i, post := range pinned {
-		p.pinned[i] = post
+		p.pinnedPosts[i] = post
 	}
 }
 
 // Update : ポストを更新
-func (p *posts) Update(posts []*sharedapi.Post) {
+func (p *postList) Update(posts []*sharedapi.Post) {
 	addedPostsCount := p.addPosts(posts)
 	cursorPos := p.getCurrentCursorPos()
 
@@ -185,8 +185,8 @@ func (p *posts) Update(posts []*sharedapi.Post) {
 }
 
 // getCurrentCursorPos : 現在のカーソル位置を取得
-func (p *posts) getCurrentCursorPos() int {
-	pos := getHighlightId(p.view.GetHighlights())
+func (p *postList) getCurrentCursorPos() int {
+	pos := getHighlightId(p.textView.GetHighlights())
 
 	if pos == -1 {
 		pos = 0
@@ -196,11 +196,11 @@ func (p *posts) getCurrentCursorPos() int {
 }
 
 // addPosts : ポストを追加
-func (p *posts) addPosts(posts []*sharedapi.Post) int {
+func (p *postList) addPosts(posts []*sharedapi.Post) int {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	size := len(p.contents)
+	size := len(p.posts)
 	addSize := len(posts)
 	allSize := size + addSize
 	maxSize := global.conf.Pref.Feature.AccmulateTweetsLimit
@@ -210,17 +210,17 @@ func (p *posts) addPosts(posts []*sharedapi.Post) int {
 		size -= allSize - maxSize
 	}
 
-	p.contents = append(posts, p.contents[:size]...)
+	p.posts = append(posts, p.posts[:size]...)
 
 	return addSize
 }
 
 // DeletePost : ポストを削除
-func (p *posts) DeletePost(id string) {
+func (p *postList) DeletePost(id string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	i, ok := find(p.contents, func(c *sharedapi.Post) bool {
+	i, ok := find(p.posts, func(c *sharedapi.Post) bool {
 		// リポスト元のIDを参照
 		if ref := c.Reference; ref != nil {
 			return ref.ID == id
@@ -234,19 +234,19 @@ func (p *posts) DeletePost(id string) {
 	}
 
 	// i番目の要素を削除
-	p.contents = p.contents[:i+copy(p.contents[i:], p.contents[i+1:])]
+	p.posts = p.posts[:i+copy(p.posts[i:], p.posts[i+1:])]
 
 	// 再描画して反映
 	p.draw(p.getCurrentCursorPos())
 }
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
-func (p *posts) draw(cursorPos int) {
+func (p *postList) draw(cursorPos int) {
 	// icon := global.conf.Pref.Icon
 	appearance := global.conf.Pref.Appearance
 	width := getWindowWidth()
 
-	p.view.
+	p.textView.
 		SetTextAlign(tview.AlignLeft).
 		Clear()
 
@@ -256,11 +256,11 @@ func (p *posts) draw(cursorPos int) {
 		return
 	}
 
-	contents := p.contents
+	contents := p.posts
 
 	// ピン留めがある場合、先頭に追加
-	if len(p.pinned) > 0 {
-		contents = append(p.pinned, p.contents...)
+	if len(p.pinnedPosts) > 0 {
+		contents = append(p.pinnedPosts, p.posts...)
 	}
 
 	for i, post := range contents {
@@ -286,8 +286,8 @@ func (p *posts) draw(cursorPos int) {
 		// }
 
 		// fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
-		fmt.Fprintf(p.view, `["%s"]%s[""]`+"\n", createPostTag(i), post.Author.Username)
-		fmt.Fprintf(p.view, "%s\n", post.Text)
+		fmt.Fprintf(p.textView, `["%s"]%s[""]`+"\n", createPostTag(i), post.Author.Username)
+		fmt.Fprintf(p.textView, "%s\n", post.Text)
 
 		// 引用元ツイートを表示
 		// if quotedTweet != nil {
@@ -305,7 +305,7 @@ func (p *posts) draw(cursorPos int) {
 
 		// 末尾のツイート以外ならセパレータを挿入
 		if i < p.GetPostsCount()-1 {
-			fmt.Fprintln(p.view, createSeparator(appearance.TweetSeparator, width))
+			fmt.Fprintln(p.textView, createSeparator(appearance.TweetSeparator, width))
 		}
 	}
 
@@ -313,8 +313,8 @@ func (p *posts) draw(cursorPos int) {
 }
 
 // DrawMessage : ビューにメッセージを表示
-func (p *posts) DrawMessage(s string) {
-	p.view.Clear().
+func (p *postList) DrawMessage(s string) {
+	p.textView.Clear().
 		SetTextAlign(tview.AlignCenter).
 		SetText(s)
 }

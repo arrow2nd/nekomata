@@ -12,8 +12,8 @@ const (
 
 type timelinePage struct {
 	*basePage
-	kind  timelineKind
-	posts *posts
+	kind     timelineKind
+	postList *postList
 }
 
 func newTimelinePage(kind timelineKind) (*timelinePage, error) {
@@ -34,17 +34,17 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 	page := &timelinePage{
 		basePage: newBasePage(tabName),
 		kind:     kind,
-		posts:    postsView,
+		postList: postsView,
 	}
 
-	page.SetFrame(postsView.view)
+	page.SetFrame(postsView.textView)
 
 	return page, nil
 }
 
 func (t *timelinePage) Load() error {
 	var (
-		sinceID = t.posts.GetSinceId()
+		sinceID = t.postList.GetSinceId()
 		limit   = global.conf.Pref.Feature.LoadTweetsLimit
 		posts   []*sharedapi.Post
 		err     error
@@ -63,7 +63,7 @@ func (t *timelinePage) Load() error {
 		return err
 	}
 
-	t.posts.Update(posts)
+	t.postList.Update(posts)
 
 	return nil
 }

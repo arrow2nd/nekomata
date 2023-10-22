@@ -29,7 +29,7 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 			return err
 		}
 
-		page.posts.view.SetChangedFunc(func() {
+		page.postList.textView.SetChangedFunc(func() {
 			a.app.Draw()
 		})
 
