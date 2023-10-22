@@ -54,8 +54,8 @@ func (l *Layout) createPostStr(p *sharedapi.Post) string {
 
 	// ハッシュタグをハイライト
 	for _, tag := range p.Tags {
-		re := regexp.MustCompile(fmt.Sprintf(`[#＃](%s\s|%s$)`, tag.Name, tag.Name))
-		styledTag := createStyledText(l.Style.Tweet.HashTag, "#$1")
+		re := regexp.MustCompile(fmt.Sprintf(`(?i)[#＃](%s\s|%s$)`, tag.Name, tag.Name))
+		styledTag := createStyledText(l.Style.Tweet.HashTag, "#$1", tag.URL)
 		text = re.ReplaceAllString(text, styledTag)
 	}
 
@@ -79,5 +79,5 @@ func (l *Layout) createPostDetail(p *sharedapi.Post) (string, error) {
 		return "", err
 	}
 
-	return createStyledText(l.Style.Tweet.Detail, buf.String()), nil
+	return createStyledText(l.Style.Tweet.Detail, buf.String(), ""), nil
 }

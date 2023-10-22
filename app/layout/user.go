@@ -19,10 +19,10 @@ func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
 
 	funcMap := template.FuncMap{
 		"displayName": func() string {
-			return createStyledText(l.Style.User.Name, name)
+			return createStyledText(l.Style.User.Name, name, "")
 		},
 		"username": func() string {
-			return createStyledText(l.Style.User.UserName, truncate("@"+u.Username, l.Width/2))
+			return createStyledText(l.Style.User.UserName, truncate("@"+u.Username, l.Width/2), "")
 		},
 		"badges": func() string {
 			badges := []string{}
@@ -30,14 +30,14 @@ func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
 			if u.Verified {
 				badges = append(
 					badges,
-					createStyledText(l.Style.User.Verified, l.Icon.Verified),
+					createStyledText(l.Style.User.Verified, l.Icon.Verified, ""),
 				)
 			}
 
 			if u.Private {
 				badges = append(
 					badges,
-					createStyledText(l.Style.User.Private, l.Icon.Private),
+					createStyledText(l.Style.User.Private, l.Icon.Private, ""),
 				)
 			}
 

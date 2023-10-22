@@ -7,8 +7,8 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func createStyledText(style, text string) string {
-	return fmt.Sprintf("[%s]%s[-:-:-]", style, text)
+func createStyledText(style, text, url string) string {
+	return fmt.Sprintf("[%s:%s]%s[-:-:-:-]", style, url, text)
 }
 
 func truncate(s string, l int) string {
