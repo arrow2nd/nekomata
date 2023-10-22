@@ -12,12 +12,12 @@ import (
 type view struct {
 	flex            *tview.Flex
 	pages           *tview.Pages
-	tabBar          *tview.TextView
-	textArea        *tview.TextArea
-	modal           *tview.Modal
 	pageItems       map[string]page
+	tabBar          *tview.TextView
 	tabs            []string
 	currentTabIndex int
+	textArea        *tview.TextArea
+	modal           *tview.Modal
 	mu              sync.Mutex
 }
 
@@ -25,12 +25,12 @@ func newView() *view {
 	v := &view{
 		flex:            tview.NewFlex(),
 		pages:           tview.NewPages(),
-		tabBar:          tview.NewTextView(),
-		textArea:        tview.NewTextArea(),
-		modal:           tview.NewModal(),
 		pageItems:       map[string]page{},
+		tabBar:          tview.NewTextView(),
 		tabs:            []string{},
 		currentTabIndex: 0,
+		textArea:        tview.NewTextArea(),
+		modal:           tview.NewModal(),
 	}
 
 	v.flex.
