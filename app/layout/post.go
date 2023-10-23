@@ -52,11 +52,15 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 func (l *Layout) createPostStr(p *sharedapi.Post) string {
 	text := p.Text
 
+	// メンションをハイライト
+	styledMention := createStyledText(l.Style.Tweet.Mention, "$1@$2", "")
+	text = regexp.MustCompile(`(^|[^\w@#$%&])@(\w+)`).ReplaceAllString(text, styledMention)
+
 	// ハッシュタグをハイライト
 	for _, tag := range p.Tags {
 		re := regexp.MustCompile(fmt.Sprintf(`(?i)[#＃](%s\s|%s$)`, tag.Name, tag.Name))
-		styledTag := createStyledText(l.Style.Tweet.HashTag, "#$1", tag.URL)
-		text = re.ReplaceAllString(text, styledTag)
+		styledHashtag := createStyledText(l.Style.Tweet.HashTag, "#$1", tag.URL)
+		text = re.ReplaceAllString(text, styledHashtag)
 	}
 
 	return text
