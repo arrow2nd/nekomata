@@ -11,42 +11,6 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
-// mentionAttribute : メンション先のユーザー
-type mentionAttribute struct {
-	ID   string `json:"id"`
-	Acct string `json:"acct"`
-}
-
-// poll : アンケート
-type poll struct {
-	// ID : アンケートID
-	ID string `json:"id"`
-	// ExpiresAt : 終了日時
-	ExpiresAt *time.Time `json:"expires_at"`
-	// Expired : 終了しているか
-	Expired bool `json:"expired"`
-	// Multiple : 複数投票可能か
-	Multiple bool `json:"multiple"`
-	// VotesCount : 総投票数
-	VotesCount int `json:"votes_count"`
-	// VotersCount : 総投票ユーザー数
-	VotersCount *int `json:"voters_count"`
-	// Voted : 投票済か
-	Voted bool `json:"voted"`
-	// OwnVotes : 自分が投票した項目
-	OwnVotes []int `json:"own_votes"`
-	// Options : アンケート項目
-	Options []pollOption `json:"options"`
-}
-
-// pollOption : アンケート項目
-type pollOption struct {
-	// Title : タイトル
-	Title string `json:"title"`
-	// VotersCount : 投票数
-	VotesCount int `json:"votes_count"`
-}
-
 // status : 投稿
 type status struct {
 	// ID : 投稿ID
@@ -92,6 +56,43 @@ type status struct {
 	Poll *poll `json:"poll"`
 }
 
+// mentionAttribute : メンション先のユーザー
+type mentionAttribute struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Acct     string `json:"acct"`
+}
+
+// poll : アンケート
+type poll struct {
+	// ID : アンケートID
+	ID string `json:"id"`
+	// ExpiresAt : 終了日時
+	ExpiresAt *time.Time `json:"expires_at"`
+	// Expired : 終了しているか
+	Expired bool `json:"expired"`
+	// Multiple : 複数投票可能か
+	Multiple bool `json:"multiple"`
+	// VotesCount : 総投票数
+	VotesCount int `json:"votes_count"`
+	// VotersCount : 総投票ユーザー数
+	VotersCount *int `json:"voters_count"`
+	// Voted : 投票済か
+	Voted bool `json:"voted"`
+	// OwnVotes : 自分が投票した項目
+	OwnVotes []int `json:"own_votes"`
+	// Options : アンケート項目
+	Options []pollOption `json:"options"`
+}
+
+// pollOption : アンケート項目
+type pollOption struct {
+	// Title : タイトル
+	Title string `json:"title"`
+	// VotersCount : 投票数
+	VotesCount int `json:"votes_count"`
+}
+
 // ToShared : api.Post に変換
 // TODO: テスト書く
 func (s *status) ToShared() *sharedapi.Post {
@@ -107,6 +108,7 @@ func (s *status) ToShared() *sharedapi.Post {
 		Bookmarked:  s.Bookmarked,
 		Text:        html2text(s.Content),
 		Tags:        []sharedapi.Tag{},
+		Mentions:    []sharedapi.Mention{},
 		Author:      s.Account.ToShared(),
 	}
 
@@ -115,6 +117,16 @@ func (s *status) ToShared() *sharedapi.Post {
 			post.Tags = append(post.Tags, sharedapi.Tag{
 				Name: tag.Name,
 				URL:  tag.URL,
+			})
+		}
+	}
+
+	if s.Mentions != nil && len(s.Mentions) > 0 {
+		for _, mention := range s.Mentions {
+			post.Mentions = append(post.Mentions, sharedapi.Mention{
+				ID:          mention.ID,
+				DisplayName: mention.Username,
+				Username:    mention.Acct,
 			})
 		}
 	}

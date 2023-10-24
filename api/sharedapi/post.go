@@ -36,6 +36,8 @@ type Post struct {
 	Bookmarked bool
 	// Text : 本文
 	Text string
+	// Mentions : メンション
+	Mentions []Mention
 	// Tags : ハッシュタグ
 	Tags []Tag
 	// Via : 投稿元
@@ -58,4 +60,11 @@ type Reaction struct {
 type Tag struct {
 	Name string
 	URL  string
+}
+
+// Mention : メンション先
+type Mention struct {
+	ID          string
+	DisplayName string
+	Username    string
 }
