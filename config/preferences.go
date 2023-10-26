@@ -72,6 +72,8 @@ type Template struct {
 
 // Text : 表示テキスト
 type Text struct {
+	// Bookmarked : ブックマーク済み
+	Bookmarked string `toml:"bookmarked"`
 	// Repost : リポストの単位
 	Repost string `toml:"repost"`
 	// Loading : 読み込み中
@@ -198,7 +200,8 @@ func defaultPreferences() *Preferences {
 			UserDetail:      "",
 		},
 		Text: Text{
-			Repost:           "RP",
+			Bookmarked:       "Bookmarked",
+			Repost:           "Repost",
 			Loading:          "Loading...",
 			NoPosts:          "No posts ฅ^-ω-^ฅ",
 			PostTextAreaHint: "Meow",

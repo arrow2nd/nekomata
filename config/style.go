@@ -45,6 +45,7 @@ type TweetStyle struct {
 	Liked      string `toml:"liked"`
 	Repost     string `toml:"repost"`
 	Reposted   string `toml:"reposted"`
+	Bookmarked string `toml:"bookmarked"`
 	HashTag    string `toml:"hashtag"`
 	Mention    string `toml:"mention"`
 	PollGraph  string `toml:"poll_graph"`
@@ -111,6 +112,7 @@ func defaultStyle() *Style {
 			Liked:      "pink:-:r",
 			Repost:     "lime:-:-",
 			Reposted:   "lime:-:r",
+			Bookmarked: "red:-:r",
 			HashTag:    "aqua:-:-",
 			Mention:    "aqua:-:-",
 			PollGraph:  "aqua:-:-",

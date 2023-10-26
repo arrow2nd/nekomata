@@ -50,6 +50,11 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 		"metrics": func() (string, error) {
 			metrics := []string{}
 
+			// ブックマーク済み
+			if p.Bookmarked {
+				metrics = append(metrics, createStyledText(l.Style.Tweet.Bookmarked, l.Text.Bookmarked, ""))
+			}
+
 			// リポスト数
 			if p.RepostCount > 0 {
 				text := l.createMetricsStr(&sharedapi.Reaction{
