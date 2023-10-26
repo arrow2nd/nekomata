@@ -12,6 +12,11 @@ import (
 func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
 	name := truncate(u.DisplayName, l.Width)
 
+	// DisplayNameが無い場合はUsernameを使う
+	if name == "" {
+		name = truncate(u.Username, l.Width)
+	}
+
 	// カーソル選択用のタグを埋め込む
 	if i >= 0 {
 		name = fmt.Sprintf(`["%s"]%s[""]`, CreatePostHighlightTag(i), name)
