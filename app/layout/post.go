@@ -47,6 +47,29 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 		"detail": func() (string, error) {
 			return l.createPostDetail(p)
 		},
+		"metrics": func() (string, error) {
+			metrics := []string{}
+
+			// リポスト数
+			if p.RepostCount > 0 {
+				text := l.createMetricsStr(&sharedapi.Reaction{
+					Name:    l.Text.Repost,
+					Count:   p.RepostCount,
+					Reacted: p.Reposted,
+				}, l.Style.Tweet.Repost, l.Style.Tweet.Reposted)
+
+				metrics = append(metrics, text)
+			}
+
+			// リアクション
+			for _, r := range p.Reactions {
+				if text := l.createMetricsStr(&r, l.Style.Tweet.Like, l.Style.Tweet.Liked); text != "" {
+					metrics = append(metrics, text)
+				}
+			}
+
+			return strings.Join(metrics, " "), nil
+		},
 	}
 
 	t, err := template.New("post").Funcs(funcMap).Parse(l.Template.Post)
@@ -54,9 +77,14 @@ func (l *Layout) Post(i int, p *sharedapi.Post) error {
 		return err
 	}
 
-	if err := t.Execute(l.Writer, *p); err != nil {
+	buf := bytes.Buffer{}
+	if err := t.Execute(&buf, *p); err != nil {
 		return err
 	}
+
+	// 不要な改行を除く
+	post := strings.TrimSpace(buf.String())
+	fmt.Fprintln(l.Writer, post)
 
 	return nil
 }
@@ -101,4 +129,18 @@ func (l *Layout) createPostDetail(p *sharedapi.Post) (string, error) {
 	}
 
 	return createStyledText(l.Style.Tweet.Detail, buf.String(), ""), nil
+}
+
+func (l *Layout) createMetricsStr(r *sharedapi.Reaction, normalStyle, revStyle string) string {
+	if r.Count == 0 {
+		return ""
+	}
+
+	style := normalStyle
+	if r.Reacted {
+		style = revStyle
+	}
+
+	text := fmt.Sprintf("%s %d", r.Name, r.Count)
+	return createStyledText(style, text, "")
 }

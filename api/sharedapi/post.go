@@ -28,8 +28,6 @@ type Post struct {
 	RepostCount int
 	// Reactions : リアクション
 	Reactions []Reaction
-	// Reacted : リアクション済か
-	Reacted bool
 	// Reposted : リポスト済か
 	Reposted bool
 	// Bookmarked : ブックマーク済か
@@ -52,8 +50,9 @@ type Post struct {
 
 // Reaction : リアクション詳細
 type Reaction struct {
-	Name  string
-	Count int
+	Name    string
+	Count   int
+	Reacted bool
 }
 
 // Tag : ハッシュタグ

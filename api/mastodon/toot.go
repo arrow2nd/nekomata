@@ -102,14 +102,17 @@ func (s *status) ToShared() *sharedapi.Post {
 		Visibility:  s.Visibility,
 		Sensitive:   s.Sensitive,
 		RepostCount: s.ReblogsCount,
-		Reactions:   []sharedapi.Reaction{{Name: "Fav", Count: s.FavouritesCount}},
-		Reacted:     s.Favourited,
-		Reposted:    s.Reblogged,
-		Bookmarked:  s.Bookmarked,
-		Text:        html2text(s.Content),
-		Tags:        []sharedapi.Tag{},
-		Mentions:    []sharedapi.Mention{},
-		Author:      s.Account.ToShared(),
+		Reactions: []sharedapi.Reaction{{
+			Name:    "Like",
+			Count:   s.FavouritesCount,
+			Reacted: s.Favourited,
+		}},
+		Reposted:   s.Reblogged,
+		Bookmarked: s.Bookmarked,
+		Text:       html2text(s.Content),
+		Tags:       []sharedapi.Tag{},
+		Mentions:   []sharedapi.Mention{},
+		Author:     s.Account.ToShared(),
 	}
 
 	if s.Tags != nil && len(s.Tags) > 0 {

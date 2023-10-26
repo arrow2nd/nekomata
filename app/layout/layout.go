@@ -11,6 +11,7 @@ type Layout struct {
 	Width        int
 	Template     *config.Template
 	Appearancene *config.Appearancene
+	Text         *config.Text
 	Icon         *config.Icon
 	Style        *config.Style
 }

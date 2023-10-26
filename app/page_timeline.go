@@ -33,6 +33,7 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 		Width:        getWindowWidth(),
 		Template:     &global.conf.Pref.Template,
 		Appearancene: &global.conf.Pref.Appearance,
+		Text:         &global.conf.Pref.Text,
 		Icon:         &global.conf.Pref.Icon,
 		Style:        global.conf.Style,
 	}

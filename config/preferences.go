@@ -188,7 +188,7 @@ func defaultPreferences() *Preferences {
 			TabMaxWidth:             20,
 		},
 		Template: Template{
-			Post:            "{{ author }}\n{{ text }}\n{{ detail }}\n",
+			Post:            "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}\n",
 			PostAnotation:   "{text} {author_name} {author_username}",
 			PostDetail:      "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
 			TweetPoll:       "",
