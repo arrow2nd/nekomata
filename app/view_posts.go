@@ -7,6 +7,7 @@ import (
 	"github.com/arrow2nd/nekomata/app/layout"
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/rivo/tview"
+	"golang.org/x/net/context"
 )
 
 // cursorMove : カーソルの移動量
@@ -16,11 +17,12 @@ const (
 )
 
 type postList struct {
-	textView    *tview.TextView
-	pinnedPosts []*sharedapi.Post
-	posts       []*sharedapi.Post
-	layout      *layout.Layout
-	mu          sync.Mutex
+	textView     *tview.TextView
+	pinnedPosts  []*sharedapi.Post
+	posts        []*sharedapi.Post
+	layout       *layout.Layout
+	mu           sync.Mutex
+	streamCancel context.CancelFunc
 }
 
 func newPostsView(l *layout.Layout) (*postList, error) {

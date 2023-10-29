@@ -41,7 +41,7 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *sharedapi.StreamingTimeli
 
 		select {
 		case <-opts.Context.Done():
-			return opts.Context.Err() // 終了
+			return nil // 終了
 		default:
 		}
 

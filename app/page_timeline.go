@@ -1,6 +1,9 @@
 package app
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/app/layout"
 )
@@ -15,8 +18,9 @@ const (
 
 type timelinePage struct {
 	*basePage
-	kind     timelineKind
-	postList *postList
+	kind         timelineKind
+	postList     *postList
+	staremCancel context.CancelFunc
 }
 
 func newTimelinePage(kind timelineKind) (*timelinePage, error) {
@@ -62,6 +66,10 @@ func (t *timelinePage) Load() error {
 		err     error
 	)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	t.staremCancel = cancel
+
+	// タイムラインを取得
 	switch t.kind {
 	case homeTimeline:
 		posts, err = global.client.GetHomeTimeline(sinceID, limit)
@@ -75,5 +83,42 @@ func (t *timelinePage) Load() error {
 		return err
 	}
 
-	return t.postList.Update(posts)
+	// 表示に反映
+	if err := t.postList.Update(posts); err != nil {
+		return err
+	}
+
+	// TODO: 非対応の場合も考慮したい
+	opts := &sharedapi.StreamingTimelineOpts{
+		Context: ctx,
+		OnUpdate: func(post *sharedapi.Post) {
+			if err := t.postList.Update([]*sharedapi.Post{post}); err != nil {
+				label := fmt.Sprintf("stream (%s)", t.name)
+				global.SetErrorStatus(label, err.Error())
+			}
+		},
+		OnDelete: func(id string) {
+			// TODO: 後で対応
+		},
+		OnError: func(err error) {
+			label := fmt.Sprintf("stream (%s)", t.name)
+			global.SetErrorStatus(label, err.Error())
+		},
+	}
+
+	// ストリームを開始
+	switch t.kind {
+	case homeTimeline:
+		err = global.client.StreamingHomeTimeline(opts)
+	case globalTimeline:
+		err = global.client.StreamingGlobalTimeline(opts)
+	case localTimeline:
+		err = global.client.StreamingLocalTimeline(opts)
+	}
+
+	return err
+}
+
+func (t *timelinePage) OnDelete() {
+	t.staremCancel()
 }
