@@ -10,7 +10,7 @@ import (
 
 func newCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "nekomata",
+		Name:  global.name,
 		Short: "🐱 Multi-SNS client with TUI",
 		Long:  "TUI social networking client for multiple services",
 		SetFlag: func(f *pflag.FlagSet) {
@@ -20,7 +20,7 @@ func newCmd() *cli.Command {
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// コマンドラインからの実行ならバージョンを表示して終了
 			if ver, _ := f.GetBool("version"); global.isCLI && ver {
-				exit.OK(fmt.Sprintf("🐱 %s for v.%s", c.Name, version))
+				exit.OK(fmt.Sprintf("🐱 %s for v.%s", c.Name, global.version))
 			}
 
 			// エラーメッセージを組み立てる

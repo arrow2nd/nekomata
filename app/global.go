@@ -9,6 +9,8 @@ import (
 
 // Global : 全体共有
 type Global struct {
+	name                  string
+	version               string
 	currentUsername       string
 	client                sharedapi.Client
 	conf                  *config.Config
@@ -24,6 +26,8 @@ type Global struct {
 }
 
 var global = Global{
+	name:                  "nekomata",
+	version:               "develop",
 	conf:                  nil,
 	isCLI:                 false,
 	chStatus:              make(chan string, 1),

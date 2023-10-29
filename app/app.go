@@ -11,8 +11,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-var version = "develop"
-
 // App : アプリケーション
 type App struct {
 	app                   *tview.Application
