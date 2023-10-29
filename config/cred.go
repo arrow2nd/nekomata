@@ -8,20 +8,25 @@ import (
 
 // Credential : 資格情報
 type Credential struct {
-	// Clients : クライアントのカスタム資格情報
+	// Clients : クライアント
 	Clients map[string]*sharedapi.ClientCredential `toml:"clients"`
 	// Users : ユーザー
 	Users map[string]*sharedapi.UserCredential `tonl:"users"`
 }
 
 // GetClient : クライアントの資格情報を取得
-func (c *Credential) GetClient(service string) (*sharedapi.ClientCredential, error) {
-	cred, ok := c.Clients[service]
+func (c *Credential) GetClient(server string) (*sharedapi.ClientCredential, error) {
+	cred, ok := c.Clients[server]
 	if !ok {
-		return nil, fmt.Errorf("service not found: %s", service)
+		return nil, fmt.Errorf("client credential not found: %s", server)
 	}
 
 	return cred, nil
+}
+
+// AddClient : クライアントの資格情報を追加
+func (c *Credential) AddClient(server string, cred *sharedapi.ClientCredential) {
+	c.Clients[server] = cred
 }
 
 // GetUser : ユーザーの資格情報を取得
@@ -46,8 +51,8 @@ func (c *Credential) GetAllUsernames() []string {
 }
 
 // AddUser : ユーザーの資格情報を追加
-func (c *Credential) AddUser(username string, user *sharedapi.UserCredential) {
-	c.Users[username] = user
+func (c *Credential) AddUser(username string, cred *sharedapi.UserCredential) {
+	c.Users[username] = cred
 }
 
 // DeleteUser : ユーザーの資格情報を削除

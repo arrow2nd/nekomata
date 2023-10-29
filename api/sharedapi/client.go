@@ -3,6 +3,8 @@ package sharedapi
 import "io"
 
 type Client interface {
+	// RegisterNewApplication : サーバーにアプリケーションを登録
+	RegisterNewApplication() (string, string, error)
 	// Authenticate : アプリケーション認証を行なってアクセストークンを取得
 	Authenticate(w io.Writer) (string, error)
 
@@ -79,20 +81,20 @@ type Client interface {
 
 // ClientCredential : クライアントの資格情報
 type ClientCredential struct {
-	Name   string
-	ID     string
-	Secret string
+	// Service : サービス種別
+	Service string
+	Name    string
+	ID      string
+	Secret  string
 }
 
-// HasMissingFields : 構造体のフィールドに欠けがあるか
-func (c *ClientCredential) HasMissingFields() bool {
-	return c.Name == "" || c.ID == "" || c.Secret == ""
+// IsUncertified : 資格情報が無いかどうか
+func (c *ClientCredential) IsUncertified() bool {
+	return c.ID == "" || c.Secret == ""
 }
 
 // UserCredential : ユーザーの資格情報
 type UserCredential struct {
-	// Server : サービス名
-	Service string
 	// Server : 接続先サーバーのURL
 	Server string
 	// Token : トークン

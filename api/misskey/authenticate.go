@@ -102,3 +102,7 @@ func (m *Misskey) recieveToken(sessionID string) (string, error) {
 
 	return authRes.Token, nil
 }
+
+func (m *Misskey) RegisterNewApplication() (string, string, error) {
+	return "", "", nil
+}

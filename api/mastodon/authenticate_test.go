@@ -20,7 +20,7 @@ func TestCreateAuthorizeURL(t *testing.T) {
 		},
 	}
 
-	u := m.createAuthorizeURL([]string{"aaaa", "bbbb"})
+	u := m.createAuthorizeURL("aaaa bbbb")
 
 	endpoint := endpointOauthAuthorize.URL(m.user.Server, nil)
 	want := endpoint + "?client_id=hoge&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&response_type=code&scope=aaaa+bbbb"

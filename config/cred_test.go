@@ -3,7 +3,6 @@ package config
 import (
 	"testing"
 
-	"github.com/arrow2nd/nekomata/api"
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/stretchr/testify/assert"
 )
@@ -11,7 +10,7 @@ import (
 func newTestCredentials() Credential {
 	return Credential{
 		Clients: map[string]*sharedapi.ClientCredential{
-			api.ServiceMastodon: {
+			"https://example.com": {
 				Name:   "nekomata",
 				ID:     "id_1",
 				Secret: "secret_1",

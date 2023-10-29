@@ -33,7 +33,7 @@ func login(username string) error {
 		return err
 	}
 
-	clientCred, err := global.conf.Creds.GetClient(userCred.Service)
+	clientCred, err := global.conf.Creds.GetClient(userCred.Server)
 	if err != nil {
 		return err
 	}
@@ -84,21 +84,35 @@ func authenticateAndSaveCredential() (*sharedapi.Account, error) {
 
 	// TODO: 入力されたドメインが選択したサービスのものか確認してもよさそう
 
-	// クライアントの資格情報を取得
-	clientCred, err := global.conf.Creds.GetClient(service)
-	if err != nil {
-		return nil, err
+	clientCred, _ := global.conf.Creds.GetClient(server)
+	if clientCred == nil {
+		clientCred = &sharedapi.ClientCredential{
+			Name:    global.name,
+			Service: service,
+		}
 	}
 
 	userCred := &sharedapi.UserCredential{
-		Service: service,
-		Server:  server,
+		Server: server,
 	}
 
 	// クライアントを作成
 	client, err := api.NewClient(clientCred, userCred)
 	if err != nil {
 		return nil, err
+	}
+
+	// 資格情報が空ならアプリケーションをサーバーに登録
+	if clientCred.IsUncertified() {
+		id, secret, err := client.RegisterNewApplication()
+		if err != nil {
+			return nil, err
+		}
+
+		clientCred.ID = id
+		clientCred.Secret = secret
+
+		global.conf.Creds.AddClient(server, clientCred)
 	}
 
 	// アプリケーション認証
@@ -115,6 +129,7 @@ func authenticateAndSaveCredential() (*sharedapi.Account, error) {
 	}
 
 	global.conf.Creds.AddUser(account.Username, userCred)
+
 	if err := global.conf.SaveCred(); err != nil {
 		return nil, err
 	}

@@ -69,5 +69,5 @@ func RecieveAuthenticateCode(queryName string, validator func(string) bool) (str
 
 // PrintAuthenticateURL : 認証用URLを出力
 func PrintAuthenticateURL(w io.Writer, u string) {
-	fmt.Fprintf(w, "Please access the following URL to approve the application\n\n%s\n", u)
+	fmt.Fprintf(w, "Please access the following URL to approve the application\n\n%s\n\n", u)
 }

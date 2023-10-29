@@ -7,6 +7,7 @@ import (
 const (
 	endpointOauthAuthorize    sharedapi.Endpoint = "/oauth/authorize"
 	endpointOauthToken        sharedapi.Endpoint = "/oauth/token"
+	endpointApps              sharedapi.Endpoint = "/api/v1/apps"
 	endpointAnnouncements     sharedapi.Endpoint = "/api/v1/announcements"
 	endpointStatuses          sharedapi.Endpoint = "/api/v1/statuses"
 	endpointFavourite         sharedapi.Endpoint = "/api/v1/statuses/:id/favourite"

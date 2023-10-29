@@ -1,9 +1,6 @@
 package config
 
-import (
-	"github.com/arrow2nd/nekomata/api"
-	"github.com/arrow2nd/nekomata/api/sharedapi"
-)
+import "github.com/arrow2nd/nekomata/api/sharedapi"
 
 // Config : 設定
 type Config struct {
@@ -23,14 +20,9 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
-	defaultClients := map[string]*sharedapi.ClientCredential{}
-	for _, s := range api.GetAllServices() {
-		defaultClients[s] = &sharedapi.ClientCredential{}
-	}
-
 	return &Config{
 		Creds: &Credential{
-			Clients: defaultClients,
+			Clients: map[string]*sharedapi.ClientCredential{},
 			Users:   map[string]*sharedapi.UserCredential{},
 		},
 		Pref:    defaultPreferences(),

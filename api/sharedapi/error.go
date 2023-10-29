@@ -33,8 +33,9 @@ func (h *HTTPError) Error() string {
 }
 
 type DecodeError struct {
-	URL string
-	Err error
+	Response interface{}
+	URL      string
+	Err      error
 }
 
 func (d *DecodeError) Error() string {

@@ -11,33 +11,20 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
-var (
-	defaultClientCredential = sharedapi.ClientCredential{
-		Name:   "",
-		ID:     "",
-		Secret: "",
-	}
-)
-
 type Mastodon struct {
 	client *sharedapi.ClientCredential
 	user   *sharedapi.UserCredential
 }
 
 func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (*Mastodon, error) {
-	mastodon := &Mastodon{
+	if c == nil {
+		return nil, errors.New("mastodon: client credential is empty")
+	}
+
+	return &Mastodon{
 		client: c,
 		user:   u,
-	}
-
-	if c == nil || c.HasMissingFields() {
-		if defaultClientCredential.HasMissingFields() {
-			return nil, errors.New("client credentials are missing. please edit `.credentials.toml` with `nekomata edit`")
-		}
-		mastodon.client = &defaultClientCredential
-	}
-
-	return mastodon, nil
+	}, nil
 }
 
 type requestOpts struct {
