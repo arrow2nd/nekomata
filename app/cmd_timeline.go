@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/arrow2nd/nekomata/cli"
 	"github.com/spf13/pflag"
 )
@@ -35,7 +37,13 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 
 		go func() {
 			if err := page.Load(); err != nil {
-				global.SetErrorStatus(string(t), err.Error())
+				label := fmt.Sprintf("load (%s)", t)
+				global.SetErrorStatus(label, err.Error())
+			}
+
+			if err := page.StreamingRun(); err != nil {
+				label := fmt.Sprintf("streaming (%s)", t)
+				global.SetErrorStatus(label, err.Error())
 			}
 		}()
 

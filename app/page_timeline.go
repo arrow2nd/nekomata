@@ -66,9 +66,6 @@ func (t *timelinePage) Load() error {
 		err     error
 	)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	t.staremCancel = cancel
-
 	// タイムラインを取得
 	switch t.kind {
 	case homeTimeline:
@@ -88,6 +85,17 @@ func (t *timelinePage) Load() error {
 		return err
 	}
 
+	return err
+}
+
+func (t *timelinePage) OnDelete() {
+	t.staremCancel()
+}
+
+func (t *timelinePage) StreamingRun() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	t.staremCancel = cancel
+
 	// TODO: 非対応の場合も考慮したい
 	opts := &sharedapi.StreamingTimelineOpts{
 		Context: ctx,
@@ -106,19 +114,14 @@ func (t *timelinePage) Load() error {
 		},
 	}
 
-	// ストリームを開始
 	switch t.kind {
 	case homeTimeline:
-		err = global.client.StreamingHomeTimeline(opts)
+		return global.client.StreamingHomeTimeline(opts)
 	case globalTimeline:
-		err = global.client.StreamingGlobalTimeline(opts)
+		return global.client.StreamingGlobalTimeline(opts)
 	case localTimeline:
-		err = global.client.StreamingLocalTimeline(opts)
+		return global.client.StreamingLocalTimeline(opts)
 	}
 
-	return err
-}
-
-func (t *timelinePage) OnDelete() {
-	t.staremCancel()
+	return nil
 }

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -19,8 +21,12 @@ type page interface {
 func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, error) {
 	handler := map[string]func(){
 		config.ActionReloadPage: func() {
-			// TODO: エラーハンドリングする
-			go p.Load()
+			go func() {
+				if err := p.Load(); err != nil {
+					label := fmt.Sprintf("load (%s)", p.GetName())
+					global.SetErrorStatus(label, err.Error())
+				}
+			}()
 		},
 	}
 
