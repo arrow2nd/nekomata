@@ -3,7 +3,6 @@ package app
 import (
 	"testing"
 
-	"github.com/arrow2nd/nekomata/config"
 	"github.com/mattn/go-runewidth"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,46 +14,6 @@ func TestOpenExternalEditor(t *testing.T) {
 		err := a.openExternalEditor("")
 		assert.EqualError(t, err, "please specify which editor to use")
 	})
-}
-
-func TestGetStringDisplayRow(t *testing.T) {
-	tests := []struct {
-		name string
-		s    string
-		w    int
-		want int
-	}{
-		{
-			name: "半角文字",
-			s:    "morino",
-			w:    1,
-			want: 6,
-		},
-		{
-			name: "全角文字",
-			s:    "杜野",
-			w:    10,
-			want: 1,
-		},
-		{
-			name: "複数行に渡る文字列",
-			s:    "serizawa_asahi,mayuzumi_fuyuko,izumi_mei",
-			w:    10,
-			want: 4,
-		},
-		{
-			name: "改行を含む文字列",
-			s:    "osaki_tenka\nosaki_amana\nkuwayama_chiyuki",
-			w:    11,
-			want: 4,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := getStringDisplayRow(tt.s, tt.w)
-			assert.Equal(t, tt.want, got)
-		})
-	}
 }
 
 func TestGetHighlightId(t *testing.T) {
@@ -173,41 +132,6 @@ func TestTruncate(t *testing.T) {
 	}
 }
 
-func TestTrimEndNewline(t *testing.T) {
-	tests := []struct {
-		name string
-		s    string
-		want string
-	}{
-		{
-			name: "改行がない",
-			s:    "komiya_kaho",
-			want: "komiya_kaho",
-		},
-		{
-			name: "改行を削除(CR)",
-			s:    "tsukioka_kogane\r",
-			want: "tsukioka_kogane",
-		},
-		{
-			name: "改行を削除(LF)",
-			s:    "mitsumine_yuika\n",
-			want: "mitsumine_yuika",
-		},
-		{
-			name: "改行を削除(CRLF)",
-			s:    "tanaka_mamimi\r\n",
-			want: "tanaka_mamimi",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := trimEndNewline(tt.s)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
 func TestSplit(t *testing.T) {
 	tests := []struct {
 		name string
@@ -235,105 +159,6 @@ func TestSplit(t *testing.T) {
 			got, err := split(tt.s)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestReplaceLayoutTag(t *testing.T) {
-	tests := []struct {
-		name string
-		l    string
-		t    string
-		s    string
-		want string
-	}{
-		{
-			name: "置換できるか",
-			l:    "I am {test} man",
-			t:    "{test}",
-			s:    "iron",
-			want: "I am iron man",
-		},
-		{
-			name: "置換文字列がある場合タグ末尾の空白文字が残るか",
-			l:    "{test}\t",
-			t:    "{test}",
-			s:    "neko-chan",
-			want: "neko-chan\t",
-		},
-		{
-			name: "置換文字列が空の場合タグ末尾の空白文字が消去されるか",
-			l:    "{test}\n",
-			t:    "{test}",
-			s:    "",
-			want: "",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := replaceLayoutTag(tt.l, tt.t, tt.s)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestCreateSeparator(t *testing.T) {
-	global = Global{
-		conf: &config.Config{
-			Style: &config.Style{
-				Tweet: config.TweetStyle{
-					Separator: "style_sep",
-				},
-			},
-		},
-	}
-
-	t.Run("生成できるか", func(t *testing.T) {
-		s := createSeparator("-", 10)
-		want := "[style_sep]----------[-:-:-]"
-
-		assert.Equal(t, want, s)
-	})
-}
-
-func TestCreateMetricsString(t *testing.T) {
-	tests := []struct {
-		name    string
-		unit    string
-		style   string
-		count   int
-		reverse bool
-		want    string
-	}{
-		{
-			name:    "いいね無し",
-			unit:    "Fav",
-			style:   "pink",
-			count:   0,
-			reverse: false,
-			want:    "",
-		},
-		{
-			name:    "1いいね",
-			unit:    "Fav",
-			style:   "pink",
-			count:   1,
-			reverse: false,
-			want:    "[pink]1Fav[-:-:-]",
-		},
-		{
-			name:    "2いいね",
-			unit:    "Fav",
-			style:   "pink",
-			count:   2,
-			reverse: false,
-			want:    "[pink]2Favs[-:-:-]",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := createMetricsString(tt.unit, tt.style, tt.count)
-			assert.Equal(t, tt.want, s)
 		})
 	}
 }

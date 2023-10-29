@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"math"
 	"os"
 	"os/exec"
 	"regexp"
@@ -57,21 +56,6 @@ func getWindowWidth() int {
 	return w - 2
 }
 
-// getStringDisplayRow : 文字列の表示行数を取得
-func getStringDisplayRow(s string, w int) int {
-	row := 0
-
-	// Color Tag・ハイライトタグを削除
-	tagDeleted := replaceAll(s, `\[(.+?:.+?:.+?|".*?")\]`, "")
-
-	for _, s := range strings.Split(tagDeleted, "\n") {
-		r := int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
-		row += r
-	}
-
-	return row
-}
-
 // getHighlightId : ハイライト一覧からIDを取得（見つからない場合 -1 が返る）
 func getHighlightId(ids []string) int {
 	if ids == nil {
@@ -107,17 +91,6 @@ func truncate(s string, w int) string {
 	return runewidth.Truncate(s, w, "…")
 }
 
-// trimEndNewline : 末尾の改行を削除
-func trimEndNewline(s string) string {
-	s = strings.TrimRight(s, "\n")
-
-	if strings.HasSuffix(s, "\r") {
-		s = strings.TrimRight(s, "\r")
-	}
-
-	return s
-}
-
 // split : 文字列をスペースで分割（ダブルクオートで囲まれた部分は残す）
 func split(s string) ([]string, error) {
 	r := csv.NewReader(strings.NewReader(s))
@@ -129,41 +102,6 @@ func split(s string) ([]string, error) {
 func replaceAll(str, reg, rep string) string {
 	replace := regexp.MustCompile(reg)
 	return replace.ReplaceAllString(str, rep)
-}
-
-// replaceLayoutTag : レイアウトタグを置換
-func replaceLayoutTag(l, tag, newStr string) string {
-	// newStrが空なら、タグと後ろにある空白文字を削除
-	// NOTE: 後ろに改行がある場合に無駄な空白行ができるのを防止
-	if newStr == "" {
-		return replaceAll(l, tag+"\\s?", "")
-	}
-
-	return strings.ReplaceAll(l, tag, newStr)
-}
-
-// createStyledText : スタイル適応済みの文字列を作成
-func createStyledText(style, text string) string {
-	return fmt.Sprintf("[%s]%s[-:-:-]", style, text)
-}
-
-// createSeparator : 指定幅のセパレータ文字列を作成
-func createSeparator(s string, width int) string {
-	return createStyledText(
-		global.conf.Style.Tweet.Separator,
-		strings.Repeat(s, width),
-	)
-}
-
-// createMetricsString : ツイートのリアクション数文字列を作成
-func createMetricsString(unit, style string, count int) string {
-	if count <= 0 {
-		return ""
-	} else if count > 1 {
-		unit += "s"
-	}
-
-	return createStyledText(style, strconv.Itoa(count)+unit)
 }
 
 // createStatusMessage : ラベル付きステータスメッセージを作成

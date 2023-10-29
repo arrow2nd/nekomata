@@ -2,10 +2,17 @@ package layout
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/mattn/go-runewidth"
 )
+
+// PrintSeparator : セパレータを表示
+func (l *Layout) PrintSeparator(s string) {
+	sep := createStyledText(l.Style.Tweet.Separator, strings.Repeat(s, l.Width), "")
+	fmt.Fprintln(l.Writer, sep)
+}
 
 func createStyledText(style, text, url string) string {
 	return fmt.Sprintf("[%s:%s]%s[-:-:-:-]", style, url, text)

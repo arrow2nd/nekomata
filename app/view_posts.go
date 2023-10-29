@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
@@ -244,8 +243,6 @@ func (p *postList) DeletePost(id string) error {
 func (p *postList) draw(cursorPos int) error {
 	// icon := global.conf.Pref.Icon
 	appearance := global.conf.Pref.Appearance
-	width := getWindowWidth()
-
 	p.textView.
 		SetTextAlign(tview.AlignLeft).
 		Clear()
@@ -306,7 +303,7 @@ func (p *postList) draw(cursorPos int) error {
 
 		// 末尾のツイート以外ならセパレータを挿入
 		if i < p.GetPostsCount()-1 {
-			fmt.Fprintln(p.textView, createSeparator(appearance.TweetSeparator, width))
+			p.layout.PrintSeparator(appearance.TweetSeparator)
 		}
 	}
 
