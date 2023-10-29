@@ -20,8 +20,14 @@ func CreatePostSeparator(sep string, w int) string {
 	return ""
 }
 
-// Post : ポストのレイアウトを作成
-func (l *Layout) Post(i int, p *sharedapi.Post) error {
+// PrintPost : ポストを表示
+func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
+	// ピン止めツイート
+	// TODO: 後で対応する
+	// if i == 0 && t.pinned != nil {
+	// 	annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", icon.Pinned)
+	// }
+
 	// リポストなら元ポストに置き換える
 	if p.Reference != nil {
 		l.printAnnotation("Reposted by", p.Author.DisplayName, "@"+p.Author.Username)

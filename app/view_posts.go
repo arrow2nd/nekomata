@@ -261,48 +261,12 @@ func (p *postList) draw(cursorPos int) error {
 	}
 
 	for i, post := range contents {
-		// var quoted *sharedapi.Post
-		// annotation := ""
-
-		// 参照ツイートを確認
-		// for _, rc := range content.ReferencedTweets {
-		// 	switch rc.Reference.Type {
-		// 	case "retweeted":
-		// 		annotation += createAnnotation("RT by", content.Author)
-		// 		content = rc.TweetDictionary
-		// 	case "replied_to":
-		// 		annotation += createAnnotation("Reply to", rc.TweetDictionary.Author)
-		// 	case "quoted":
-		// 		quotedTweet = rc.TweetDictionary
-		// 	}
-		// }
-
-		// ピン留めツイート
-		// if i == 0 && t.pinned != nil {
-		// 	annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", icon.Pinned)
-		// }
-		if err := p.layout.Post(i, post); err != nil {
+		if err := p.layout.PrintPost(i, post); err != nil {
 			return err
 		}
 
-		// fmt.Fprintf(p.textView, "%s\n", post.Text)
-
-		// 引用元ツイートを表示
-		// if quotedTweet != nil {
-		// 	if !appearance.HideQuoteTweetSeparator {
-		// 		fmt.Fprintln(t.view, createSeparator(appearance.QuoteTweetSeparator, width))
-		// 	}
-		//
-		// 	fmt.Fprintln(t.view, createTweetLayout("", quotedTweet, -1, width))
-		// }
-
-		// セパレータを挿入しない
-		if appearance.HideTweetSeparator {
-			continue
-		}
-
 		// 末尾のツイート以外ならセパレータを挿入
-		if i < p.GetPostsCount()-1 {
+		if !appearance.HideTweetSeparator || i < p.GetPostsCount()-1 {
 			p.layout.PrintSeparator(appearance.TweetSeparator)
 		}
 	}
