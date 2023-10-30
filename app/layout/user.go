@@ -10,11 +10,11 @@ import (
 )
 
 func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
-	name := truncate(u.DisplayName, l.Width)
+	name := Truncate(u.DisplayName, l.Width)
 
 	// DisplayNameが無い場合はUsernameを使う
 	if name == "" {
-		name = truncate(u.Username, l.Width)
+		name = Truncate(u.Username, l.Width)
 	}
 
 	// カーソル選択用のタグを埋め込む
@@ -24,10 +24,10 @@ func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
 
 	funcMap := template.FuncMap{
 		"displayName": func() string {
-			return createStyledText(l.Style.User.Name, name, "")
+			return CreateStyledText(l.Style.User.Name, name, "")
 		},
 		"username": func() string {
-			return createStyledText(l.Style.User.UserName, truncate("@"+u.Username, l.Width/2), "")
+			return CreateStyledText(l.Style.User.UserName, Truncate("@"+u.Username, l.Width/2), "")
 		},
 		"badges": func() string {
 			badges := []string{}
@@ -35,14 +35,14 @@ func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
 			if u.Verified {
 				badges = append(
 					badges,
-					createStyledText(l.Style.User.Verified, l.Icon.Verified, ""),
+					CreateStyledText(l.Style.User.Verified, l.Icon.Verified, ""),
 				)
 			}
 
 			if u.Private {
 				badges = append(
 					badges,
-					createStyledText(l.Style.User.Private, l.Icon.Private, ""),
+					CreateStyledText(l.Style.User.Private, l.Icon.Private, ""),
 				)
 			}
 

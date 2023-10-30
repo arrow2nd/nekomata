@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 
+	"github.com/arrow2nd/nekomata/app/layout"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -44,24 +45,11 @@ func (s *statusBar) Init() {
 // DrawAccountInfo : ログイン中のアカウント情報を描画
 func (s *statusBar) DrawAccountInfo() {
 	s.leftView.Clear()
-
-	fmt.Fprintf(
-		s.leftView,
-		" [%s]@%s[-:-:-]",
-		global.conf.Style.StatusBar.Text,
-		"",
-		// shared.api.CurrentUser.UserName,
-	)
+	fmt.Fprintf(s.leftView, layout.CreateStyledText(global.conf.Style.StatusBar.Text, " @"+global.currentUsername, ""))
 }
 
 // DrawPageIndicator : 現在のページのインジケータを描画
 func (s *statusBar) DrawPageIndicator(d string) {
 	s.rightView.Clear()
-
-	fmt.Fprintf(
-		s.rightView,
-		"[%s]%s[-:-:-] ",
-		global.conf.Style.StatusBar.Text,
-		d,
-	)
+	fmt.Fprintf(s.rightView, layout.CreateStyledText(global.conf.Style.StatusBar.Text, d, ""))
 }

@@ -58,7 +58,7 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 			// ブックマーク済み
 			if p.Bookmarked {
-				metrics = append(metrics, createStyledText(l.Style.Tweet.Bookmarked, l.Text.Bookmarked, ""))
+				metrics = append(metrics, CreateStyledText(l.Style.Tweet.Bookmarked, l.Text.Bookmarked, ""))
 			}
 
 			// リポスト数
@@ -102,20 +102,20 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 func (l *Layout) printAnnotation(t ...string) {
 	text := strings.Join(t, " ")
-	fmt.Fprintln(l.Writer, createStyledText(l.Style.Tweet.Annotation, text, ""))
+	fmt.Fprintln(l.Writer, CreateStyledText(l.Style.Tweet.Annotation, text, ""))
 }
 
 func (l *Layout) createPostStr(p *sharedapi.Post) string {
 	text := p.Text
 
 	// メンションをハイライト
-	styledMention := createStyledText(l.Style.Tweet.Mention, "$1@$2", "")
+	styledMention := CreateStyledText(l.Style.Tweet.Mention, "$1@$2", "")
 	text = regexp.MustCompile(`(^|[^\w@#$%&/])@(\w+)`).ReplaceAllString(text, styledMention)
 
 	// ハッシュタグをハイライト
 	for _, tag := range p.Tags {
 		re := regexp.MustCompile(fmt.Sprintf(`(?i)[#＃](%s\s|%s$)`, tag.Name, tag.Name))
-		styledHashtag := createStyledText(l.Style.Tweet.HashTag, "#$1", tag.URL)
+		styledHashtag := CreateStyledText(l.Style.Tweet.HashTag, "#$1", tag.URL)
 		text = re.ReplaceAllString(text, styledHashtag)
 	}
 
@@ -139,7 +139,7 @@ func (l *Layout) createPostDetail(p *sharedapi.Post) (string, error) {
 		return "", err
 	}
 
-	return createStyledText(l.Style.Tweet.Detail, buf.String(), ""), nil
+	return CreateStyledText(l.Style.Tweet.Detail, buf.String(), ""), nil
 }
 
 func (l *Layout) createMetricsStr(r *sharedapi.Reaction, normalStyle, revStyle string) string {
@@ -153,5 +153,5 @@ func (l *Layout) createMetricsStr(r *sharedapi.Reaction, normalStyle, revStyle s
 	}
 
 	text := fmt.Sprintf("%s %d", r.Name, r.Count)
-	return createStyledText(style, text, "")
+	return CreateStyledText(style, text, "")
 }
