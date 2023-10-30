@@ -10,16 +10,8 @@ import (
 
 // PrintSeparator : セパレータを表示
 func (l *Layout) PrintSeparator(s string) {
-	sep := createStyledText(l.Style.Tweet.Separator, strings.Repeat(s, l.Width), "")
+	sep := CreateStyledText(l.Style.Tweet.Separator, strings.Repeat(s, l.Width), "")
 	fmt.Fprintln(l.Writer, sep)
-}
-
-func createStyledText(style, text, url string) string {
-	return fmt.Sprintf("[%s:%s]%s[-:-:-:-]", style, url, text)
-}
-
-func truncate(s string, l int) string {
-	return runewidth.Truncate(s, l, "…")
 }
 
 func (l *Layout) convertDateString(createAt time.Time) string {
@@ -44,4 +36,14 @@ func isSameDate(t time.Time) bool {
 	t2 := time.Date(fixedTime.Year(), fixedTime.Month(), fixedTime.Day(), 0, 0, 0, 0, location)
 
 	return t1.Equal(t2)
+}
+
+// CreateStyledText : スタイルありのテキストを作成
+func CreateStyledText(style, text, url string) string {
+	return fmt.Sprintf("[%s:%s]%s[-:-:-:-]", style, url, text)
+}
+
+// Truncate : …で省略
+func Truncate(s string, l int) string {
+	return runewidth.Truncate(s, l, "…")
 }
