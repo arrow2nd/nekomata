@@ -57,6 +57,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("リクエストに失敗", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: "http://localhost:9999",
 			},
@@ -72,6 +75,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("アクセス失敗", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
@@ -87,6 +93,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("JSONデコードエラー", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
@@ -107,6 +116,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("エラーレスポンス", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
@@ -122,6 +134,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("指定した内容がヘッダーにあるか", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
@@ -141,6 +156,9 @@ func TestRequest(t *testing.T) {
 
 	t.Run("指定したメソッドで送信できているか", func(t *testing.T) {
 		m := &Mastodon{
+			client: &sharedapi.ClientCredential{
+				Name: "hoge",
+			},
 			user: &sharedapi.UserCredential{
 				Server: ts.URL,
 			},
