@@ -42,13 +42,20 @@ func (m *Mastodon) request(opts *requestOpts, out interface{}) error {
 		return fmt.Errorf("create request error (%s): %w", opts.url, err)
 	}
 
+	if m.client.Name != "" {
+		req.Header.Set("User-Agent", m.client.Name)
+	}
+
 	if opts.isAuth {
 		req.Header.Set("Authorization", "Bearer "+m.user.Token)
 	}
 
+	ct := "application/x-www-form-urlencoded"
 	if opts.contentType != "" {
-		req.Header.Set("Content-Type", opts.contentType)
+		ct = opts.contentType
 	}
+
+	req.Header.Set("Content-Type", ct)
 
 	if opts.q != nil {
 		req.URL.RawQuery = opts.q.Encode()
