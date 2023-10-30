@@ -1,12 +1,14 @@
 package mastodon
 
 import (
+	"context"
 	"encoding/json"
 	"net/url"
 	"strings"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
-	"golang.org/x/net/websocket"
+	"nhooyr.io/websocket"
+	"nhooyr.io/websocket/wsjson"
 )
 
 type event struct {
@@ -25,27 +27,25 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *sharedapi.StreamingTimeli
 	q.Add("access_token", m.user.Token)
 	url.RawQuery = q.Encode()
 
-	conn, err := websocket.Dial(url.String(), "", m.user.Server)
+	conn, _, err := websocket.Dial(context.Background(), url.String(), nil)
 	if err != nil {
 		return err
 	}
 
 	go func() {
 		<-opts.Context.Done()
-		conn.Close()
+		conn.CloseNow()
 	}()
 
 	for {
-		var res event
-		err := websocket.JSON.Receive(conn, &res)
-
 		select {
 		case <-opts.Context.Done():
 			return nil // 終了
 		default:
 		}
 
-		if err != nil {
+		var res event
+		if err := wsjson.Read(context.Background(), conn, &res); err != nil {
 			opts.OnError(err)
 			break // 再接続
 		}
