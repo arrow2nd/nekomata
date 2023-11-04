@@ -34,12 +34,12 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 	}
 
 	layout := &layout.Layout{
-		Width:        getWindowWidth(),
-		Template:     &global.conf.Pref.Template,
-		Appearancene: &global.conf.Pref.Appearance,
-		Text:         &global.conf.Pref.Text,
-		Icon:         &global.conf.Pref.Icon,
-		Style:        global.conf.Style,
+		Width:      getWindowWidth(),
+		Template:   &global.conf.Pref.Template,
+		Appearance: &global.conf.Pref.Appearance,
+		Text:       &global.conf.Pref.Text,
+		Icon:       &global.conf.Pref.Icon,
+		Style:      global.conf.Style,
 	}
 
 	postsView, err := newPostsView(layout)
@@ -61,7 +61,7 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 func (t *timelinePage) Load() error {
 	var (
 		sinceID = t.postList.GetSinceId()
-		limit   = global.conf.Pref.Feature.LoadTweetsLimit
+		limit   = global.conf.Pref.Feature.LoadPostCount
 		posts   []*sharedapi.Post
 		err     error
 	)

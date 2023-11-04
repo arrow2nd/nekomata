@@ -7,11 +7,11 @@ import (
 )
 
 type Layout struct {
-	Writer       io.Writer
-	Width        int
-	Template     *config.Template
-	Appearancene *config.Appearancene
-	Text         *config.Text
-	Icon         *config.Icon
-	Style        *config.Style
+	Writer     io.Writer
+	Width      int
+	Template   *config.Template
+	Appearance *config.Appearance
+	Text       *config.Text
+	Icon       *config.Icon
+	Style      *config.Style
 }

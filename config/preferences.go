@@ -6,11 +6,11 @@ const PreferencesVersion = 1
 type Feature struct {
 	// MainUser : メインで使用するユーザー
 	MainUser string `toml:"main_user"`
-	// LoadTweetsLimit : 1度に読み込むツイート数
-	LoadTweetsLimit int `toml:"load_tweets_limit"`
-	// AccmulateTweetsLimit : ツイートの最大蓄積数
-	AccmulateTweetsLimit int `toml:"accmulate_tweets_limit"`
-	// UseExternalEditor : ツイート編集に外部エディタを使用するか
+	// LoadPostCount : 1度に読み込む投稿数
+	LoadPostCount int `toml:"load_post_count"`
+	// MaxPostCount : 投稿の最大蓄積数
+	MaxPostCount int `toml:"max_post_count"`
+	// UseExternalEditor : 投稿内容に編集に外部エディタを使用するか
 	UseExternalEditor bool `toml:"use_external_editor"`
 	// IsLocaleCJK : ロケールがCJKか
 	IsLocaleCJK bool `toml:"is_locale_cjk"`
@@ -18,8 +18,8 @@ type Feature struct {
 	StartupCmds []string `toml:"startup_cmds"`
 }
 
-// Appearancene : 外観
-type Appearancene struct {
+// Appearance : 外観
+type Appearance struct {
 	// StyleFilePath : 配色テーマファイルのパス
 	StyleFilePath string `toml:"style_file"`
 	// DateFormat : 日付のフォーマット
@@ -54,8 +54,8 @@ type Appearancene struct {
 type Template struct {
 	// Post : 投稿
 	Post string `toml:"post"`
-	// PostAnotation : 投稿のアノテーション
-	PostAnotation string `toml:"post_anotation"`
+	// PostAnnotation : 投稿のアノテーション
+	PostAnnotation string `toml:"post_annotation"`
 	// PostDetail : ツイート詳細
 	PostDetail string `toml:"post_detail"`
 	// TweetPoll : 投票
@@ -137,7 +137,7 @@ type Preferences struct {
 	Version     int             `toml:"version"`
 	Feature     Feature         `toml:"feature"`
 	Confirm     map[string]bool `toml:"comfirm"`
-	Appearance  Appearancene    `toml:"appearance"`
+	Appearance  Appearance      `toml:"appearance"`
 	Template    Template        `toml:"template"`
 	Text        Text            `toml:"text"`
 	Icon        Icon            `toml:"icon"`
@@ -149,11 +149,11 @@ func defaultPreferences() *Preferences {
 	return &Preferences{
 		Version: PreferencesVersion,
 		Feature: Feature{
-			MainUser:             "",
-			LoadTweetsLimit:      25,
-			AccmulateTweetsLimit: 250,
-			UseExternalEditor:    false,
-			IsLocaleCJK:          true,
+			MainUser:          "",
+			LoadPostCount:     25,
+			MaxPostCount:      250,
+			UseExternalEditor: false,
+			IsLocaleCJK:       true,
 			StartupCmds: []string{
 				"home",
 			},
@@ -173,7 +173,7 @@ func defaultPreferences() *Preferences {
 			"tweet":     true,
 			"quit":      true,
 		},
-		Appearance: Appearancene{
+		Appearance: Appearance{
 			StyleFilePath:           "style_default.toml",
 			DateFormat:              "2006/01/02",
 			TimeFormat:              "15:04:05",
@@ -191,7 +191,7 @@ func defaultPreferences() *Preferences {
 		},
 		Template: Template{
 			Post:            "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}",
-			PostAnotation:   "{text} {author_name} {author_username}",
+			PostAnnotation:  "{text} {author_name} {author_username}",
 			PostDetail:      "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
 			TweetPoll:       "",
 			TweetPollGraph:  "",

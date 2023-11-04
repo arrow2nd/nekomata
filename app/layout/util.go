@@ -12,9 +12,9 @@ func (l *Layout) convertDateString(createAt time.Time) string {
 
 	// 今日の日付なら時刻のみを表示
 	if isSameDate(createAt) {
-		format = l.Appearancene.TimeFormat
+		format = l.Appearance.TimeFormat
 	} else {
-		format = fmt.Sprintf("%s %s", l.Appearancene.DateFormat, l.Appearancene.TimeFormat)
+		format = fmt.Sprintf("%s %s", l.Appearance.DateFormat, l.Appearance.TimeFormat)
 	}
 
 	return createAt.Local().Format(format)

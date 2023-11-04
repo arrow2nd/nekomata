@@ -212,7 +212,7 @@ func (p *postList) addPosts(posts []*sharedapi.Post) int {
 	size := len(p.posts)
 	addSize := len(posts)
 	allSize := size + addSize
-	maxSize := global.conf.Pref.Feature.AccmulateTweetsLimit
+	maxSize := global.conf.Pref.Feature.MaxPostCount
 
 	// 最大蓄積数を超えていたら古いものから削除
 	if allSize > maxSize {

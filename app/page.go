@@ -10,7 +10,7 @@ import (
 
 type page interface {
 	GetName() string
-	GetPrimivite() tview.Primitive
+	GetPrimitive() tview.Primitive
 	Load() error
 	OnActive()
 	OnInactive()
@@ -60,8 +60,8 @@ func (b *basePage) GetName() string {
 	return b.name
 }
 
-// GetPrimivite : プリミティブを取得
-func (b *basePage) GetPrimivite() tview.Primitive {
+// GetPrimitive : プリミティブを取得
+func (b *basePage) GetPrimitive() tview.Primitive {
 	return b.frame
 }
 

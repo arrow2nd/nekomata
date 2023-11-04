@@ -85,7 +85,7 @@ func (v *view) AddPage(p page, focus bool) error {
 
 	// ページ・タブを追加
 	v.pageItems[newTab] = p
-	v.pages.AddPage(newTab, p.GetPrimivite(), true, focus)
+	v.pages.AddPage(newTab, p.GetPrimitive(), true, focus)
 	v.addTab(newTab)
 
 	// フォーカスが当たっているならタブをハイライト
