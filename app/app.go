@@ -35,6 +35,8 @@ func New() *App {
 
 // Init : 初期化
 func (a *App) Init() error {
+	global.app = a.app
+
 	if err := a.loadConfig(); err != nil {
 		return err
 	}

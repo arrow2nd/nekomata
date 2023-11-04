@@ -16,12 +16,14 @@ func CreatePostHighlightTag(id int) string {
 }
 
 // CreatePostSeparator : セパレータを作成
-func CreatePostSeparator(sep string, w int) string {
-	return ""
+func (l *Layout) CreatePostSeparator(sep string, w int) string {
+	return CreateStyledText(l.Style.Tweet.Separator, strings.Repeat(sep, l.Width), "")
 }
 
-// PrintPost : ポストを表示
-func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
+// CreatePost : 投稿のレイアウトを作成
+func (l *Layout) CreatePost(i int, p *sharedapi.Post) (string, error) {
+	layout := ""
+
 	// ピン止めツイート
 	// TODO: 後で対応する
 	// if i == 0 && t.pinned != nil {
@@ -30,7 +32,7 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 	// リポストなら元ポストに置き換える
 	if p.Reference != nil {
-		l.printAnnotation("Reposted by", p.Author.DisplayName, "@"+p.Author.Username)
+		layout += l.createAnnotation("Reposted by", p.Author.DisplayName, "@"+p.Author.Username)
 		p = p.Reference
 	}
 
@@ -40,15 +42,15 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 		for _, u := range p.Mentions {
 			users = append(users, u.DisplayName+" @"+u.Username)
 		}
-		l.printAnnotation("Reply to", strings.Join(users, ", "))
+		layout += l.createAnnotation("Reply to", strings.Join(users, ", "))
 	}
 
 	funcMap := template.FuncMap{
 		"author": func() (string, error) {
-			return l.createUserStr(i, p.Author)
+			return l.createUser(i, p.Author)
 		},
 		"text": func() string {
-			return l.createPostStr(p)
+			return l.createPostText(p)
 		},
 		"detail": func() (string, error) {
 			return l.createPostDetail(p)
@@ -63,7 +65,7 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 			// リポスト数
 			if p.RepostCount > 0 {
-				text := l.createMetricsStr(&sharedapi.Reaction{
+				text := l.createPostMetrics(&sharedapi.Reaction{
 					Name:    l.Text.Repost,
 					Count:   p.RepostCount,
 					Reacted: p.Reposted,
@@ -74,7 +76,7 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 			// リアクション
 			for _, r := range p.Reactions {
-				if text := l.createMetricsStr(&r, l.Style.Tweet.Like, l.Style.Tweet.Liked); text != "" {
+				if text := l.createPostMetrics(&r, l.Style.Tweet.Like, l.Style.Tweet.Liked); text != "" {
 					metrics = append(metrics, text)
 				}
 			}
@@ -85,27 +87,24 @@ func (l *Layout) PrintPost(i int, p *sharedapi.Post) error {
 
 	t, err := template.New("post").Funcs(funcMap).Parse(l.Template.Post)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	buf := bytes.Buffer{}
 	if err := t.Execute(&buf, *p); err != nil {
-		return err
+		return "", err
 	}
 
 	// 不要な改行を除く
-	post := strings.TrimSpace(buf.String())
-	fmt.Fprintln(l.Writer, post)
-
-	return nil
+	return strings.TrimSpace(buf.String()), nil
 }
 
-func (l *Layout) printAnnotation(t ...string) {
+func (l *Layout) createAnnotation(t ...string) string {
 	text := strings.Join(t, " ")
-	fmt.Fprintln(l.Writer, CreateStyledText(l.Style.Tweet.Annotation, text, ""))
+	return CreateStyledText(l.Style.Tweet.Annotation, text, "") + "\n"
 }
 
-func (l *Layout) createPostStr(p *sharedapi.Post) string {
+func (l *Layout) createPostText(p *sharedapi.Post) string {
 	text := p.Text
 
 	// メンションをハイライト
@@ -142,7 +141,7 @@ func (l *Layout) createPostDetail(p *sharedapi.Post) (string, error) {
 	return CreateStyledText(l.Style.Tweet.Detail, buf.String(), ""), nil
 }
 
-func (l *Layout) createMetricsStr(r *sharedapi.Reaction, normalStyle, revStyle string) string {
+func (l *Layout) createPostMetrics(r *sharedapi.Reaction, normalStyle, revStyle string) string {
 	if r.Count == 0 {
 		return ""
 	}

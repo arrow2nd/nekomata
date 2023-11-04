@@ -31,10 +31,6 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 			return err
 		}
 
-		page.postList.textView.SetChangedFunc(func() {
-			a.app.Draw()
-		})
-
 		go func() {
 			if err := page.Load(); err != nil {
 				label := fmt.Sprintf("load (%s)", t)

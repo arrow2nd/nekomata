@@ -9,7 +9,7 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 )
 
-func (l *Layout) createUserStr(i int, u *sharedapi.Account) (string, error) {
+func (l *Layout) createUser(i int, u *sharedapi.Account) (string, error) {
 	name := Truncate(u.DisplayName, l.Width)
 
 	// DisplayNameが無い場合はUsernameを使う

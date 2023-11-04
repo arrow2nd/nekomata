@@ -12,6 +12,7 @@ type Global struct {
 	name                  string
 	version               string
 	currentUsername       string
+	app                   *tview.Application
 	client                sharedapi.Client
 	conf                  *config.Config
 	isCLI                 bool

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
@@ -20,8 +21,8 @@ type postList struct {
 	textView     *tview.TextView
 	pinnedPosts  []*sharedapi.Post
 	posts        []*sharedapi.Post
-	layout       *layout.Layout
 	mu           sync.Mutex
+	layout       *layout.Layout
 	streamCancel context.CancelFunc
 }
 
@@ -65,11 +66,13 @@ func (p *postList) setKeybindings() error {
 			p.moveCursor(cursorMoveDown)
 		},
 		config.ActionCursorTop: func() {
-			p.scrollToPost(0)
+			p.highlightCursor(0)
+			p.textView.ScrollToHighlight()
 		},
 		config.ActionCursorBottom: func() {
 			lastIndex := p.GetPostsCount() - 1
-			p.scrollToPost(lastIndex)
+			p.highlightCursor(lastIndex)
+			p.textView.ScrollToHighlight()
 		},
 		config.ActionTweetLike: func() {
 		},
@@ -126,11 +129,12 @@ func (p *postList) moveCursor(c int) {
 		return
 	}
 
-	p.scrollToPost(idx + int(c))
+	p.highlightCursor(idx + int(c))
+	p.textView.ScrollToHighlight()
 }
 
-// scrollToPost : 指定したポストまでスクロール
-func (p *postList) scrollToPost(i int) {
+// highlightCursor : カーソルをハイライト
+func (p *postList) highlightCursor(i int) {
 	// 範囲内に丸める
 	if max := p.GetPostsCount(); i < 0 {
 		i = 0
@@ -139,10 +143,9 @@ func (p *postList) scrollToPost(i int) {
 	}
 
 	p.textView.Highlight(layout.CreatePostHighlightTag(i))
-	p.textView.ScrollToHighlight()
 }
 
-// GetPostsCount : ポスト数を取得
+// GetPostsCount : 投稿数を取得
 func (p *postList) GetPostsCount() int {
 	c := len(p.posts)
 
@@ -153,7 +156,7 @@ func (p *postList) GetPostsCount() int {
 	return c
 }
 
-// GetSinceId : 最新のポストのIDを取得
+// GetSinceId : 最新の投稿のIDを取得
 func (p *postList) GetSinceId() string {
 	if len(p.posts) == 0 {
 		return ""
@@ -171,18 +174,23 @@ func (p *postList) SetPinned(pinned []*sharedapi.Post) {
 	}
 }
 
-// Update : ポストを更新
+// Update : 投稿一覧を更新
 func (p *postList) Update(posts []*sharedapi.Post) error {
 	addedPostsCount := p.addPosts(posts)
 	cursorPos := p.getCurrentCursorPos()
 
-	// 先頭以外のツイートを選択中の場合、更新後もそのツイートを選択したままにする
-	// NOTE: "先頭以外" なのは、ストリームモードで放置した時にカーソルが段々下に下がってしまうのを防ぐため
+	// 先頭ではない投稿を選択中の場合、更新後もその投稿を選択したままにする
 	if cursorPos != 0 {
 		cursorPos += addedPostsCount
 	}
 
-	return p.draw(cursorPos)
+	var err error = nil
+
+	global.app.QueueUpdateDraw(func() {
+		err = p.draw(cursorPos)
+	})
+
+	return err
 }
 
 // getCurrentCursorPos : 現在のカーソル位置を取得
@@ -196,7 +204,7 @@ func (p *postList) getCurrentCursorPos() int {
 	return pos
 }
 
-// addPosts : ポストを追加
+// addPosts : 投稿を追加
 func (p *postList) addPosts(posts []*sharedapi.Post) int {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -216,13 +224,13 @@ func (p *postList) addPosts(posts []*sharedapi.Post) int {
 	return addSize
 }
 
-// DeletePost : ポストを削除
+// DeletePost : 投稿を削除
 func (p *postList) DeletePost(id string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
 	i, ok := find(p.posts, func(c *sharedapi.Post) bool {
-		// リポスト元のIDを参照
+		// 引用元のIDを参照
 		if ref := c.Reference; ref != nil {
 			return ref.ID == id
 		}
@@ -245,16 +253,24 @@ func (p *postList) DeletePost(id string) error {
 func (p *postList) draw(cursorPos int) error {
 	// icon := global.conf.Pref.Icon
 	appearance := global.conf.Pref.Appearance
-	p.textView.
-		SetTextAlign(tview.AlignLeft).
-		Clear()
 
-	// 表示するポストが無いなら描画を中断
+	// カーソルが流れる可能性があるか
+	scrollOffsetRow, _ := p.textView.GetScrollOffset()
+	isCursorFlowing := cursorPos != 0 && scrollOffsetRow == 0
+
+	// カーソル行数の計算用
+	isCalculatingLines := isCursorFlowing
+	cursorLineNum := 0
+
+	p.textView.Clear()
+
+	// 表示する投稿が無いなら描画を中断
 	if p.GetPostsCount() == 0 {
 		p.DrawMessage(global.conf.Pref.Text.NoPosts)
 		return nil
 	}
 
+	width := getWindowWidth()
 	contents := p.posts
 
 	// ピン留めがある場合、先頭に追加
@@ -263,17 +279,46 @@ func (p *postList) draw(cursorPos int) error {
 	}
 
 	for i, post := range contents {
-		if err := p.layout.PrintPost(i, post); err != nil {
+		postLayout, err := p.layout.CreatePost(i, post)
+		if err != nil {
 			return err
 		}
 
-		// 末尾のツイート以外ならセパレータを挿入
-		if !appearance.HideTweetSeparator || i < p.GetPostsCount()-1 {
-			p.layout.PrintSeparator(appearance.TweetSeparator)
+		fmt.Fprintln(p.textView, postLayout)
+
+		// 末尾の投稿ではないならセパレータを挿入
+		insertSeparator := !appearance.HideTweetSeparator || i < p.GetPostsCount()-1
+		if insertSeparator {
+			fmt.Fprintln(p.textView, p.layout.CreatePostSeparator(appearance.TweetSeparator, width))
+		}
+
+		// カーソルの行数を計算する必要がないならスキップ
+		if !isCalculatingLines {
+			continue
+		}
+
+		// カーソルの当たっている投稿なら計算を終了
+		if i == cursorPos {
+			cursorLineNum++
+			isCalculatingLines = false
+			continue
+		}
+
+		cursorLineNum += getStringDisplayRow(postLayout, width)
+		if insertSeparator {
+			cursorLineNum++
 		}
 	}
 
-	p.scrollToPost(cursorPos)
+	p.highlightCursor(cursorPos)
+
+	// カーソルが流れる & 位置がTextViewの半分より上 or
+	// 既にスクロール済みならカーソル位置までスクロールさせる
+	// NOTE: 無条件にScrollToHighlight()を呼ぶと画面の下半分が描画されないことがあるため
+	_, _, _, innerHeight := p.textView.GetInnerRect()
+	if (isCursorFlowing && cursorLineNum >= innerHeight/2) || (cursorPos != 0 && scrollOffsetRow != 0) {
+		p.textView.ScrollToHighlight()
+	}
 
 	return nil
 }

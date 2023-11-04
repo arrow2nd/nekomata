@@ -2,17 +2,10 @@ package layout
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/mattn/go-runewidth"
 )
-
-// PrintSeparator : セパレータを表示
-func (l *Layout) PrintSeparator(s string) {
-	sep := CreateStyledText(l.Style.Tweet.Separator, strings.Repeat(s, l.Width), "")
-	fmt.Fprintln(l.Writer, sep)
-}
 
 func (l *Layout) convertDateString(createAt time.Time) string {
 	format := ""

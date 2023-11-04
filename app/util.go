@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"regexp"
@@ -54,6 +55,21 @@ func getWindowWidth() int {
 	}
 
 	return w - 2
+}
+
+// getStringDisplayRow : 文字列の表示行数を取得
+func getStringDisplayRow(s string, w int) int {
+	row := 0
+
+	// タグを削除
+	tagDeleted := replaceAll(s, `\[(.+?:.+?:.+?|".*?")\]`, "")
+
+	for _, s := range strings.Split(tagDeleted, "\n") {
+		r := int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
+		row += r
+	}
+
+	return row
 }
 
 // getHighlightId : ハイライト一覧からIDを取得（見つからない場合 -1 が返る）
