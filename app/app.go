@@ -314,33 +314,40 @@ func (a *App) eventReciever() {
 			// ステータスメッセージを表示
 			a.commandLine.ShowStatusMessage(status)
 			a.app.Draw()
+
 		case indicator := <-global.chIndicator:
 			// インジケータを更新
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
+
 		case b := <-global.chDisableViewKeyEvent:
 			// ビューのキー操作ロック状態を更新
 			a.isDisablePageKeyEvent = b
+
 		case opt := <-global.chPopupModal:
 			// モーダルを表示
 			a.view.PopupModal(opt)
 			a.app.Draw()
+
 		case cmd := <-global.chExecCommand:
 			// コマンドを実行`
 			if err := a.ExecCommnad(cmd); err != nil {
 				global.SetErrorStatus("Command", err.Error())
 			}
+
 		case cmd := <-global.chInputCommand:
 			// コマンドを入力
 			a.app.SetFocus(a.commandLine.inputField)
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
+
 		case <-global.chFocusView:
 			// ビューにフォーカス
 			if a.app.GetFocus() != a.view.textArea {
 				a.app.SetFocus(a.view.flex)
 			}
 			a.app.Draw()
+
 		case p := <-global.chFocusPrimitive:
 			// 任意のプリミティブにフォーカス
 			a.app.SetFocus(*p)
