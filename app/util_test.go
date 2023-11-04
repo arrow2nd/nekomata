@@ -29,12 +29,12 @@ func TestGetHighlightId(t *testing.T) {
 		},
 		{
 			name: "2桁のIDを抽出",
-			arg:  []string{"tweet_10"},
+			arg:  []string{"post_10"},
 			want: 10,
 		},
 		{
 			name: "3桁のIDを抽出",
-			arg:  []string{"tweet_100"},
+			arg:  []string{"post_100"},
 			want: 100,
 		},
 		{

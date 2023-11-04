@@ -58,8 +58,8 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Page.GetString(config.ActionReloadPage),
 	)
 
-	tweet := fmt.Sprintf(
-		`[Tweet View]
+	post := fmt.Sprintf(
+		`[Post list]
   %-20s Scroll up
   %-20s Scroll down
   %-20s Move cursor up
@@ -67,14 +67,13 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Move cursor top
   %-20s Move cursor bottom
 
-  %-20s Like
-  %-20s Unlike
-  %-20s Retweet
-  %-20s Unretweet
-  %-20s New tweet
-  %-20s Quote tweet
-  %-20s Reply to tweet
-  %-20s Delete a tweet
+  %-20s Reaction
+  %-20s Remove reaction
+  %-20s Repost
+  %-20s Remove repost
+  %-20s New post
+  %-20s Reply
+  %-20s Delete
   %-20s Open in browser
   %-20s Copy link to clipboard
   
@@ -87,33 +86,32 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Open user timeline page
   %-20s Open user likes page
 `,
-		k.TweetView.GetString(config.ActionScrollUp),
-		k.TweetView.GetString(config.ActionScrollDown),
-		k.TweetView.GetString(config.ActionCursorUp),
-		k.TweetView.GetString(config.ActionCursorDown),
-		k.TweetView.GetString(config.ActionCursorTop),
-		k.TweetView.GetString(config.ActionCursorBottom),
-		k.TweetView.GetString(config.ActionTweetLike),
-		k.TweetView.GetString(config.ActionTweetUnlike),
-		k.TweetView.GetString(config.ActionTweetRetweet),
-		k.TweetView.GetString(config.ActionTweetUnretweet),
-		k.TweetView.GetString(config.ActionTweet),
-		k.TweetView.GetString(config.ActionQuote),
-		k.TweetView.GetString(config.ActionReply),
-		k.TweetView.GetString(config.ActionTweetDelete),
-		k.TweetView.GetString(config.ActionOpenBrowser),
-		k.TweetView.GetString(config.ActionCopyUrl),
-		k.TweetView.GetString(config.ActionUserFollow),
-		k.TweetView.GetString(config.ActionUserUnfollow),
-		k.TweetView.GetString(config.ActionUserMute),
-		k.TweetView.GetString(config.ActionUserUnmute),
-		k.TweetView.GetString(config.ActionUserBlock),
-		k.TweetView.GetString(config.ActionUserUnblock),
-		k.TweetView.GetString(config.ActionOpenUserPage),
-		k.TweetView.GetString(config.ActionOpenUserLikes),
+		k.Posts.GetString(config.ActionScrollUp),
+		k.Posts.GetString(config.ActionScrollDown),
+		k.Posts.GetString(config.ActionCursorUp),
+		k.Posts.GetString(config.ActionCursorDown),
+		k.Posts.GetString(config.ActionCursorTop),
+		k.Posts.GetString(config.ActionCursorBottom),
+		k.Posts.GetString(config.ActionPostReaction),
+		k.Posts.GetString(config.ActionPostRemoveReaction),
+		k.Posts.GetString(config.ActionPostRepost),
+		k.Posts.GetString(config.ActionPostRemoveRepost),
+		k.Posts.GetString(config.ActionPost),
+		k.Posts.GetString(config.ActionReply),
+		k.Posts.GetString(config.ActionPostDelete),
+		k.Posts.GetString(config.ActionOpenBrowser),
+		k.Posts.GetString(config.ActionCopyUrl),
+		k.Posts.GetString(config.ActionUserFollow),
+		k.Posts.GetString(config.ActionUserUnfollow),
+		k.Posts.GetString(config.ActionUserMute),
+		k.Posts.GetString(config.ActionUserUnmute),
+		k.Posts.GetString(config.ActionUserBlock),
+		k.Posts.GetString(config.ActionUserUnblock),
+		k.Posts.GetString(config.ActionOpenUserPage),
+		k.Posts.GetString(config.ActionOpenUserLikes),
 	)
 
-	text := global + view + page + tweet
+	text := global + view + page + post
 
 	return &cli.Command{
 		Name:     "keybindings",

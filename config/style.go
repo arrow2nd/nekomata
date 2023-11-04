@@ -37,8 +37,8 @@ type StatusBarStyle struct {
 	BackgroundColor color  `toml:"background_color"`
 }
 
-// TweetStyle : ツイートのスタイル
-type TweetStyle struct {
+// PostStyle : 投稿のスタイル
+type PostStyle struct {
 	Annotation string `toml:"annotation"`
 	Detail     string `toml:"detail"`
 	Like       string `toml:"like"`
@@ -64,8 +64,8 @@ type UserStyle struct {
 
 // MetricsStyle : ユーザメトリクスのスタイル
 type MetricsStyle struct {
-	TweetsText               string `toml:"tweets_text"`
-	TweetsBackgroundColor    color  `toml:"tweets_background_color"`
+	PostsText                string `toml:"posts_text"`
+	PostsBackgroundColor     color  `toml:"posts_background_color"`
 	FollowingText            string `toml:"following_text"`
 	FollowingBackgroundColor color  `toml:"following_background_color"`
 	FollowersText            string `toml:"followers_text"`
@@ -78,7 +78,7 @@ type Style struct {
 	Tab          TabStyle          `toml:"tab"`
 	Autocomplate AutocompleteStyle `toml:"autocomplete"`
 	StatusBar    StatusBarStyle    `toml:"statusbar"`
-	Tweet        TweetStyle        `toml:"tweet"`
+	Post         PostStyle         `toml:"post"`
 	User         UserStyle         `toml:"user"`
 	Metrics      MetricsStyle      `toml:"metrics"`
 }
@@ -105,7 +105,7 @@ func defaultStyle() *Style {
 			Text:            "black:-:-",
 			BackgroundColor: "#ffffff",
 		},
-		Tweet: TweetStyle{
+		Post: PostStyle{
 			Annotation: "teal:-:-",
 			Detail:     "gray:-:-",
 			Like:       "pink:-:-",
@@ -127,8 +127,8 @@ func defaultStyle() *Style {
 			Private:  "gray:-:-",
 		},
 		Metrics: MetricsStyle{
-			TweetsText:               "black:-:-",
-			TweetsBackgroundColor:    "#a094c7",
+			PostsText:                "black:-:-",
+			PostsBackgroundColor:     "#a094c7",
 			FollowingText:            "black:-:-",
 			FollowingBackgroundColor: "#84a0c6",
 			FollowersText:            "black:-:-",

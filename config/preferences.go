@@ -32,14 +32,10 @@ type Appearance struct {
 	UserProfilePaddingX int `toml:"user_profile_padding_x"`
 	// UserDetailSeparator : ユーザ詳細のセパレータ
 	UserDetailSeparator string `toml:"user_detail_separator"`
-	// HideTweetSeparator : ツイート間のセパレータを非表示
-	HideTweetSeparator bool `toml:"hide_tweet_separator"`
-	// HideQuoteTweetSeparator : 引用ツイートのセパレータを非表示
-	HideQuoteTweetSeparator bool `toml:"hide_quote_tweet_separator"`
-	// TweetSeparator : ツイートのセパレータ
-	TweetSeparator string `toml:"tweet_separator"`
-	// QuoteTweetSeparator : 引用ツイートのセパレータ
-	QuoteTweetSeparator string `toml:"quote_tweet_separator"`
+	// HidePostSeparator : 投稿間のセパレータを非表示
+	HidePostSeparator bool `toml:"hide_post_separator"`
+	// PostSeparator : 投稿のセパレータ
+	PostSeparator string `toml:"post_separator"`
 	// GraphChar : 投票グラフの表示に使用する文字
 	GraphChar string `toml:"graph_char"`
 	// GraphMaxWidth : 投票グラフの最大表示幅
@@ -56,14 +52,14 @@ type Template struct {
 	Post string `toml:"post"`
 	// PostAnnotation : 投稿のアノテーション
 	PostAnnotation string `toml:"post_annotation"`
-	// PostDetail : ツイート詳細
+	// PostDetail : 投稿詳細
 	PostDetail string `toml:"post_detail"`
-	// TweetPoll : 投票
-	TweetPoll string `toml:"post_poll"`
-	// TweetPollGraph : 投票グラフ
-	TweetPollGraph string `toml:"post_poll_graph"`
-	// TweetPollDetail : 投票詳細
-	TweetPollDetail string `toml:"post_poll_detail"`
+	// PostPoll : 投票
+	PostPoll string `toml:"post_poll"`
+	// PostPollGraph : 投票グラフ
+	PostPollGraph string `toml:"post_poll_graph"`
+	// PostPollDetail : 投票詳細
+	PostPollDetail string `toml:"post_poll_detail"`
 	// User : ユーザ
 	User string `toml:"user"`
 	// UserDetail : ユーザ詳細
@@ -128,8 +124,8 @@ type Keybindings struct {
 	View keybinding `toml:"view"`
 	// Page : ページ共通のキーバインド
 	Page keybinding `toml:"page"`
-	// TweetView : ツイートビューのキーバインド
-	TweetView keybinding `toml:"tweet"`
+	// Posts : 投稿一覧のキーバインド
+	Posts keybinding `toml:"posts"`
 }
 
 // Preferences : 環境設定
@@ -159,45 +155,43 @@ func defaultPreferences() *Preferences {
 			},
 		},
 		Confirm: map[string]bool{
-			"like":      true,
-			"unlike":    true,
-			"retweet":   true,
-			"unretweet": true,
-			"delete":    true,
-			"follow":    true,
-			"unfollow":  true,
-			"block":     true,
-			"unblock":   true,
-			"mute":      true,
-			"unmute":    true,
-			"tweet":     true,
-			"quit":      true,
+			"reaction":        true,
+			"remove reaction": true,
+			"repost":          true,
+			"remove repost":   true,
+			"delete":          true,
+			"follow":          true,
+			"unfollow":        true,
+			"block":           true,
+			"unblock":         true,
+			"mute":            true,
+			"unmute":          true,
+			"post":            true,
+			"quit":            true,
 		},
 		Appearance: Appearance{
-			StyleFilePath:           "style_default.toml",
-			DateFormat:              "2006/01/02",
-			TimeFormat:              "15:04:05",
-			UserBIOMaxRow:           3,
-			UserProfilePaddingX:     4,
-			UserDetailSeparator:     " | ",
-			HideTweetSeparator:      false,
-			HideQuoteTweetSeparator: false,
-			TweetSeparator:          "─",
-			QuoteTweetSeparator:     "-",
-			GraphChar:               "\u2588",
-			GraphMaxWidth:           30,
-			TabSeparator:            "|",
-			TabMaxWidth:             20,
+			StyleFilePath:       "style_default.toml",
+			DateFormat:          "2006/01/02",
+			TimeFormat:          "15:04:05",
+			UserBIOMaxRow:       3,
+			UserProfilePaddingX: 4,
+			UserDetailSeparator: " | ",
+			HidePostSeparator:   false,
+			PostSeparator:       "─",
+			GraphChar:           "\u2588",
+			GraphMaxWidth:       30,
+			TabSeparator:        "|",
+			TabMaxWidth:         20,
 		},
 		Template: Template{
-			Post:            "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}",
-			PostAnnotation:  "{text} {author_name} {author_username}",
-			PostDetail:      "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
-			TweetPoll:       "",
-			TweetPollGraph:  "",
-			TweetPollDetail: "",
-			User:            "{{ displayName }} {{ username }} {{ badges }}",
-			UserDetail:      "",
+			Post:           "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}",
+			PostAnnotation: "{text} {author_name} {author_username}",
+			PostDetail:     "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
+			PostPoll:       "",
+			PostPollGraph:  "",
+			PostPollDetail: "",
+			User:           "{{ displayName }} {{ username }} {{ badges }}",
+			UserDetail:     "",
 		},
 		Text: Text{
 			Bookmarked:       "Bookmarked",
@@ -239,31 +233,30 @@ func defaultPreferences() *Preferences {
 			Page: keybinding{
 				ActionReloadPage: {"."},
 			},
-			TweetView: keybinding{
-				ActionScrollUp:       {"ctrl+j", "PageUp"},
-				ActionScrollDown:     {"ctrl+k", "PageDown"},
-				ActionCursorUp:       {"k", "Up"},
-				ActionCursorDown:     {"j", "Down"},
-				ActionCursorTop:      {"g", "Home"},
-				ActionCursorBottom:   {"G", "End"},
-				ActionTweetLike:      {"f"},
-				ActionTweetUnlike:    {"F"},
-				ActionTweetRetweet:   {"t"},
-				ActionTweetUnretweet: {"T"},
-				ActionTweetDelete:    {"D"},
-				ActionUserFollow:     {"w"},
-				ActionUserUnfollow:   {"W"},
-				ActionUserBlock:      {"x"},
-				ActionUserUnblock:    {"X"},
-				ActionUserMute:       {"u"},
-				ActionUserUnmute:     {"U"},
-				ActionOpenUserPage:   {"i"},
-				ActionOpenUserLikes:  {"I"},
-				ActionTweet:          {"n"},
-				ActionQuote:          {"q"},
-				ActionReply:          {"r"},
-				ActionOpenBrowser:    {"o"},
-				ActionCopyUrl:        {"c"},
+			Posts: keybinding{
+				ActionScrollUp:           {"ctrl+j", "PageUp"},
+				ActionScrollDown:         {"ctrl+k", "PageDown"},
+				ActionCursorUp:           {"k", "Up"},
+				ActionCursorDown:         {"j", "Down"},
+				ActionCursorTop:          {"g", "Home"},
+				ActionCursorBottom:       {"G", "End"},
+				ActionPostReaction:       {"f"},
+				ActionPostRemoveReaction: {"F"},
+				ActionPostRepost:         {"t"},
+				ActionPostRemoveRepost:   {"T"},
+				ActionPostDelete:         {"D"},
+				ActionUserFollow:         {"w"},
+				ActionUserUnfollow:       {"W"},
+				ActionUserBlock:          {"x"},
+				ActionUserUnblock:        {"X"},
+				ActionUserMute:           {"u"},
+				ActionUserUnmute:         {"U"},
+				ActionOpenUserPage:       {"i"},
+				ActionOpenUserLikes:      {"I"},
+				ActionPost:               {"n"},
+				ActionReply:              {"r"},
+				ActionOpenBrowser:        {"o"},
+				ActionCopyUrl:            {"c"},
 			},
 		},
 	}

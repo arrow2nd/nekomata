@@ -74,15 +74,15 @@ func (p *postList) setKeybindings() error {
 			p.highlightCursor(lastIndex)
 			p.textView.ScrollToHighlight()
 		},
-		config.ActionTweetLike: func() {
+		config.ActionPostReaction: func() {
 		},
-		config.ActionTweetUnlike: func() {
+		config.ActionPostRemoveReaction: func() {
 		},
-		config.ActionTweetRetweet: func() {
+		config.ActionPostRepost: func() {
 		},
-		config.ActionTweetUnretweet: func() {
+		config.ActionPostRemoveRepost: func() {
 		},
-		config.ActionTweetDelete: func() {
+		config.ActionPostDelete: func() {
 		},
 		config.ActionUserFollow: func() {
 		},
@@ -100,9 +100,7 @@ func (p *postList) setKeybindings() error {
 		},
 		config.ActionOpenUserLikes: func() {
 		},
-		config.ActionTweet: func() {
-		},
-		config.ActionQuote: func() {
+		config.ActionPost: func() {
 		},
 		config.ActionReply: func() {
 		},
@@ -112,7 +110,7 @@ func (p *postList) setKeybindings() error {
 		},
 	}
 
-	c, err := global.conf.Pref.Keybindings.TweetView.MappingEventHandler(handlers)
+	c, err := global.conf.Pref.Keybindings.Posts.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
@@ -287,9 +285,9 @@ func (p *postList) draw(cursorPos int) error {
 		fmt.Fprintln(p.textView, postLayout)
 
 		// 末尾の投稿ではないならセパレータを挿入
-		insertSeparator := !appearance.HideTweetSeparator || i < p.GetPostsCount()-1
+		insertSeparator := !appearance.HidePostSeparator || i < p.GetPostsCount()-1
 		if insertSeparator {
-			fmt.Fprintln(p.textView, p.layout.CreatePostSeparator(appearance.TweetSeparator, width))
+			fmt.Fprintln(p.textView, p.layout.CreatePostSeparator(appearance.PostSeparator, width))
 		}
 
 		// カーソルの行数を計算する必要がないならスキップ
