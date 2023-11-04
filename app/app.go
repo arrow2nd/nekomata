@@ -301,13 +301,13 @@ func (a *App) Run() error {
 		return a.cmd.Execute(os.Args[1:])
 	}
 
-	go a.eventReciever()
+	go a.eventReceiver()
 
 	return a.app.Run()
 }
 
-// eventReciever : イベントレシーバ
-func (a *App) eventReciever() {
+// eventReceiver : イベントレシーバ
+func (a *App) eventReceiver() {
 	for {
 		select {
 		case status := <-global.chStatus:
