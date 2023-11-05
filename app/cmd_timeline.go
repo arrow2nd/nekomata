@@ -26,8 +26,8 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 			return err
 		}
 
-		unfocus, _ := f.GetBool("unfocus")
-		if err := a.view.AddPage(page, !unfocus); err != nil {
+		openBackground, _ := f.GetBool("background")
+		if err := a.view.AddPage(page, !openBackground); err != nil {
 			return err
 		}
 
@@ -47,24 +47,27 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 	}
 
 	home := &cli.Command{
-		Name:  "home",
-		Short: "Add home timeline page",
+		Name:    "home",
+		Short:   "Add home timeline page",
+		SetFlag: setOpenBackgroundFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			return action(homeTimeline, c, f)
 		},
 	}
 
 	global := &cli.Command{
-		Name:  "global",
-		Short: "Add global timeline page",
+		Name:    "global",
+		Short:   "Add global timeline page",
+		SetFlag: setOpenBackgroundFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			return action(globalTimeline, c, f)
 		},
 	}
 
 	local := &cli.Command{
-		Name:  "local",
-		Short: "Add local timeline page",
+		Name:    "local",
+		Short:   "Add local timeline page",
+		SetFlag: setOpenBackgroundFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			return action(localTimeline, c, f)
 		},

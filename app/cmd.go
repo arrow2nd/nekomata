@@ -34,6 +34,6 @@ func newCmd() *cli.Command {
 	}
 }
 
-func setUnfocusFlag(f *pflag.FlagSet) {
-	f.BoolP("unfocus", "u", false, "no focus on page")
+func setOpenBackgroundFlag(f *pflag.FlagSet) {
+	f.BoolP("background", "u", false, "open the page in the background")
 }
