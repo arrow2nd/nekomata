@@ -22,7 +22,7 @@ func (m *Misskey) Reaction(id, reaction string) (*sharedapi.Post, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unreaction(id string) (*sharedapi.Post, error) {
+func (m *Misskey) RemoveReaction(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
 
@@ -30,7 +30,7 @@ func (m *Misskey) Repost(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unrepost(id string) (*sharedapi.Post, error) {
+func (m *Misskey) RemoveRepost(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
 
@@ -38,6 +38,6 @@ func (m *Misskey) Bookmark(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
 
-func (m *Misskey) Unbookmark(id string) (*sharedapi.Post, error) {
+func (m *Misskey) RemoveBookmark(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
