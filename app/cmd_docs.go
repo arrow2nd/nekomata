@@ -75,16 +75,8 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Reply
   %-20s Delete
   %-20s Open in browser
-  %-20s Copy link to clipboard
-  
-  %-20s Follow
-  %-20s Unfollow
-  %-20s Mute
-  %-20s Unmute
-  %-20s Block
-  %-20s Unblock
   %-20s Open user timeline page
-  %-20s Open user likes page
+  %-20s Copy link to clipboard
 `,
 		k.Posts.GetString(config.ActionScrollUp),
 		k.Posts.GetString(config.ActionScrollDown),
@@ -100,7 +92,20 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionReply),
 		k.Posts.GetString(config.ActionPostDelete),
 		k.Posts.GetString(config.ActionOpenBrowser),
+		k.Posts.GetString(config.ActionOpenUserPage),
 		k.Posts.GetString(config.ActionCopyUrl),
+	)
+
+	user := fmt.Sprintf(
+		`[User page]
+  %-20s Follow
+  %-20s Unfollow
+  %-20s Mute
+  %-20s Unmute
+  %-20s Block
+  %-20s Unblock
+  %-20s Open user likes page
+`,
 		k.Posts.GetString(config.ActionUserFollow),
 		k.Posts.GetString(config.ActionUserUnfollow),
 		k.Posts.GetString(config.ActionUserMute),
@@ -108,19 +113,18 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionUserBlock),
 		k.Posts.GetString(config.ActionUserUnblock),
 		k.Posts.GetString(config.ActionOpenUserPage),
-		k.Posts.GetString(config.ActionOpenUserReactions),
 	)
 
-	text := global + view + page + post
+	text := global + view + page + post + user
 
 	return &cli.Command{
 		Name:     "keybindings",
 		Short:    "Documentation for keybindings",
 		Validate: cli.NoArgs(),
-		SetFlag:  setUnfocusFlag,
+		SetFlag:  setOpenBackgroundFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newDocsPage("Keybindings", text), !unfocus)
+			openBackground, _ := f.GetBool("background")
+			return a.view.AddPage(newDocsPage("Keybindings", text), !openBackground)
 		},
 	}
 }

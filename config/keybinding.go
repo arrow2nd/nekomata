@@ -35,18 +35,20 @@ const (
 	ActionPostRepost         = "post_repost"
 	ActionPostRemoveRepost   = "post_remove_repost"
 	ActionPostDelete         = "post_delete"
-	ActionUserFollow         = "user_follow"
-	ActionUserUnfollow       = "user_unfollow"
-	ActionUserBlock          = "user_block"
-	ActionUserUnblock        = "user_unblock"
-	ActionUserMute           = "user_mute"
-	ActionUserUnmute         = "user_unmute"
 	ActionOpenUserPage       = "open_user_page"
-	ActionOpenUserReactions  = "open_user_likes"
 	ActionPost               = "post"
 	ActionReply              = "reply"
 	ActionOpenBrowser        = "open_browser"
 	ActionCopyUrl            = "copy_url"
+
+	// ユーザーページのアクション
+	ActionUserFollow        = "user_follow"
+	ActionUserUnfollow      = "user_unfollow"
+	ActionUserBlock         = "user_block"
+	ActionUserUnblock       = "user_unblock"
+	ActionUserMute          = "user_mute"
+	ActionUserUnmute        = "user_unmute"
+	ActionOpenUserReactions = "open_user_likes"
 )
 
 type keybinding map[string][]string
