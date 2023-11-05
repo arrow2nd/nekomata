@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
@@ -54,6 +55,13 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 
 	page.SetFrame(postsView.textView)
 
+	handler, err := createCommonPageKeyHandler(page)
+	if err != nil {
+		return nil, err
+	}
+
+	page.frame.SetInputCapture(handler)
+
 	return page, nil
 }
 
@@ -64,6 +72,11 @@ func (t *timelinePage) Load() error {
 		posts   []*sharedapi.Post
 		err     error
 	)
+
+	// ストリーミング中は手動で読み込みさせない
+	if t.streamCancel != nil {
+		return errors.New("cannot load manually due to streaming")
+	}
 
 	// 読み込み中
 	global.SetStatus(t.name, global.conf.Pref.Text.Loading)
