@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"github.com/rivo/tview"
-)
+import "github.com/rivo/tview"
 
 type docsPage struct {
 	*basePage
@@ -12,7 +8,7 @@ type docsPage struct {
 }
 
 func newDocsPage(name, text string) *docsPage {
-	tabName := strings.Replace(global.conf.Pref.Text.TabDocs, "{name}", name, 1)
+	tabName := replaceTabTemplateName(global.conf.Pref.Template.TabDocument, name)
 
 	textView := tview.NewTextView().
 		SetWordWrap(true).

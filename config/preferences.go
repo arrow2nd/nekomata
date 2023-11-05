@@ -4,14 +4,12 @@ const PreferencesVersion = 1
 
 // Feature : 機能
 type Feature struct {
-	// MainUser : メインで使用するユーザー
-	MainUser string `toml:"main_user"`
+	// MainAccount : メインで使用するアカウント
+	MainAccount string `toml:"main_account"`
 	// LoadPostCount : 1度に読み込む投稿数
 	LoadPostCount int `toml:"load_post_count"`
 	// MaxPostCount : 投稿の最大蓄積数
 	MaxPostCount int `toml:"max_post_count"`
-	// UseExternalEditor : 投稿内容に編集に外部エディタを使用するか
-	UseExternalEditor bool `toml:"use_external_editor"`
 	// IsLocaleCJK : ロケールがCJKか
 	IsLocaleCJK bool `toml:"is_locale_cjk"`
 	// StartupCmds : 起動時に実行するコマンド
@@ -20,22 +18,20 @@ type Feature struct {
 
 // Appearance : 外観
 type Appearance struct {
-	// StyleFilePath : 配色テーマファイルのパス
-	StyleFilePath string `toml:"style_file"`
-	// DateFormat : 日付のフォーマット
-	DateFormat string `toml:"date_fmt"`
-	// TimeFormat : 時刻のフォーマット
-	TimeFormat string `toml:"time_fmt"`
+	// StylePath : 配色テーマファイルのパス
+	StylePath string `toml:"style_path"`
+	// FormatDate : 日付のフォーマット
+	FormatDate string `toml:"format_date"`
+	// FormatTime : 時刻のフォーマット
+	FormatTime string `toml:"format_time"`
 	// UserBIOMaxRow : ユーザBIOの最大表示行数
 	UserBIOMaxRow int `toml:"user_bio_max_row"`
-	// UserProfilePaddingX : ユーザプロフィールの左右パディング
-	UserProfilePaddingX int `toml:"user_profile_padding_x"`
 	// UserDetailSeparator : ユーザ詳細のセパレータ
 	UserDetailSeparator string `toml:"user_detail_separator"`
-	// HidePostSeparator : 投稿間のセパレータを非表示
-	HidePostSeparator bool `toml:"hide_post_separator"`
 	// PostSeparator : 投稿のセパレータ
 	PostSeparator string `toml:"post_separator"`
+	// HidePostSeparator : 投稿間のセパレータを非表示
+	HidePostSeparator bool `toml:"hide_post_separator"`
 	// GraphChar : 投票グラフの表示に使用する文字
 	GraphChar string `toml:"graph_char"`
 	// GraphMaxWidth : 投票グラフの最大表示幅
@@ -64,20 +60,6 @@ type Template struct {
 	User string `toml:"user"`
 	// UserDetail : ユーザ詳細
 	UserDetail string `toml:"user_detail"`
-}
-
-// Text : 表示テキスト
-type Text struct {
-	// Bookmarked : ブックマーク済み
-	Bookmarked string `toml:"bookmarked"`
-	// Repost : リポストの単位
-	Repost string `toml:"repost"`
-	// Loading : 読み込み中
-	Loading string `toml:"loading"`
-	// NoPosts : ポスト無し
-	NoPosts string `toml:"no_posts"`
-	// PostTextAreaHint : テキストエリアのヒント
-	PostTextAreaHint string `toml:"post_textarea_hint"`
 	// TabHome : ホームタイムラインタブ
 	TabHome string `toml:"tab_home"`
 	// TabGlobal : グローバスタイムラインタブ
@@ -88,22 +70,22 @@ type Text struct {
 	TabList string `toml:"tab_list"`
 	// TabMention : メンションタブ
 	TabMention string `toml:"tab_mention"`
-	// TabBookmark : ブックマークタブ
-	TabBookmark string `toml:"tab_bookmark"`
+	// TabBookmarks : ブックマークタブ
+	TabBookmarks string `toml:"tab_bookmark"`
 	// TabUser : ユーザタブ
 	TabUser string `toml:"tab_user"`
 	// TabSearch : 検索タブ
 	TabSearch string `toml:"tab_search"`
-	// TabLikes : いいねリストタブ
-	TabLikes string `toml:"tab_likes"`
-	// TabAnnouncement : アナウンスタブ
-	TabAnnouncement string `toml:"announcement_home"`
-	// TabDocs : ドキュメントタブ
-	TabDocs string `toml:"tab_docs"`
+	// TabReactions : いいねタブ
+	TabReactions string `toml:"tab_reactions"`
+	// TabAnnouncements : アナウンスタブ
+	TabAnnouncements string `toml:"announcements"`
+	// TabDocument : ドキュメントタブ
+	TabDocument string `toml:"tab_document"`
 }
 
-// Icon : アイコン
-type Icon struct {
+// Text : 表示テキスト
+type Text struct {
 	// Geo : 位置情報
 	Geo string `toml:"geo"`
 	// Link : リンク
@@ -114,6 +96,16 @@ type Icon struct {
 	Verified string `toml:"verified"`
 	// Private : 非公開バッジ
 	Private string `toml:"private"`
+	// Bookmarked : ブックマーク済み
+	Bookmarked string `toml:"bookmarked"`
+	// Reaction : リアクション数
+	Reaction string `toml:"reaction"`
+	// Repost : リポスト数
+	Repost string `toml:"repost"`
+	// Loading : 読み込み中
+	Loading string `toml:"loading"`
+	// NoPosts : 投稿なし
+	NoPosts string `toml:"no_posts"`
 }
 
 // Keybindings : キーバインド
@@ -136,7 +128,6 @@ type Preferences struct {
 	Appearance  Appearance      `toml:"appearance"`
 	Template    Template        `toml:"template"`
 	Text        Text            `toml:"text"`
-	Icon        Icon            `toml:"icon"`
 	Keybindings Keybindings     `toml:"keybinding"`
 }
 
@@ -145,11 +136,10 @@ func defaultPreferences() *Preferences {
 	return &Preferences{
 		Version: PreferencesVersion,
 		Feature: Feature{
-			MainUser:          "",
-			LoadPostCount:     25,
-			MaxPostCount:      250,
-			UseExternalEditor: false,
-			IsLocaleCJK:       true,
+			MainAccount:   "",
+			LoadPostCount: 25,
+			MaxPostCount:  250,
+			IsLocaleCJK:   true,
 			StartupCmds: []string{
 				"home",
 			},
@@ -170,11 +160,10 @@ func defaultPreferences() *Preferences {
 			"quit":            true,
 		},
 		Appearance: Appearance{
-			StyleFilePath:       "style_default.toml",
-			DateFormat:          "2006/01/02",
-			TimeFormat:          "15:04:05",
+			StylePath:           "style_default.toml",
+			FormatDate:          "2006/01/02",
+			FormatTime:          "15:04:05",
 			UserBIOMaxRow:       3,
-			UserProfilePaddingX: 4,
 			UserDetailSeparator: " | ",
 			HidePostSeparator:   false,
 			PostSeparator:       "─",
@@ -184,39 +173,37 @@ func defaultPreferences() *Preferences {
 			TabMaxWidth:         20,
 		},
 		Template: Template{
-			Post:           "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}",
-			PostAnnotation: "{text} {author_name} {author_username}",
-			PostDetail:     "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
-			PostPoll:       "",
-			PostPollGraph:  "",
-			PostPollDetail: "",
-			User:           "{{ displayName }} {{ username }} {{ badges }}",
-			UserDetail:     "",
-		},
-		Text: Text{
-			Bookmarked:       "Bookmarked",
-			Repost:           "Repost",
-			Loading:          "Loading...",
-			NoPosts:          "No posts ฅ^-ω-^ฅ",
-			PostTextAreaHint: "Meow",
+			Post:             "{{ author }}\n{{ text }}\n{{ detail }}\n{{ metrics }}",
+			PostAnnotation:   "{text} {author_name} {author_username}",
+			PostDetail:       "{{ createdAt }}{{ if .Via }} | via {{ .Via }}{{ end }}",
+			PostPoll:         "",
+			PostPollGraph:    "",
+			PostPollDetail:   "",
+			User:             "{{ displayName }} {{ username }} {{ badges }}",
+			UserDetail:       "",
 			TabHome:          "Home",
 			TabGlobal:        "Global",
 			TabLocal:         "Local",
-			TabList:          "List: {name}",
+			TabList:          "List: {{ name }}",
 			TabMention:       "Mention",
-			TabBookmark:      "Bookmark",
-			TabUser:          "User: @{name}",
-			TabSearch:        "Search: {query}",
-			TabLikes:         "Likes: @{name}",
-			TabAnnouncement:  "Announcement",
-			TabDocs:          "Docs: {name}",
+			TabUser:          "User: @{{ name }}",
+			TabSearch:        "Search: {{ name }}",
+			TabBookmarks:     "Bookmarks",
+			TabReactions:     "Reactions: @{{ name }}",
+			TabAnnouncements: "Announcements",
+			TabDocument:      "Document: {{ name }}",
 		},
-		Icon: Icon{
-			Geo:      "📍",
-			Link:     "🔗",
-			Pinned:   "📌",
-			Verified: "✅",
-			Private:  "🔒",
+		Text: Text{
+			Geo:        "📍",
+			Link:       "🔗",
+			Pinned:     "📌",
+			Verified:   "✅",
+			Private:    "🔒",
+			Bookmarked: "Bookmarked",
+			Reaction:   "Fav",
+			Repost:     "Repost",
+			Loading:    "Loading...",
+			NoPosts:    "No posts ฅ^-ω-^ฅ",
 		},
 		Keybindings: Keybindings{
 			Global: keybinding{
@@ -252,7 +239,7 @@ func defaultPreferences() *Preferences {
 				ActionUserMute:           {"u"},
 				ActionUserUnmute:         {"U"},
 				ActionOpenUserPage:       {"i"},
-				ActionOpenUserLikes:      {"I"},
+				ActionOpenUserReactions:  {"I"},
 				ActionPost:               {"n"},
 				ActionReply:              {"r"},
 				ActionOpenBrowser:        {"o"},

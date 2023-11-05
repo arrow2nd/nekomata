@@ -19,7 +19,7 @@ func login(username string) error {
 		}
 
 		// メインユーザーに設定
-		global.conf.Pref.Feature.MainUser = account.Username
+		global.conf.Pref.Feature.MainAccount = account.Username
 		if err := global.conf.SavePreferences(); err != nil {
 			return err
 		}

@@ -24,21 +24,19 @@ type timelinePage struct {
 }
 
 func newTimelinePage(kind timelineKind) (*timelinePage, error) {
-	tabName := global.conf.Pref.Text.TabHome
+	tabTemplate := global.conf.Pref.Template.TabHome
 
 	switch kind {
 	case globalTimeline:
-		tabName = global.conf.Pref.Text.TabGlobal
+		tabTemplate = global.conf.Pref.Template.TabGlobal
 	case localTimeline:
-		tabName = global.conf.Pref.Text.TabLocal
+		tabTemplate = global.conf.Pref.Template.TabLocal
 	}
 
 	layout := &layout.Layout{
-		Width:      getWindowWidth(),
 		Template:   &global.conf.Pref.Template,
 		Appearance: &global.conf.Pref.Appearance,
 		Text:       &global.conf.Pref.Text,
-		Icon:       &global.conf.Pref.Icon,
 		Style:      global.conf.Style,
 	}
 
@@ -48,7 +46,7 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 	}
 
 	page := &timelinePage{
-		basePage: newBasePage(tabName),
+		basePage: newBasePage(tabTemplate),
 		kind:     kind,
 		postList: postsView,
 	}

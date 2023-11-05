@@ -19,12 +19,12 @@ func (a *App) getTargetUsername(label string, f *pflag.FlagSet) (string, error) 
 			Items: global.conf.Creds.GetAllUsernames(),
 		}
 
-		_, seletecd, err := prompt.Run()
+		_, selected, err := prompt.Run()
 		if err != nil {
 			return "", err
 		}
 
-		return seletecd, nil
+		return selected, nil
 	}
 
 	return username, nil
@@ -141,7 +141,7 @@ func (a *App) newAccountSetCmd() *cli.Command {
 				return err
 			}
 
-			global.conf.Pref.Feature.MainUser = username
+			global.conf.Pref.Feature.MainAccount = username
 			if err := global.conf.SavePreferences(); err != nil {
 				return err
 			}

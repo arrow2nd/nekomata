@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/arrow2nd/nekomata/config"
 	"github.com/gdamore/tcell/v2"
@@ -15,27 +16,6 @@ type page interface {
 	OnActive()
 	OnInactive()
 	OnDelete()
-}
-
-// createCommonPageKeyHandler : ページ共通のキーハンドラを作成
-func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, error) {
-	handler := map[string]func(){
-		config.ActionReloadPage: func() {
-			go func() {
-				if err := p.Load(); err != nil {
-					label := fmt.Sprintf("load (%s)", p.GetName())
-					global.SetErrorStatus(label, err.Error())
-				}
-			}()
-		},
-	}
-
-	c, err := global.conf.Pref.Keybindings.Page.MappingEventHandler(handler)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.Capture, nil
 }
 
 type basePage struct {
@@ -91,3 +71,29 @@ func (b *basePage) OnInactive() {
 
 // OnDelete : ページが破棄された
 func (b *basePage) OnDelete() {}
+
+// createCommonPageKeyHandler : ページ共通のキーハンドラを作成
+func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, error) {
+	handler := map[string]func(){
+		config.ActionReloadPage: func() {
+			go func() {
+				if err := p.Load(); err != nil {
+					label := fmt.Sprintf("load (%s)", p.GetName())
+					global.SetErrorStatus(label, err.Error())
+				}
+			}()
+		},
+	}
+
+	c, err := global.conf.Pref.Keybindings.Page.MappingEventHandler(handler)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Capture, nil
+}
+
+// replaceTabTemplateName : タブテンプレートの名前を置換する
+func replaceTabTemplateName(template, name string) string {
+	return strings.Replace(template, "{{ name }}", name, 1)
+}

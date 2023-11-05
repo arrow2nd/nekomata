@@ -98,7 +98,7 @@ func (p *postList) setKeybindings() error {
 		},
 		config.ActionOpenUserPage: func() {
 		},
-		config.ActionOpenUserLikes: func() {
+		config.ActionOpenUserReactions: func() {
 		},
 		config.ActionPost: func() {
 		},
@@ -268,7 +268,7 @@ func (p *postList) draw(cursorPos int) error {
 		return nil
 	}
 
-	width := getWindowWidth()
+	width := layout.GetWindowWidth()
 	contents := p.posts
 
 	// ピン留めがある場合、先頭に追加

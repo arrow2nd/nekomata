@@ -11,9 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/arrow2nd/nekomata/app/exit"
+	"github.com/arrow2nd/nekomata/app/layout"
 	"github.com/mattn/go-runewidth"
-	"golang.org/x/term"
 )
 
 // openExternalEditor : 外部エディタを開く
@@ -43,18 +42,6 @@ func (a *App) openExternalEditor(editor string, args ...string) error {
 	}
 
 	return nil
-}
-
-// getWindowWidth : 表示領域の幅を取得
-func getWindowWidth() int {
-	fd := int(os.Stdout.Fd())
-
-	w, _, err := term.GetSize(fd)
-	if err != nil {
-		exit.Error(err.Error(), exit.CodeErrTerm)
-	}
-
-	return w - 2
 }
 
 // getStringDisplayRow : 文字列の表示行数を取得
@@ -122,7 +109,7 @@ func replaceAll(str, reg, rep string) string {
 
 // createStatusMessage : ラベル付きステータスメッセージを作成
 func createStatusMessage(label, status string) string {
-	width := getWindowWidth()
+	width := layout.GetWindowWidth()
 	status = strings.ReplaceAll(status, "\n", " ")
 
 	return truncate(fmt.Sprintf("[%s] %s", label, status), width)

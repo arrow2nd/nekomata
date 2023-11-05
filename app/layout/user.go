@@ -10,11 +10,12 @@ import (
 )
 
 func (l *Layout) createUser(i int, u *sharedapi.Account) (string, error) {
-	name := Truncate(u.DisplayName, l.Width)
+	width := GetWindowWidth()
+	name := Truncate(u.DisplayName, width)
 
 	// DisplayNameが無い場合はUsernameを使う
 	if name == "" {
-		name = Truncate(u.Username, l.Width)
+		name = Truncate(u.Username, width)
 	}
 
 	// カーソル選択用のタグを埋め込む
@@ -27,7 +28,7 @@ func (l *Layout) createUser(i int, u *sharedapi.Account) (string, error) {
 			return CreateStyledText(l.Style.User.Name, name, "")
 		},
 		"username": func() string {
-			return CreateStyledText(l.Style.User.UserName, Truncate("@"+u.Username, l.Width/2), "")
+			return CreateStyledText(l.Style.User.UserName, Truncate("@"+u.Username, width/2), "")
 		},
 		"badges": func() string {
 			badges := []string{}
@@ -35,14 +36,14 @@ func (l *Layout) createUser(i int, u *sharedapi.Account) (string, error) {
 			if u.Verified {
 				badges = append(
 					badges,
-					CreateStyledText(l.Style.User.Verified, l.Icon.Verified, ""),
+					CreateStyledText(l.Style.User.Verified, l.Text.Verified, ""),
 				)
 			}
 
 			if u.Private {
 				badges = append(
 					badges,
-					CreateStyledText(l.Style.User.Private, l.Icon.Private, ""),
+					CreateStyledText(l.Style.User.Private, l.Text.Private, ""),
 				)
 			}
 

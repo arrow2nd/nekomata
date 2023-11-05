@@ -11,7 +11,7 @@ type Credential struct {
 	// Clients : クライアント
 	Clients map[string]*sharedapi.ClientCredential `toml:"clients"`
 	// Users : ユーザー
-	Users map[string]*sharedapi.UserCredential `tonl:"users"`
+	Users map[string]*sharedapi.UserCredential `toml:"users"`
 }
 
 // GetClient : クライアントの資格情報を取得

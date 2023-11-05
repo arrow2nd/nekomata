@@ -108,7 +108,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionUserBlock),
 		k.Posts.GetString(config.ActionUserUnblock),
 		k.Posts.GetString(config.ActionOpenUserPage),
-		k.Posts.GetString(config.ActionOpenUserLikes),
+		k.Posts.GetString(config.ActionOpenUserReactions),
 	)
 
 	text := global + view + page + post

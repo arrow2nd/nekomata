@@ -15,9 +15,9 @@ func CreatePostHighlightTag(id int) string {
 	return fmt.Sprintf("post_%d", id)
 }
 
-// CreatePostSeparator : セパレータを作成
+// CreatePostSeparator : 投稿のセパレータを作成
 func (l *Layout) CreatePostSeparator(sep string, w int) string {
-	return CreateStyledText(l.Style.Post.Separator, strings.Repeat(sep, l.Width), "")
+	return CreateStyledText(l.Style.Post.Separator, strings.Repeat(sep, w), "")
 }
 
 // CreatePost : 投稿のレイアウトを作成
