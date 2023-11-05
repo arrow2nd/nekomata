@@ -103,8 +103,7 @@ func (t *timelinePage) Load() error {
 	}
 
 	// ストリーミングを開始
-	// TODO: 非対応の場合も考慮したい
-	if t.streamCancel == nil {
+	if global.client.IsStreamingSupported() && t.streamCancel == nil {
 		go t.Streaming()
 	}
 

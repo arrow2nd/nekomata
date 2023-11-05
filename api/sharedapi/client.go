@@ -3,6 +3,9 @@ package sharedapi
 import "io"
 
 type Client interface {
+	// IsStreamingSupported : ストリーミングをサポートしているか
+	IsStreamingSupported() bool
+
 	// RegisterNewApplication : サーバーにアプリケーションを登録
 	RegisterNewApplication() (string, string, error)
 	// Authenticate : アプリケーション認証を行なってアクセストークンを取得

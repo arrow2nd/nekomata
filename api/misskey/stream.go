@@ -2,6 +2,10 @@ package misskey
 
 import "github.com/arrow2nd/nekomata/api/sharedapi"
 
+func (m *Misskey) IsStreamingSupported() bool {
+	return true
+}
+
 func (m *Misskey) StreamingGlobalTimeline(opts *sharedapi.StreamingTimelineOpts) error {
 	return nil
 }

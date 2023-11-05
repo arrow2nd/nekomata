@@ -12,6 +12,10 @@ import (
 	"nhooyr.io/websocket/wsjson"
 )
 
+func (m *Mastodon) IsStreamingSupported() bool {
+	return true
+}
+
 type event struct {
 	Stream  []string `json:"stream"`
 	Event   string

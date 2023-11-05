@@ -263,6 +263,6 @@ func (m *Mastodon) Bookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointBookmark)
 }
 
-func (m *Mastodon) Unbookmark(id string) (*sharedapi.Post, error) {
+func (m *Mastodon) RemoveBookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnbookmark)
 }
