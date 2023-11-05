@@ -36,11 +36,6 @@ func (a *App) newTimelineSubCmds() []*cli.Command {
 				label := fmt.Sprintf("load (%s)", t)
 				global.SetErrorStatus(label, err.Error())
 			}
-
-			if err := page.StreamingRun(); err != nil {
-				label := fmt.Sprintf("streaming (%s)", t)
-				global.SetErrorStatus(label, err.Error())
-			}
 		}()
 
 		return nil

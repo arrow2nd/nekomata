@@ -20,7 +20,7 @@ type timelinePage struct {
 	*basePage
 	kind         timelineKind
 	postList     *postList
-	staremCancel context.CancelFunc
+	streamCancel context.CancelFunc
 }
 
 func newTimelinePage(kind timelineKind) (*timelinePage, error) {
@@ -46,9 +46,10 @@ func newTimelinePage(kind timelineKind) (*timelinePage, error) {
 	}
 
 	page := &timelinePage{
-		basePage: newBasePage(tabTemplate),
-		kind:     kind,
-		postList: postsView,
+		basePage:     newBasePage(tabTemplate),
+		kind:         kind,
+		postList:     postsView,
+		streamCancel: nil,
 	}
 
 	page.SetFrame(postsView.textView)
@@ -64,6 +65,9 @@ func (t *timelinePage) Load() error {
 		err     error
 	)
 
+	// 読み込み中
+	global.SetStatus(t.name, global.conf.Pref.Text.Loading)
+
 	// タイムラインを取得
 	switch t.kind {
 	case homeTimeline:
@@ -78,48 +82,71 @@ func (t *timelinePage) Load() error {
 		return err
 	}
 
-	// 表示に反映
-	if err := t.postList.Update(posts); err != nil {
-		return err
+	// 読み込み完了
+	if n := len(posts); n > 0 {
+		global.SetStatus(t.name, fmt.Sprintf("%d posts loaded", n))
+	} else {
+		global.SetStatus(t.name, global.conf.Pref.Text.NoPosts)
 	}
 
-	return err
+	// ストリーミングを開始
+	// TODO: 非対応の場合も考慮したい
+	if t.streamCancel == nil {
+		go t.Streaming()
+	}
+
+	// 表示に反映
+	return t.postList.Update(posts)
 }
 
 func (t *timelinePage) OnDelete() {
-	t.staremCancel()
+	if t.streamCancel != nil {
+		t.streamCancel()
+	}
 }
 
-func (t *timelinePage) StreamingRun() error {
+func (t *timelinePage) Streaming() {
 	ctx, cancel := context.WithCancel(context.Background())
-	t.staremCancel = cancel
+	t.streamCancel = cancel
 
-	// TODO: 非対応の場合も考慮したい
+	defer func() {
+		t.streamCancel = nil
+	}()
+
 	opts := &sharedapi.StreamingTimelineOpts{
 		Context: ctx,
 		OnUpdate: func(post *sharedapi.Post) {
 			if err := t.postList.Update([]*sharedapi.Post{post}); err != nil {
-				label := fmt.Sprintf("stream (%s)", t.name)
-				global.SetErrorStatus(label, err.Error())
+				t.showError(err)
 			}
 		},
 		OnDelete: func(id string) {
 			// TODO: 後で対応
 		},
 		OnError: func(err error) {
-			label := fmt.Sprintf("stream (%s)", t.name)
-			global.SetErrorStatus(label, err.Error())
+			t.showError(err)
 		},
 	}
 
+	var err error = nil
+
 	switch t.kind {
 	case homeTimeline:
-		return global.client.StreamingHomeTimeline(opts)
+		err = global.client.StreamingHomeTimeline(opts)
 	case globalTimeline:
-		return global.client.StreamingGlobalTimeline(opts)
+		err = global.client.StreamingGlobalTimeline(opts)
 	case localTimeline:
-		return global.client.StreamingLocalTimeline(opts)
+		err = global.client.StreamingLocalTimeline(opts)
+	default:
+		err = fmt.Errorf("invalid kind: %s", t.kind)
 	}
 
-	return nil
+	if err != nil {
+		t.showError(err)
+	}
+}
+
+func (t *timelinePage) showError(e error) {
+	label := fmt.Sprintf("streaming (%s)", t.name)
+	global.SetErrorStatus(label, e.Error())
 }

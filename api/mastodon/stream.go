@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/url"
 	"strings"
 
@@ -45,8 +46,10 @@ func (m *Mastodon) handleWebSocket(q url.Values, opts *sharedapi.StreamingTimeli
 		}
 
 		var res event
-		if err := wsjson.Read(context.Background(), conn, &res); err != nil {
-			opts.OnError(err)
+		if err := wsjson.Read(opts.Context, conn, &res); err != nil {
+			if !errors.Is(err, context.Canceled) {
+				opts.OnError(err)
+			}
 			break // 再接続
 		}
 
