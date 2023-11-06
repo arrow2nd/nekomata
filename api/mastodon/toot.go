@@ -247,7 +247,7 @@ func (m *Mastodon) Reaction(id, reaction string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointFavourite)
 }
 
-func (m *Mastodon) RemoveReaction(id string) (*sharedapi.Post, error) {
+func (m *Mastodon) Unreaction(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnfavourite)
 }
 
@@ -255,7 +255,7 @@ func (m *Mastodon) Repost(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointReblog)
 }
 
-func (m *Mastodon) RemoveRepost(id string) (*sharedapi.Post, error) {
+func (m *Mastodon) Unrepost(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnreblog)
 }
 
@@ -263,6 +263,6 @@ func (m *Mastodon) Bookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointBookmark)
 }
 
-func (m *Mastodon) RemoveBookmark(id string) (*sharedapi.Post, error) {
+func (m *Mastodon) Unbookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnbookmark)
 }

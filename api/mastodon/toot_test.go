@@ -206,7 +206,7 @@ func TestUnreaction(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		res, err := m.RemoveReaction(id)
+		res, err := m.Unreaction(id)
 		assert.NoError(t, err)
 
 		assert.NotNil(t, res)
@@ -216,7 +216,7 @@ func TestUnreaction(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		_, err = m.RemoveReaction(id)
+		_, err = m.Unreaction(id)
 		assert.Error(t, err)
 	})
 }
@@ -254,7 +254,7 @@ func TestUnrepost(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		res, err := m.RemoveRepost(id)
+		res, err := m.Unrepost(id)
 		assert.NoError(t, err)
 
 		assert.NotNil(t, res)
@@ -264,7 +264,7 @@ func TestUnrepost(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		_, err = m.RemoveRepost(id)
+		_, err = m.Unrepost(id)
 		assert.Error(t, err)
 	})
 }
@@ -302,7 +302,7 @@ func TestUnbookmark(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		res, err := m.RemoveBookmark(id)
+		res, err := m.Unbookmark(id)
 		assert.NoError(t, err)
 
 		assert.NotNil(t, res)
@@ -312,7 +312,7 @@ func TestUnbookmark(t *testing.T) {
 		m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 		assert.NoError(t, err)
 
-		_, err = m.RemoveBookmark(id)
+		_, err = m.Unbookmark(id)
 		assert.Error(t, err)
 	})
 }

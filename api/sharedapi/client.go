@@ -28,16 +28,16 @@ type Client interface {
 
 	// Reaction : 投稿にリアクション
 	Reaction(id string, reactionName string) (*Post, error)
-	// RemoveReaction : リアクションを削除
-	RemoveReaction(id string) (*Post, error)
+	// Unreaction : リアクションを削除
+	Unreaction(id string) (*Post, error)
 	// Repost : 投稿をリポスト
 	Repost(id string) (*Post, error)
-	// RemoveRepost : リポストを削除
-	RemoveRepost(id string) (*Post, error)
+	// Unrepost : リポストを削除
+	Unrepost(id string) (*Post, error)
 	// Bookmark : 投稿をブックマーク
 	Bookmark(id string) (*Post, error)
-	// RemoveBookmark : ブックマークを解除
-	RemoveBookmark(id string) (*Post, error)
+	// Unbookmark : ブックマークを解除
+	Unbookmark(id string) (*Post, error)
 
 	// SearchAccounts : アカウントを検索
 	SearchAccounts(query string, limit int) ([]*Account, error)

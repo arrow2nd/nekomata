@@ -74,21 +74,30 @@ func (p *postList) setKeybindings() error {
 			p.highlightCursor(lastIndex)
 			p.textView.ScrollToHighlight()
 		},
-		config.ActionPostReaction: func() {
+		config.ActionReaction: func() {
+			p.action(config.ActionReaction)
 		},
-		config.ActionPostRemoveReaction: func() {
+		config.ActionUnreaction: func() {
+			p.action(config.ActionUnreaction)
 		},
-		config.ActionPostRepost: func() {
+		config.ActionRepost: func() {
+			p.action(config.ActionRepost)
 		},
-		config.ActionPostRemoveRepost: func() {
+		config.ActionUnrepost: func() {
+			p.action(config.ActionUnrepost)
 		},
-		config.ActionPostDelete: func() {
+		config.ActionBookmark: func() {
+			p.action(config.ActionBookmark)
 		},
-		config.ActionOpenUserPage: func() {
+		config.ActionUnbookmark: func() {
+			p.action(config.ActionUnbookmark)
 		},
-		config.ActionPost: func() {
+		config.ActionDelete: func() {
+			p.action(config.ActionDelete)
 		},
 		config.ActionReply: func() {
+		},
+		config.ActionOpenUserPage: func() {
 		},
 		config.ActionOpenBrowser: func() {
 		},
@@ -147,6 +156,34 @@ func (p *postList) GetSinceId() string {
 	}
 
 	return p.posts[0].ID
+}
+
+// getSelectPost : 選択した投稿を取得
+func (p *postList) getSelectPost() *sharedapi.Post {
+	id := getHighlightId(p.textView.GetHighlights())
+	if id == -1 {
+		return nil
+	}
+
+	var post *sharedapi.Post = nil
+
+	if p.pinnedPosts == nil {
+		// ピン留めがない
+		post = p.posts[id]
+	} else if id < len(p.pinnedPosts) {
+		// ピン留めを選択している
+		post = p.pinnedPosts[id]
+	} else {
+		// ピン留め以外を選択している
+		post = p.posts[id-len(p.pinnedPosts)]
+	}
+
+	// リポストなら参照元に置き換える
+	if post.Reference != nil {
+		post = post.Reference
+	}
+
+	return post
 }
 
 // SetPinned : ピン留めを登録
@@ -229,8 +266,7 @@ func (p *postList) DeletePost(id string) error {
 	// i番目の要素を削除
 	p.posts = p.posts[:i+copy(p.posts[i:], p.posts[i+1:])]
 
-	// 再描画して反映
-	return p.draw(p.getCurrentCursorPos())
+	return nil
 }
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）

@@ -68,9 +68,11 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Move cursor bottom
 
   %-20s Reaction
-  %-20s Remove reaction
+  %-20s Unreaction
   %-20s Repost
-  %-20s Remove repost
+  %-20s Unrepost
+  %-20s Bookmark
+  %-20s Unbookmark
   %-20s New post
   %-20s Reply
   %-20s Delete
@@ -84,13 +86,15 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionCursorDown),
 		k.Posts.GetString(config.ActionCursorTop),
 		k.Posts.GetString(config.ActionCursorBottom),
-		k.Posts.GetString(config.ActionPostReaction),
-		k.Posts.GetString(config.ActionPostRemoveReaction),
-		k.Posts.GetString(config.ActionPostRepost),
-		k.Posts.GetString(config.ActionPostRemoveRepost),
+		k.Posts.GetString(config.ActionReaction),
+		k.Posts.GetString(config.ActionUnreaction),
+		k.Posts.GetString(config.ActionRepost),
+		k.Posts.GetString(config.ActionUnrepost),
+		k.Posts.GetString(config.ActionBookmark),
+		k.Posts.GetString(config.ActionUnbookmark),
 		k.Posts.GetString(config.ActionPost),
 		k.Posts.GetString(config.ActionReply),
-		k.Posts.GetString(config.ActionPostDelete),
+		k.Posts.GetString(config.ActionDelete),
 		k.Posts.GetString(config.ActionOpenBrowser),
 		k.Posts.GetString(config.ActionOpenUserPage),
 		k.Posts.GetString(config.ActionCopyUrl),
@@ -106,12 +110,12 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Unblock
   %-20s Open user likes page
 `,
-		k.Posts.GetString(config.ActionUserFollow),
-		k.Posts.GetString(config.ActionUserUnfollow),
-		k.Posts.GetString(config.ActionUserMute),
-		k.Posts.GetString(config.ActionUserUnmute),
-		k.Posts.GetString(config.ActionUserBlock),
-		k.Posts.GetString(config.ActionUserUnblock),
+		k.Posts.GetString(config.ActionFollow),
+		k.Posts.GetString(config.ActionUnfollow),
+		k.Posts.GetString(config.ActionMute),
+		k.Posts.GetString(config.ActionUnmute),
+		k.Posts.GetString(config.ActionBlock),
+		k.Posts.GetString(config.ActionUnblock),
 		k.Posts.GetString(config.ActionOpenUserPage),
 	)
 
