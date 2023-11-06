@@ -260,7 +260,7 @@ func (p *postList) draw(cursorPos int) error {
 	isCalculatingLines := isCursorFlowing
 	cursorLineNum := 0
 
-	p.textView.Clear()
+	p.textView.Clear().SetTextAlign(tview.AlignLeft)
 
 	// 表示する投稿が無いなら描画を中断
 	if p.GetPostsCount() == 0 {

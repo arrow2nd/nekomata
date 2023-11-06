@@ -79,7 +79,7 @@ func (t *timelinePage) Load() error {
 	}
 
 	// 読み込み中
-	global.SetStatus(t.name, global.conf.Pref.Text.Loading)
+	t.postList.DrawMessage(global.conf.Pref.Text.Loading)
 
 	// タイムラインを取得
 	switch t.kind {
