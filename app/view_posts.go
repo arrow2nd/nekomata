@@ -84,21 +84,7 @@ func (p *postList) setKeybindings() error {
 		},
 		config.ActionPostDelete: func() {
 		},
-		config.ActionUserFollow: func() {
-		},
-		config.ActionUserUnfollow: func() {
-		},
-		config.ActionUserBlock: func() {
-		},
-		config.ActionUserUnblock: func() {
-		},
-		config.ActionUserMute: func() {
-		},
-		config.ActionUserUnmute: func() {
-		},
 		config.ActionOpenUserPage: func() {
-		},
-		config.ActionOpenUserReactions: func() {
 		},
 		config.ActionPost: func() {
 		},
