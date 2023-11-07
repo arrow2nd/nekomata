@@ -18,7 +18,7 @@ func (p *postList) action(action string) {
 
 	f := func() {
 		var (
-			err    error           = nil
+			err    error           = fmt.Errorf("unknown action: %s", action)
 			result *sharedapi.Post = nil
 		)
 
@@ -45,20 +45,44 @@ func (p *postList) action(action string) {
 			return
 		}
 
+		// ステータスを反映
 		switch action {
-		case config.ActionReaction, config.ActionUnreaction:
+		case config.ActionReaction:
 			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
+			if target.Reactions[0].Count == result.Reactions[0].Count {
+				result.Reactions[0].Count++
+			}
 			target.Reactions = result.Reactions
-		case config.ActionRepost, config.ActionUnrepost:
+
+		case config.ActionUnreaction:
+			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
+			if target.Reactions[0].Count == result.Reactions[0].Count {
+				result.Reactions[0].Count--
+			}
+			target.Reactions = result.Reactions
+
+		case config.ActionRepost:
+			if target.RepostCount == result.RepostCount {
+				result.RepostCount++
+			}
 			target.Reposted = result.Reposted
 			target.RepostCount = result.RepostCount
+
+		case config.ActionUnrepost:
+			if target.RepostCount == result.RepostCount {
+				result.RepostCount--
+			}
+			target.Reposted = result.Reposted
+			target.RepostCount = result.RepostCount
+
 		case config.ActionBookmark, config.ActionUnbookmark:
 			target.Bookmarked = result.Bookmarked
+
 		case config.ActionDelete:
 			p.DeletePost(id)
 		}
 
-		// 再描画して反映
+		// 再描画
 		p.draw(p.getCurrentCursorPos())
 
 		if !strings.HasSuffix(action, "e") {

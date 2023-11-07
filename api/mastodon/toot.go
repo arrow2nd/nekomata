@@ -252,7 +252,11 @@ func (m *Mastodon) Unreaction(id string) (*sharedapi.Post, error) {
 }
 
 func (m *Mastodon) Repost(id string) (*sharedapi.Post, error) {
-	return m.doTootAction(id, endpointReblog)
+	post, err := m.doTootAction(id, endpointReblog)
+	if err != nil {
+		return nil, err
+	}
+	return post.Reference, nil
 }
 
 func (m *Mastodon) Unrepost(id string) (*sharedapi.Post, error) {
