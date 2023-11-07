@@ -146,9 +146,9 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 	// コマンドラインモードか
 	global.isCLI = f.NArg() > 0 || isSkipLogin
 
-	username, _ := f.GetString("username")
+	account, _ := f.GetString("account")
 
-	return isSkipLogin, username, nil
+	return isSkipLogin, account, nil
 }
 
 // setAppStyles : アプリ全体のスタイルを設定
