@@ -103,6 +103,7 @@ func (p *postList) setKeybindings() error {
 			p.openBrowser()
 		},
 		config.ActionCopyUrl: func() {
+			p.copyToClipboard()
 		},
 	}
 

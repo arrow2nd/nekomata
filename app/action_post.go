@@ -7,6 +7,7 @@ import (
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/config"
+	"github.com/atotto/clipboard"
 	"github.com/pkg/browser"
 )
 
@@ -109,14 +110,17 @@ func (p *postList) action(action string) {
 	global.ReqestPopupModal(&ModalOpts{title, "", f})
 }
 
+// createPostSummary : 投稿の要約を作成
 func createPostSummary(p *sharedapi.Post) string {
 	return fmt.Sprintf("%s | %s", createUserSummary(p.Author), p.Text)
 }
 
+// createUserSummary : ユーザー情報の要約を作成
 func createUserSummary(u *sharedapi.Account) string {
 	return fmt.Sprintf("%s @%s", u.DisplayName, u.Username)
 }
 
+// openBrowser : 投稿をブラウザで表示
 func (p *postList) openBrowser() {
 	post := p.getSelectPost()
 	if post == nil {
@@ -138,4 +142,25 @@ func (p *postList) openBrowser() {
 	}
 
 	global.SetStatus("Opened", createPostSummary(post))
+}
+
+// copyToClipboard : 投稿のURLをクリップボードにコピー
+func (p *postList) copyToClipboard() {
+	post := p.getSelectPost()
+	if post == nil {
+		return
+	}
+
+	u, err := global.client.CreatePostURL(post)
+	if err != nil {
+		global.SetErrorStatus("Copy", err.Error())
+		return
+	}
+
+	if err := clipboard.WriteAll(u); err != nil {
+		global.SetErrorStatus("Copy", err.Error())
+		return
+	}
+
+	global.SetStatus("Copied", createPostSummary(post))
 }
