@@ -16,6 +16,10 @@ type Mastodon struct {
 	user   *sharedapi.UserCredential
 }
 
+func (m *Mastodon) CreatePostURL(post *sharedapi.Post) (string, error) {
+	return url.JoinPath(m.user.Server, "@"+post.Author.Username, post.ID)
+}
+
 func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (*Mastodon, error) {
 	if c == nil {
 		return nil, errors.New("mastodon: client credential is empty")

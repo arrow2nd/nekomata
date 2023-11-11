@@ -2,10 +2,12 @@ package app
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/config"
+	"github.com/pkg/browser"
 )
 
 func (p *postList) action(action string) {
@@ -113,4 +115,27 @@ func createPostSummary(p *sharedapi.Post) string {
 
 func createUserSummary(u *sharedapi.Account) string {
 	return fmt.Sprintf("%s @%s", u.DisplayName, u.Username)
+}
+
+func (p *postList) openBrowser() {
+	post := p.getSelectPost()
+	if post == nil {
+		return
+	}
+
+	u, err := global.client.CreatePostURL(post)
+	if err != nil {
+		global.SetErrorStatus("Open", err.Error())
+		return
+	}
+
+	browser.Stdout = io.Discard
+	browser.Stderr = io.Discard
+
+	if err := browser.OpenURL(u); err != nil {
+		global.SetErrorStatus("Open", err.Error())
+		return
+	}
+
+	global.SetStatus("Opened", createPostSummary(post))
 }

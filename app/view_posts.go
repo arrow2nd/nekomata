@@ -100,6 +100,7 @@ func (p *postList) setKeybindings() error {
 		config.ActionOpenUserPage: func() {
 		},
 		config.ActionOpenBrowser: func() {
+			p.openBrowser()
 		},
 		config.ActionCopyUrl: func() {
 		},

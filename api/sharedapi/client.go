@@ -5,6 +5,8 @@ import "io"
 type Client interface {
 	// IsStreamingSupported : ストリーミングをサポートしているか
 	IsStreamingSupported() bool
+	// CreatePostURL : 投稿のURLを作成
+	CreatePostURL(post *Post) (string, error)
 
 	// RegisterNewApplication : サーバーにアプリケーションを登録
 	RegisterNewApplication() (string, string, error)

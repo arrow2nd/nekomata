@@ -14,6 +14,10 @@ type Misskey struct {
 	user   *sharedapi.UserCredential
 }
 
+func (m *Misskey) CreatePostURL(post *sharedapi.Post) (string, error) {
+	return "", nil
+}
+
 // New : 新しいクライアントを生成
 func New(c *sharedapi.ClientCredential, u *sharedapi.UserCredential) (*Misskey, error) {
 	return &Misskey{
