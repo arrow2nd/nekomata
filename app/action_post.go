@@ -11,7 +11,8 @@ import (
 	"github.com/pkg/browser"
 )
 
-func (p *postList) action(action string) {
+// actionPost : 投稿に対してアクション
+func (p *postList) actionPost(action string) {
 	target := p.getSelectPost()
 	if target == nil {
 		return
@@ -52,29 +53,21 @@ func (p *postList) action(action string) {
 		switch action {
 		case config.ActionReaction:
 			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
-			if target.Reactions[0].Count == result.Reactions[0].Count {
-				result.Reactions[0].Count++
-			}
+			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, 1)
 			target.Reactions = result.Reactions
 
 		case config.ActionUnreaction:
 			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
-			if target.Reactions[0].Count == result.Reactions[0].Count {
-				result.Reactions[0].Count--
-			}
+			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, -1)
 			target.Reactions = result.Reactions
 
 		case config.ActionRepost:
-			if target.RepostCount == result.RepostCount {
-				result.RepostCount++
-			}
+			synchronizeResponseCounts(target.RepostCount, &result.RepostCount, 1)
 			target.Reposted = result.Reposted
 			target.RepostCount = result.RepostCount
 
 		case config.ActionUnrepost:
-			if target.RepostCount == result.RepostCount {
-				result.RepostCount--
-			}
+			synchronizeResponseCounts(target.RepostCount, &result.RepostCount, -1)
 			target.Reposted = result.Reposted
 			target.RepostCount = result.RepostCount
 
@@ -108,6 +101,13 @@ func (p *postList) action(action string) {
 	)
 
 	global.ReqestPopupModal(&ModalOpts{title, "", f})
+}
+
+// synchronizeResponseCounts : レスポンスの数値と実際の状態とを同期させる
+func synchronizeResponseCounts(prev int, next *int, add int) {
+	if prev == *next {
+		*next = *next + add
+	}
 }
 
 // createPostSummary : 投稿の要約を作成

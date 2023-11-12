@@ -75,25 +75,25 @@ func (p *postList) setKeybindings() error {
 			p.textView.ScrollToHighlight()
 		},
 		config.ActionReaction: func() {
-			p.action(config.ActionReaction)
+			p.actionPost(config.ActionReaction)
 		},
 		config.ActionUnreaction: func() {
-			p.action(config.ActionUnreaction)
+			p.actionPost(config.ActionUnreaction)
 		},
 		config.ActionRepost: func() {
-			p.action(config.ActionRepost)
+			p.actionPost(config.ActionRepost)
 		},
 		config.ActionUnrepost: func() {
-			p.action(config.ActionUnrepost)
+			p.actionPost(config.ActionUnrepost)
 		},
 		config.ActionBookmark: func() {
-			p.action(config.ActionBookmark)
+			p.actionPost(config.ActionBookmark)
 		},
 		config.ActionUnbookmark: func() {
-			p.action(config.ActionUnbookmark)
+			p.actionPost(config.ActionUnbookmark)
 		},
 		config.ActionDelete: func() {
-			p.action(config.ActionDelete)
+			p.actionPost(config.ActionDelete)
 		},
 		config.ActionReply: func() {
 		},
