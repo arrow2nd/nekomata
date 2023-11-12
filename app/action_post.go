@@ -21,10 +21,8 @@ func (p *postList) actionPost(action string) {
 	id := target.ID
 
 	f := func() {
-		var (
-			err    error           = fmt.Errorf("unknown action: %s", action)
-			result *sharedapi.Post = nil
-		)
+		var result *sharedapi.Post = nil
+		err := fmt.Errorf("unknown action: %s", action)
 
 		switch action {
 		case config.ActionReaction:
@@ -41,7 +39,7 @@ func (p *postList) actionPost(action string) {
 		case config.ActionUnbookmark:
 			result, err = global.client.Unbookmark(id)
 		case config.ActionDelete:
-			result, err = global.client.DeletePost(id)
+			err = global.client.DeletePost(id)
 		}
 
 		if err != nil {
@@ -70,7 +68,10 @@ func (p *postList) actionPost(action string) {
 		case config.ActionBookmark, config.ActionUnbookmark:
 			target.Bookmarked = result.Bookmarked
 		case config.ActionDelete:
-			p.DeletePost(id)
+			if err := p.DeletePost(id); err != nil {
+				global.SetErrorStatus("Delete", err.Error())
+				return
+			}
 		}
 
 		// 再描画
@@ -80,7 +81,7 @@ func (p *postList) actionPost(action string) {
 			action += "e"
 		}
 
-		global.SetStatus(action+"d", createPostSummary(result))
+		global.SetStatus(action+"d", createPostSummary(target))
 	}
 
 	// 確認画面が不要ならそのまま実行
@@ -107,7 +108,11 @@ func synchronizeResponseCounts(prev int, next *int, add int) {
 
 // createPostSummary : 投稿の要約を作成
 func createPostSummary(p *sharedapi.Post) string {
-	return fmt.Sprintf("%s | %s", createUserSummary(p.Author), p.Text)
+	text := p.Text
+	if text == "" {
+		text = "<empty>"
+	}
+	return fmt.Sprintf("%s | %s", createUserSummary(p.Author), text)
 }
 
 // openBrowser : 投稿をブラウザで表示

@@ -203,10 +203,10 @@ func (m *Mastodon) ReplyPost(replyToId string, opts *sharedapi.CreatePostOpts) (
 	return res.ToShared(), nil
 }
 
-func (m *Mastodon) DeletePost(id string) (*sharedapi.Post, error) {
+func (m *Mastodon) DeletePost(id string) error {
 	u, err := url.JoinPath(endpointStatuses.URL(m.user.Server, nil), id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create URL for quote: %w", err)
+		return fmt.Errorf("failed to delete: %w", err)
 	}
 
 	opts := &requestOpts{
@@ -216,12 +216,7 @@ func (m *Mastodon) DeletePost(id string) (*sharedapi.Post, error) {
 		isAuth: true,
 	}
 
-	res := status{}
-	if err := m.request(opts, &res); err != nil {
-		return nil, err
-	}
-
-	return res.ToShared(), nil
+	return m.request(opts, nil)
 }
 
 func (m *Mastodon) doTootAction(id string, e sharedapi.Endpoint) (*sharedapi.Post, error) {

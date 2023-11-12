@@ -230,8 +230,7 @@ func TestDeletePost(t *testing.T) {
 	m, err := mastodon.New(clientCred, &sharedapi.UserCredential{Server: ts.URL})
 	assert.NoError(t, err)
 
-	_, err = m.DeletePost(id)
-	assert.NoError(t, err)
+	assert.NoError(t, m.DeletePost(id))
 }
 
 func TestReaction(t *testing.T) {

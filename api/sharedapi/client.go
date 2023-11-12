@@ -25,7 +25,7 @@ type Client interface {
 	// ReplyPost : 投稿に返信
 	ReplyPost(text string, opts *CreatePostOpts) (*Post, error)
 	// DeletePost : 投稿を削除
-	DeletePost(id string) (*Post, error)
+	DeletePost(id string) error
 
 	// UploadMedia : メディアをアップロード (画像のみ対応)
 	UploadMedia(filename string, src io.Reader) (string, error)

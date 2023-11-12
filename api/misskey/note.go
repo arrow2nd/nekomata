@@ -14,8 +14,8 @@ func (m Misskey) ReplyPost(id string, opts *sharedapi.CreatePostOpts) (*sharedap
 	return nil, nil
 }
 
-func (m *Misskey) DeletePost(id string) (*sharedapi.Post, error) {
-	return nil, nil
+func (m *Misskey) DeletePost(id string) error {
+	return nil
 }
 
 func (m *Misskey) Reaction(id, reaction string) (*sharedapi.Post, error) {
