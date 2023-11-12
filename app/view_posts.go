@@ -106,16 +106,22 @@ func (p *postList) setKeybindings() error {
 			p.copyToClipboard()
 		},
 		config.ActionFollow: func() {
+			p.actionUser(config.ActionFollow)
 		},
 		config.ActionUnfollow: func() {
+			p.actionUser(config.ActionUnfollow)
 		},
 		config.ActionBlock: func() {
+			p.actionUser(config.ActionBlock)
 		},
 		config.ActionUnblock: func() {
+			p.actionUser(config.ActionUnblock)
 		},
 		config.ActionMute: func() {
+			p.actionUser(config.ActionMute)
 		},
 		config.ActionUnmute: func() {
+			p.actionUser(config.ActionUnmute)
 		},
 		config.ActionOpenReactions: func() {
 		},

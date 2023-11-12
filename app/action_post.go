@@ -55,25 +55,20 @@ func (p *postList) actionPost(action string) {
 			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
 			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, 1)
 			target.Reactions = result.Reactions
-
 		case config.ActionUnreaction:
 			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
 			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, -1)
 			target.Reactions = result.Reactions
-
 		case config.ActionRepost:
 			synchronizeResponseCounts(target.RepostCount, &result.RepostCount, 1)
 			target.Reposted = result.Reposted
 			target.RepostCount = result.RepostCount
-
 		case config.ActionUnrepost:
 			synchronizeResponseCounts(target.RepostCount, &result.RepostCount, -1)
 			target.Reposted = result.Reposted
 			target.RepostCount = result.RepostCount
-
 		case config.ActionBookmark, config.ActionUnbookmark:
 			target.Bookmarked = result.Bookmarked
-
 		case config.ActionDelete:
 			p.DeletePost(id)
 		}
@@ -113,11 +108,6 @@ func synchronizeResponseCounts(prev int, next *int, add int) {
 // createPostSummary : 投稿の要約を作成
 func createPostSummary(p *sharedapi.Post) string {
 	return fmt.Sprintf("%s | %s", createUserSummary(p.Author), p.Text)
-}
-
-// createUserSummary : ユーザー情報の要約を作成
-func createUserSummary(u *sharedapi.Account) string {
-	return fmt.Sprintf("%s @%s", u.DisplayName, u.Username)
 }
 
 // openBrowser : 投稿をブラウザで表示
