@@ -65,8 +65,8 @@ func (c *Command) GetChildren() []*Command {
 	return ls
 }
 
-// getAllChidrenCombinations : 全てのサブコマンドの組み合わせ一覧を取得
-func getAllChidrenCombinations(prefix string, parent *Command) []string {
+// getAllChildrenCombinations : 全てのサブコマンドの組み合わせ一覧を取得
+func getAllChildrenCombinations(prefix string, parent *Command) []string {
 	ls := []string{}
 
 	for _, c := range parent.GetChildren() {
@@ -74,7 +74,7 @@ func getAllChidrenCombinations(prefix string, parent *Command) []string {
 		ls = append(ls, p)
 
 		if c.children != nil {
-			ls = append(ls, getAllChidrenCombinations(p, c)...)
+			ls = append(ls, getAllChildrenCombinations(p, c)...)
 		}
 	}
 
@@ -89,7 +89,7 @@ func (c *Command) GetChildrenNames(all bool) []string {
 		ls = append(ls, cmd.Name)
 
 		if all {
-			ls = append(ls, getAllChidrenCombinations(cmd.Name, cmd)...)
+			ls = append(ls, getAllChildrenCombinations(cmd.Name, cmd)...)
 		}
 	}
 
