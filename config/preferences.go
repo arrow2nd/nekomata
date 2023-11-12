@@ -160,7 +160,6 @@ func defaultPreferences() *Preferences {
 			ActionUnblock:    true,
 			ActionMute:       true,
 			ActionUnmute:     true,
-			ActionPost:       true,
 			ActionQuit:       true,
 		},
 		Appearance: Appearance{

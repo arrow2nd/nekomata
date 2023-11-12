@@ -151,8 +151,8 @@ func submitPost(f *pflag.FlagSet, t string) {
 		global.SetStatus(statusLabel, res.Text)
 	}
 
-	// 確認画面不要 or コマンドラインモードなら実行
-	if global.isCLI || !global.conf.Pref.Confirm["post"] {
+	// CLIなら実行
+	if global.isCLI {
 		doPost()
 		return
 	}
@@ -163,6 +163,7 @@ func submitPost(f *pflag.FlagSet, t string) {
 		operation = "reply"
 	}
 
+	// TODO: 独自モーダルを出す
 	global.ReqestPopupModal(&ModalOpts{
 		title:  fmt.Sprintf("Do you want to post a [%s]%s[-:-:-]?", global.conf.Style.App.EmphasisText, operation),
 		text:   text,
