@@ -270,3 +270,8 @@ func (m *Mastodon) Bookmark(id string) (*sharedapi.Post, error) {
 func (m *Mastodon) Unbookmark(id string) (*sharedapi.Post, error) {
 	return m.doTootAction(id, endpointUnbookmark)
 }
+
+func (m *Mastodon) GetVisibilityList() []string {
+	// NOTE: directはサポートしない
+	return []string{"public", "unlisted", "private"}
+}

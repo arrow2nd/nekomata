@@ -5,6 +5,8 @@ import "io"
 type Client interface {
 	// IsStreamingSupported : ストリーミングをサポートしているか
 	IsStreamingSupported() bool
+	// GetVisibilityList : 公開範囲の種類を取得
+	GetVisibilityList() []string
 	// CreatePostURL : 投稿のURLを作成
 	CreatePostURL(post *Post) (string, error)
 

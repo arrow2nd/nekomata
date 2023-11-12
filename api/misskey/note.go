@@ -41,3 +41,7 @@ func (m *Misskey) Bookmark(id string) (*sharedapi.Post, error) {
 func (m *Misskey) Unbookmark(id string) (*sharedapi.Post, error) {
 	return nil, nil
 }
+
+func (m *Misskey) GetVisibilityList() []string {
+	return []string{}
+}

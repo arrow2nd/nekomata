@@ -11,7 +11,7 @@ import (
 type media struct {
 	// ID : メディアID
 	ID string `json:"id"`
-	// Type : 種類 (unknown, image, gifv, video, audio)
+	// Type : 種類 (unknown, image, gif, video, audio)
 	Type string `json:"type"`
 	// URL : オリジナルのメディアを指すURL
 	URL string `json:"url"`
