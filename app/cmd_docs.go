@@ -79,6 +79,14 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Open in browser
   %-20s Open user timeline page
   %-20s Copy link to clipboard
+
+  %-20s Follow
+  %-20s Unfollow
+  %-20s Mute
+  %-20s Unmute
+  %-20s Block
+  %-20s Unblock
+  %-20s Open user likes page
 `,
 		k.Posts.GetString(config.ActionScrollUp),
 		k.Posts.GetString(config.ActionScrollDown),
@@ -98,18 +106,6 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionOpenBrowser),
 		k.Posts.GetString(config.ActionOpenUserPage),
 		k.Posts.GetString(config.ActionCopyUrl),
-	)
-
-	user := fmt.Sprintf(
-		`[User page]
-  %-20s Follow
-  %-20s Unfollow
-  %-20s Mute
-  %-20s Unmute
-  %-20s Block
-  %-20s Unblock
-  %-20s Open user likes page
-`,
 		k.Posts.GetString(config.ActionFollow),
 		k.Posts.GetString(config.ActionUnfollow),
 		k.Posts.GetString(config.ActionMute),
@@ -119,7 +115,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.Posts.GetString(config.ActionOpenUserPage),
 	)
 
-	text := global + view + page + post + user
+	text := global + view + page + post
 
 	return &cli.Command{
 		Name:     "keybindings",

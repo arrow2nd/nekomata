@@ -105,6 +105,20 @@ func (p *postList) setKeybindings() error {
 		config.ActionCopyUrl: func() {
 			p.copyToClipboard()
 		},
+		config.ActionFollow: func() {
+		},
+		config.ActionUnfollow: func() {
+		},
+		config.ActionBlock: func() {
+		},
+		config.ActionUnblock: func() {
+		},
+		config.ActionMute: func() {
+		},
+		config.ActionUnmute: func() {
+		},
+		config.ActionOpenReactions: func() {
+		},
 	}
 
 	c, err := global.conf.Pref.Keybindings.Posts.MappingEventHandler(handlers)
