@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -222,7 +223,7 @@ func uploadImages(paths []string) ([]string, error) {
 
 				defer f.Close()
 
-				id, err := global.client.UploadMedia("", f)
+				id, err := global.client.UploadMedia(filepath.Base(imagePath), f)
 				if err != nil {
 					return fmt.Errorf("upload failed (%s): %w", imagePath, err)
 				}
