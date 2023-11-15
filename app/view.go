@@ -16,7 +16,7 @@ type view struct {
 	tabBar          *tview.TextView
 	tabs            []string
 	currentTabIndex int
-	textArea        *tview.TextArea
+	postForm        *tview.Form
 	modal           *tview.Modal
 	mu              sync.Mutex
 }
@@ -29,14 +29,14 @@ func newView() *view {
 		tabBar:          tview.NewTextView(),
 		tabs:            []string{},
 		currentTabIndex: 0,
-		textArea:        tview.NewTextArea(),
+		postForm:        tview.NewForm(),
 		modal:           tview.NewModal(),
 	}
 
 	v.flex.
 		SetDirection(tview.FlexRow).
 		AddItem(v.pages, 0, 1, true).
-		AddItem(v.textArea, 0, 0, false)
+		AddItem(v.postForm, 0, 0, false)
 
 	tabBgColor := global.conf.Style.Tab.BackgroundColor.ToColor()
 	v.tabBar.
@@ -50,7 +50,7 @@ func newView() *view {
 		AddButtons([]string{"No", "Yes"}).
 		SetInputCapture(v.handleModalKeyEvent)
 
-	v.textArea.
+	v.postForm.
 		SetTitleAlign(tview.AlignLeft).
 		SetBorderPadding(0, 0, 1, 1).
 		SetBorder(true)
@@ -137,45 +137,4 @@ func (v *view) CloseCurrentPage() {
 	}
 
 	v.tabBar.Highlight(v.tabs[v.currentTabIndex])
-}
-
-// ShowTextArea : テキストエリアを表示
-func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
-	f := func(event *tcell.EventKey) *tcell.EventKey {
-		key := event.Key()
-
-		// 閉じる
-		if key == tcell.KeyEsc {
-			v.HiddenTextArea()
-			return nil
-		}
-
-		// 入力確定
-		if key == tcell.KeyCtrlP {
-			v.HiddenTextArea()
-			onSubmit(v.textArea.GetText())
-			return nil
-		}
-
-		return event
-	}
-
-	v.textArea.
-		SetText("", false).
-		SetPlaceholder(hint).
-		SetTitle(" Press ESC to close, press Ctrl-p to post ").
-		SetInputCapture(f)
-
-	v.flex.ResizeItem(v.textArea, 0, 1)
-
-	global.RequestFocusPrimitive(v.textArea)
-	global.SetDisableViewKeyEvent(true)
-}
-
-// HiddenTextArea : テキストエリアを非表示
-func (v *view) HiddenTextArea() {
-	v.flex.ResizeItem(v.textArea, 0, 0)
-
-	global.RequestFocusPrimitive(v.pages)
-	global.SetDisableViewKeyEvent(false)
 }
