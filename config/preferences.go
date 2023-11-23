@@ -194,7 +194,7 @@ func defaultPreferences() *Preferences {
 			TabBookmarks:     "Bookmarks",
 			TabReactions:     "Reactions: @{{ name }}",
 			TabAnnouncements: "Announcements",
-			TabDocument:      "Document: {{ name }}",
+			TabDocument:      "Doc: {{ name }}",
 		},
 		Text: Text{
 			Geo:        "📍",
