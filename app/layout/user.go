@@ -10,7 +10,7 @@ import (
 )
 
 func (l *Layout) createUser(i int, u *sharedapi.Account) (string, error) {
-	width := GetWindowWidth()
+	width, _ := GetWindowSize()
 	name := Truncate(u.DisplayName, width)
 
 	// DisplayNameが無い場合はUsernameを使う

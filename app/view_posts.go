@@ -312,7 +312,7 @@ func (p *postList) draw(cursorPos int) error {
 		return nil
 	}
 
-	width := layout.GetWindowWidth()
+	width, _ := layout.GetWindowSize()
 	contents := p.posts
 
 	// ピン留めがある場合、先頭に追加

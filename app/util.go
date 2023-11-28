@@ -109,7 +109,7 @@ func replaceAll(str, reg, rep string) string {
 
 // createStatusMessage : ラベル付きステータスメッセージを作成
 func createStatusMessage(label, status string) string {
-	width := layout.GetWindowWidth()
+	width, _ := layout.GetWindowSize()
 	status = strings.ReplaceAll(status, "\n", " ")
 
 	return truncate(fmt.Sprintf("[%s] %s", label, status), width)

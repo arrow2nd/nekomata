@@ -24,16 +24,16 @@ func (l *Layout) convertDateString(createAt time.Time) string {
 	return createAt.Local().Format(format)
 }
 
-// GetWindowWidth : 表示領域の幅を取得
-func GetWindowWidth() int {
+// GetWindowSize : 表示領域の幅を取得
+func GetWindowSize() (int, int) {
 	fd := int(os.Stdout.Fd())
 
-	w, _, err := term.GetSize(fd)
+	w, h, err := term.GetSize(fd)
 	if err != nil {
 		exit.Error(err.Error(), exit.CodeErrTerm)
 	}
 
-	return w - 2
+	return w - 2, h - 4
 }
 
 // CreateStyledText : スタイルありのテキストを作成
