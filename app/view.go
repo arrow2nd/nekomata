@@ -16,7 +16,6 @@ type view struct {
 	tabBar          *tview.TextView
 	tabs            []string
 	currentTabIndex int
-	postForm        *tview.Form
 	modal           *tview.Modal
 	mu              sync.Mutex
 }
@@ -29,14 +28,12 @@ func newView() *view {
 		tabBar:          tview.NewTextView(),
 		tabs:            []string{},
 		currentTabIndex: 0,
-		postForm:        tview.NewForm(),
 		modal:           tview.NewModal(),
 	}
 
 	v.flex.
 		SetDirection(tview.FlexRow).
-		AddItem(v.pages, 0, 1, true).
-		AddItem(v.postForm, 0, 0, false)
+		AddItem(v.pages, 0, 1, true)
 
 	tabBgColor := global.conf.Style.Tab.BackgroundColor.ToColor()
 	v.tabBar.
@@ -49,11 +46,6 @@ func newView() *view {
 	v.modal.
 		AddButtons([]string{"No", "Yes"}).
 		SetInputCapture(v.handleModalKeyEvent)
-
-	v.postForm.
-		SetTitleAlign(tview.AlignLeft).
-		SetBorderPadding(0, 0, 1, 1).
-		SetBorder(true)
 
 	return v
 }

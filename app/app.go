@@ -344,14 +344,7 @@ func (a *App) eventReceiver() {
 
 		case <-global.chFocusView:
 			// ビューにフォーカス
-			if a.app.GetFocus() != a.view.postForm {
-				a.app.SetFocus(a.view.flex)
-			}
-			a.app.Draw()
-
-		case p := <-global.chFocusPrimitive:
-			// 任意のプリミティブにフォーカス
-			a.app.SetFocus(*p)
+			a.app.SetFocus(a.view.flex)
 			a.app.Draw()
 		}
 	}

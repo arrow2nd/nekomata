@@ -22,7 +22,6 @@ type Global struct {
 	chExecCommand         chan string
 	chInputCommand        chan string
 	chFocusView           chan bool
-	chFocusPrimitive      chan *tview.Primitive
 	chDisableViewKeyEvent chan bool
 }
 
@@ -37,7 +36,6 @@ var global = Global{
 	chExecCommand:         make(chan string, 1),
 	chInputCommand:        make(chan string, 1),
 	chFocusView:           make(chan bool, 1),
-	chFocusPrimitive:      make(chan *tview.Primitive, 1),
 	chDisableViewKeyEvent: make(chan bool, 1),
 }
 
