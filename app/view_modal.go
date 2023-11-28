@@ -38,7 +38,6 @@ func (v *view) PopupModal(opts *ModalOpts) {
 
 	v.pages.AddPage("modal", v.modal, true, true)
 
-	global.RequestFocusPrimitive(v.modal)
 	global.SetDisableViewKeyEvent(true)
 }
 

@@ -86,11 +86,6 @@ func (g *Global) RequestInputCommand(c string) {
 	g.chInputCommand <- c
 }
 
-// RequestFocusPrimitive : 指定したプリミティブへのフォーカスを要求
-func (g *Global) RequestFocusPrimitive(p tview.Primitive) {
-	g.chFocusPrimitive <- &p
-}
-
 // RequestFocusView : ビューへのフォーカスを要求
 func (g *Global) RequestFocusView() {
 	g.chFocusView <- true
