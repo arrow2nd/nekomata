@@ -162,7 +162,9 @@ func (a *App) setAppStyles() {
 	// 背景色
 	tview.Styles.PrimitiveBackgroundColor = bgColor
 	tview.Styles.ContrastBackgroundColor = bgColor
-	tview.Styles.MoreContrastBackgroundColor = app.BackgroundColor.ToColor()
+
+	// TODO: Dropdownの背景色
+	// tview.Styles.MoreContrastBackgroundColor = app.BackgroundColor.ToColor()
 
 	// テキスト色
 	tview.Styles.PrimaryTextColor = textColor

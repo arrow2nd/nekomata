@@ -63,18 +63,21 @@ func (a *App) execPostCmd(c *cli.Command, f *pflag.FlagSet) error {
 	}
 
 	// 外部エディタを起動
-	if text == "" {
-		editor, _ := f.GetString("editor")
+	// if text == "" {
+	// 	editor, _ := f.GetString("editor")
+	//
+	// 	t, err := a.editPostWithExternalEditor(editor)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	//
+	// 	text = t
+	// }
 
-		t, err := a.editPostWithExternalEditor(editor)
-		if err != nil {
-			return err
-		}
+	a.view.ShowPostForm(func() {
+		submitPost(f, text)
+	})
 
-		text = t
-	}
-
-	submitPost(f, text)
 	return nil
 }
 
