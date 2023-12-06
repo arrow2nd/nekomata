@@ -63,19 +63,39 @@ func (a *App) execPostCmd(c *cli.Command, f *pflag.FlagSet) error {
 	}
 
 	// 外部エディタを起動
-	// if text == "" {
-	// 	editor, _ := f.GetString("editor")
-	//
-	// 	t, err := a.editPostWithExternalEditor(editor)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	//
-	// 	text = t
-	// }
+	if text == "" {
+		editor, _ := f.GetString("editor")
 
-	a.view.ShowPostForm(func() {
-		submitPost(f, text)
+		t, err := a.editPostWithExternalEditor(editor)
+		if err != nil {
+			return err
+		}
+
+		text = t
+	}
+
+	// フラグから値を取得
+	visibility, _ := f.GetString("visibility")
+	nsfw, _ := f.GetBool("nsfw")
+	images, _ := f.GetStringSlice("image")
+	replyID, _ := f.GetString("reply")
+	existClipboardImage, _ := f.GetBool("clipboard")
+
+	// 操作内容からタイトルを作成
+	title := "post"
+	if replyID != "" {
+		title = "reply"
+	}
+
+	a.view.ShowPostForm(title, &submitPostOpts{
+		post: &sharedapi.CreatePostOpts{
+			Text:       text,
+			Visibility: visibility,
+			Sensitive:  nsfw,
+		},
+		replyID:             replyID,
+		imagePaths:          images,
+		existClipboardImage: existClipboardImage,
 	})
 
 	return nil
@@ -104,74 +124,50 @@ func (a *App) editPostWithExternalEditor(editor string) (string, error) {
 	return string(bytes), nil
 }
 
+type submitPostOpts struct {
+	post                *sharedapi.CreatePostOpts
+	replyID             string
+	imagePaths          []string
+	existClipboardImage bool
+}
+
 // submitPost : 投稿を送信
-func submitPost(f *pflag.FlagSet, t string) {
-	images, _ := f.GetStringSlice("image")
-	text := strings.TrimSpace(t)
-
+func submitPost(opts *submitPostOpts) {
 	// 本文と画像が無い場合はキャンセル
-	if text == "" && len(images) == 0 {
+	if opts.post.Text == "" && len(opts.imagePaths) == 0 {
 		return
 	}
 
-	nsfw, _ := f.GetBool("nsfw")
-	visibility, _ := f.GetString("visibility")
-	postOpts := &sharedapi.CreatePostOpts{
-		Text:       text,
-		Visibility: visibility,
-		Sensitive:  nsfw,
-	}
+	// 画像をアップロード
+	if existImages := len(opts.imagePaths) > 0; existImages || opts.existClipboardImage {
+		var err error
 
-	replyID, _ := f.GetString("reply")
-	existClipboardImage, _ := f.GetBool("clipboard")
-
-	doPost := func() {
-		if existImages := len(images) > 0; existImages || existClipboardImage {
-			var err error
-
-			if existImages {
-				postOpts.MediaIDs, err = uploadImages(images)
-			} else {
-				postOpts.MediaIDs, err = uploadImageFromClipboard()
-			}
-
-			if err != nil {
-				global.SetErrorStatus("Upload media", err.Error())
-				return
-			}
+		if existImages {
+			opts.post.MediaIDs, err = uploadImages(opts.imagePaths)
+		} else {
+			opts.post.MediaIDs, err = uploadImageFromClipboard()
 		}
 
-		res, err := global.client.CreatePost(postOpts)
 		if err != nil {
-			global.SetErrorStatus("Post", err.Error())
+			global.SetErrorStatus("Upload media", err.Error())
+			return
 		}
-
-		statusLabel := "Posted"
-		if count := len(postOpts.MediaIDs); count > 0 {
-			statusLabel += fmt.Sprintf(" / with %d attached images", count)
-		}
-
-		global.SetStatus(statusLabel, res.Text)
 	}
 
-	// CLIなら実行
-	if global.isCLI {
-		doPost()
-		return
+	// TODO: replyID があれば ReplyPost を呼ぶ
+
+	// 送信
+	res, err := global.client.CreatePost(opts.post)
+	if err != nil {
+		global.SetErrorStatus("Post", err.Error())
 	}
 
-	// 実行しようとしている操作名
-	operation := "post"
-	if replyID != "" {
-		operation = "reply"
+	statusLabel := "Posted"
+	if count := len(opts.post.MediaIDs); count > 0 {
+		statusLabel += fmt.Sprintf(" / with %d attached images", count)
 	}
 
-	// TODO: 独自モーダルを出す
-	global.ReqestPopupModal(&ModalOpts{
-		title:  fmt.Sprintf("Do you want to post a [%s]%s[-:-:-]?", global.conf.Style.App.EmphasisText, operation),
-		text:   text,
-		onDone: doPost,
-	})
+	global.SetStatus(statusLabel, res.Text)
 }
 
 // uploadImageFromClipboard : クリップボードの画像をアップロード

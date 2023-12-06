@@ -34,7 +34,6 @@ func (a *App) openExternalEditor(editor string, args ...string) error {
 		a.app.Suspend(func() {
 			err = cmd.Run()
 		})
-		a.app.Draw()
 	}
 
 	if err != nil {
