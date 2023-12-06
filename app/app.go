@@ -13,23 +13,21 @@ import (
 
 // App : アプリケーション
 type App struct {
-	app                   *tview.Application
-	cmd                   *cli.Command
-	view                  *view
-	statusBar             *statusBar
-	commandLine           *commandLine
-	isDisablePageKeyEvent bool
+	app         *tview.Application
+	cmd         *cli.Command
+	view        *view
+	statusBar   *statusBar
+	commandLine *commandLine
 }
 
 // New : 新規作成
 func New() *App {
 	return &App{
-		app:                   tview.NewApplication(),
-		cmd:                   newCmd(),
-		view:                  nil,
-		statusBar:             nil,
-		commandLine:           nil,
-		isDisablePageKeyEvent: false,
+		app:         tview.NewApplication(),
+		cmd:         newCmd(),
+		view:        nil,
+		statusBar:   nil,
+		commandLine: nil,
 	}
 }
 
@@ -238,7 +236,7 @@ func (a *App) setViewKeybindings() error {
 func (a *App) warpKeyEventHandler(c *cbind.Configuration) func(*tcell.EventKey) *tcell.EventKey {
 	return func(ev *tcell.EventKey) *tcell.EventKey {
 		// 操作が無効
-		if a.isDisablePageKeyEvent {
+		if !global.enableAppKeybind {
 			return ev
 		}
 
@@ -322,10 +320,6 @@ func (a *App) eventReceiver() {
 			a.app.QueueUpdateDraw(func() {
 				a.statusBar.DrawPageIndicator(indicator)
 			})
-
-		case b := <-global.chDisableViewKeyEvent:
-			// ビューのキー操作ロック状態を更新
-			a.isDisablePageKeyEvent = b
 
 		case opt := <-global.chPopupModal:
 			// モーダルを表示

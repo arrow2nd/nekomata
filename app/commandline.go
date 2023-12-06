@@ -111,7 +111,7 @@ func (c *commandLine) Blur() {
 	c.inputField.SetLabel("").SetText("")
 
 	global.RequestFocusView()
-	global.SetDisableViewKeyEvent(false)
+	global.enableAppKeybind = true
 }
 
 // getAutocompleteItems : 入力補完の候補を取得
@@ -170,7 +170,7 @@ func (c *commandLine) handleFocus() {
 		SetLabel(":").
 		SetPlaceholder("")
 
-	global.SetDisableViewKeyEvent(true)
+	global.enableAppKeybind = false
 }
 
 // handleKeyEvent : キーイベントハンドラ

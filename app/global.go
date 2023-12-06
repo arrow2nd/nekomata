@@ -8,35 +8,35 @@ import (
 
 // Global : 全体共有
 type Global struct {
-	name                  string
-	version               string
-	currentUsername       string
-	client                sharedapi.Client
-	conf                  *config.Config
-	isCLI                 bool
-	chStatus              chan string
-	chIndicator           chan string
-	chPopupModal          chan *ModalOpts
-	chExecCommand         chan string
-	chInputCommand        chan string
-	chFocusView           chan bool
-	chQueueUpdateDraw     chan func()
-	chDisableViewKeyEvent chan bool
+	name              string
+	version           string
+	currentUsername   string
+	client            sharedapi.Client
+	conf              *config.Config
+	isCLI             bool
+	enableAppKeybind  bool
+	chStatus          chan string
+	chIndicator       chan string
+	chPopupModal      chan *ModalOpts
+	chExecCommand     chan string
+	chInputCommand    chan string
+	chFocusView       chan bool
+	chQueueUpdateDraw chan func()
 }
 
 var global = Global{
-	name:                  "nekomata",
-	version:               "develop",
-	conf:                  nil,
-	isCLI:                 false,
-	chStatus:              make(chan string, 1),
-	chIndicator:           make(chan string, 1),
-	chPopupModal:          make(chan *ModalOpts, 1),
-	chExecCommand:         make(chan string, 1),
-	chInputCommand:        make(chan string, 1),
-	chFocusView:           make(chan bool, 1),
-	chQueueUpdateDraw:     make(chan func(), 1),
-	chDisableViewKeyEvent: make(chan bool, 1),
+	name:              "nekomata",
+	version:           "develop",
+	conf:              nil,
+	isCLI:             false,
+	enableAppKeybind:  true,
+	chStatus:          make(chan string, 1),
+	chIndicator:       make(chan string, 1),
+	chPopupModal:      make(chan *ModalOpts, 1),
+	chExecCommand:     make(chan string, 1),
+	chInputCommand:    make(chan string, 1),
+	chFocusView:       make(chan bool, 1),
+	chQueueUpdateDraw: make(chan func(), 1),
 }
 
 // SetStatus : ステータスメッセージを設定
@@ -62,11 +62,6 @@ func (g *Global) SetErrorStatus(label, errStatus string) {
 // SetIndicator : インジケータを設定
 func (g *Global) SetIndicator(indicator string) {
 	g.chIndicator <- indicator
-}
-
-// SetDisableViewKeyEvent : ビューのキーイベントを無効化
-func (g *Global) SetDisableViewKeyEvent(b bool) {
-	g.chDisableViewKeyEvent <- b
 }
 
 // ReqestPopupModal : モーダルの表示をリクエスト

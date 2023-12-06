@@ -28,7 +28,7 @@ func (v *view) PopupModal(opts *ModalOpts) {
 		}
 
 		v.pages.RemovePage("modal")
-		global.SetDisableViewKeyEvent(false)
+		global.enableAppKeybind = true
 	}
 
 	v.modal.
@@ -37,8 +37,7 @@ func (v *view) PopupModal(opts *ModalOpts) {
 		SetDoneFunc(f)
 
 	v.pages.AddPage("modal", v.modal, true, true)
-
-	global.SetDisableViewKeyEvent(true)
+	global.enableAppKeybind = false
 }
 
 // handleModalKeyEvent : モーダルのキーイベントハンドラ
