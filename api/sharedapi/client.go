@@ -21,9 +21,9 @@ type Client interface {
 	// CreatePost : 投稿を作成
 	CreatePost(opts *CreatePostOpts) (*Post, error)
 	// QuotePost : 投稿を引用
-	QuotePost(text string, opts *CreatePostOpts) (*Post, error)
+	QuotePost(id string, opts *CreatePostOpts) (*Post, error)
 	// ReplyPost : 投稿に返信
-	ReplyPost(text string, opts *CreatePostOpts) (*Post, error)
+	ReplyPost(id string, opts *CreatePostOpts) (*Post, error)
 	// DeletePost : 投稿を削除
 	DeletePost(id string) error
 
