@@ -36,7 +36,7 @@ var global = Global{
 	chExecCommand:     make(chan string, 1),
 	chInputCommand:    make(chan string, 1),
 	chFocusView:       make(chan bool, 1),
-	chQueueUpdateDraw: make(chan func(), 10),
+	chQueueUpdateDraw: make(chan func(), 50),
 }
 
 // SetStatus : ステータスメッセージを設定
