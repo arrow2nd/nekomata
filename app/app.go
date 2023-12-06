@@ -35,8 +35,6 @@ func New() *App {
 
 // Init : 初期化
 func (a *App) Init() error {
-	global.app = a.app
-
 	if err := a.loadConfig(); err != nil {
 		return err
 	}
@@ -315,13 +313,15 @@ func (a *App) eventReceiver() {
 		select {
 		case status := <-global.chStatus:
 			// ステータスメッセージを表示
-			a.commandLine.ShowStatusMessage(status)
-			a.app.Draw()
+			a.app.QueueUpdateDraw(func() {
+				a.commandLine.ShowStatusMessage(status)
+			})
 
 		case indicator := <-global.chIndicator:
 			// インジケータを更新
-			a.statusBar.DrawPageIndicator(indicator)
-			a.app.Draw()
+			a.app.QueueUpdateDraw(func() {
+				a.statusBar.DrawPageIndicator(indicator)
+			})
 
 		case b := <-global.chDisableViewKeyEvent:
 			// ビューのキー操作ロック状態を更新
@@ -329,8 +329,9 @@ func (a *App) eventReceiver() {
 
 		case opt := <-global.chPopupModal:
 			// モーダルを表示
-			a.view.PopupModal(opt)
-			a.app.Draw()
+			a.app.QueueUpdateDraw(func() {
+				a.view.PopupModal(opt)
+			})
 
 		case cmd := <-global.chExecCommand:
 			// コマンドを実行`
@@ -341,13 +342,18 @@ func (a *App) eventReceiver() {
 		case cmd := <-global.chInputCommand:
 			// コマンドを入力
 			a.app.SetFocus(a.commandLine.inputField)
-			a.commandLine.SetText(cmd)
-			a.app.Draw()
+			a.app.QueueUpdateDraw(func() {
+				a.commandLine.SetText(cmd)
+			})
 
 		case <-global.chFocusView:
 			// ビューにフォーカス
-			a.app.SetFocus(a.view.flex)
-			a.app.Draw()
+			a.app.QueueUpdateDraw(func() {
+				a.app.SetFocus(a.view.flex)
+			})
+
+		case f := <-global.chQueueUpdateDraw:
+			a.app.QueueUpdateDraw(f)
 		}
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/app/exit"
 	"github.com/arrow2nd/nekomata/config"
-	"github.com/rivo/tview"
 )
 
 // Global : 全体共有
@@ -12,7 +11,6 @@ type Global struct {
 	name                  string
 	version               string
 	currentUsername       string
-	app                   *tview.Application
 	client                sharedapi.Client
 	conf                  *config.Config
 	isCLI                 bool
@@ -22,6 +20,7 @@ type Global struct {
 	chExecCommand         chan string
 	chInputCommand        chan string
 	chFocusView           chan bool
+	chQueueUpdateDraw     chan func()
 	chDisableViewKeyEvent chan bool
 }
 
@@ -36,6 +35,7 @@ var global = Global{
 	chExecCommand:         make(chan string, 1),
 	chInputCommand:        make(chan string, 1),
 	chFocusView:           make(chan bool, 1),
+	chQueueUpdateDraw:     make(chan func(), 1),
 	chDisableViewKeyEvent: make(chan bool, 1),
 }
 
@@ -82,6 +82,11 @@ func (g *Global) RequestExecCommand(c string) {
 // RequestInputCommand : コマンドの入力をリクエスト
 func (g *Global) RequestInputCommand(c string) {
 	g.chInputCommand <- c
+}
+
+// RequestQueueUpdateDraw : 関数を実行後再描画をリクエスト
+func (g *Global) RequestQueueUpdateDraw(f func()) {
+	g.chQueueUpdateDraw <- f
 }
 
 // RequestFocusView : ビューへのフォーカスを要求
