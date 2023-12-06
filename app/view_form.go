@@ -6,39 +6,33 @@ import (
 )
 
 func (v *view) ShowPostForm(onSubmit func()) {
+	close := func() {
+		v.pages.RemovePage("postForm")
+		global.enableAppKeybind = true
+	}
+
 	form := tview.NewForm().
-		AddDropDown("Visibility", global.client.GetVisibilityList(), 0, nil). // FIXME: focus時に "l" を入力するとフリーズするかも
+		AddDropDown("Visibility", global.client.GetVisibilityList(), 0, nil).
 		AddCheckbox("NSFW", false, nil).
-		AddTextArea("Post", "", 0, 0, 0, nil).
-		AddButton("Cancel", func() {
-			v.HiddenPostForm()
-		}).
-		AddButton("Submit", func() {
-			v.HiddenPostForm()
-		}).
-		SetCancelFunc(func() {
-			v.HiddenPostForm()
-		}).
-		SetFieldBackgroundColor(tcell.GetColor("#1c1c1c"))
+		AddInputField("Contemt warning", "", 0, nil, nil).
+		AddTextArea("Body", "", 0, 5, 0, nil).
+		AddButton("Cancel", close).
+		AddButton("Submit", nil).
+		SetFieldBackgroundColor(tcell.GetColor("#1c1c1c")).
+		SetCancelFunc(close)
 
 	form.
-		SetBorder(true).
-		SetTitle(" Press ESC to close ").
-		SetTitleAlign(tview.AlignLeft)
+		SetTitle(" New post ").
+		SetTitleAlign(tview.AlignLeft).
+		SetBorder(true)
 
-	formPage := tview.NewFlex().
+	modal := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(nil, 0, 1, false).
 		AddItem(form, 0, 1, true)
 
-	global.app.QueueUpdateDraw(func() {
-		v.pages.AddPage("postForm", formPage, true, true)
+	global.RequestQueueUpdateDraw(func() {
+		v.pages.AddPage("postForm", modal, true, true)
+		global.enableAppKeybind = false
 	})
-
-	global.SetDisableViewKeyEvent(true)
-}
-
-func (v *view) HiddenPostForm() {
-	v.pages.RemovePage("postForm")
-	global.SetDisableViewKeyEvent(false)
 }
