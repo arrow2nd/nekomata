@@ -13,7 +13,6 @@ import (
 
 // App : アプリケーション
 type App struct {
-	app         *tview.Application
 	cmd         *cli.Command
 	view        *view
 	statusBar   *statusBar
@@ -22,8 +21,9 @@ type App struct {
 
 // New : 新規作成
 func New() *App {
+	global.app = tview.NewApplication()
+
 	return &App{
-		app:         tview.NewApplication(),
 		cmd:         newCmd(),
 		view:        nil,
 		statusBar:   nil,
@@ -96,7 +96,7 @@ func (a *App) Init() error {
 		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
 		AddItem(a.view.flex, 1, 0, 1, 1, 0, 0, true)
 
-	a.app.SetRoot(layout, true)
+	global.app.SetRoot(layout, true)
 
 	a.execStartupCommands()
 
@@ -194,7 +194,7 @@ func (a *App) setGlobalKeybindings() error {
 		return err
 	}
 
-	a.app.SetInputCapture(a.warpKeyEventHandler(c))
+	global.app.SetInputCapture(a.warpKeyEventHandler(c))
 
 	return nil
 }
@@ -209,10 +209,10 @@ func (a *App) setViewKeybindings() error {
 			a.view.MoveTab(TabMoveNext)
 		},
 		config.ActionRedraw: func() {
-			a.app.Sync()
+			global.app.Sync()
 		},
 		config.ActionFocusCmdLine: func() {
-			a.app.SetFocus(a.commandLine.inputField)
+			global.app.SetFocus(a.commandLine.inputField)
 		},
 		config.ActionShowHelp: func() {
 			global.RequestExecCommand("docs keybindings")
@@ -302,7 +302,7 @@ func (a *App) Run() error {
 
 	go a.eventReceiver()
 
-	return a.app.Run()
+	return global.app.Run()
 }
 
 // eventReceiver : イベントレシーバ
@@ -311,19 +311,19 @@ func (a *App) eventReceiver() {
 		select {
 		case status := <-global.chStatus:
 			// ステータスメッセージを表示
-			a.app.QueueUpdateDraw(func() {
+			global.app.QueueUpdateDraw(func() {
 				a.commandLine.ShowStatusMessage(status)
 			})
 
 		case indicator := <-global.chIndicator:
 			// インジケータを更新
-			a.app.QueueUpdateDraw(func() {
+			global.app.QueueUpdateDraw(func() {
 				a.statusBar.DrawPageIndicator(indicator)
 			})
 
 		case opt := <-global.chPopupModal:
 			// モーダルを表示
-			a.app.QueueUpdateDraw(func() {
+			global.app.QueueUpdateDraw(func() {
 				a.view.PopupModal(opt)
 			})
 
@@ -335,19 +335,16 @@ func (a *App) eventReceiver() {
 
 		case cmd := <-global.chInputCommand:
 			// コマンドを入力
-			a.app.SetFocus(a.commandLine.inputField)
-			a.app.QueueUpdateDraw(func() {
+			global.app.SetFocus(a.commandLine.inputField)
+			global.app.QueueUpdateDraw(func() {
 				a.commandLine.SetText(cmd)
 			})
 
 		case <-global.chFocusView:
 			// ビューにフォーカス
-			a.app.QueueUpdateDraw(func() {
-				a.app.SetFocus(a.view.flex)
+			global.app.QueueUpdateDraw(func() {
+				global.app.SetFocus(a.view.flex)
 			})
-
-		case f := <-global.chQueueUpdateDraw:
-			a.app.QueueUpdateDraw(f)
 		}
 	}
 }
@@ -356,12 +353,12 @@ func (a *App) eventReceiver() {
 func (a *App) quitApp() {
 	// 確認画面が不要ならそのまま終了
 	if !global.conf.Pref.Confirm["quit"] {
-		a.app.Stop()
+		global.app.Stop()
 		return
 	}
 
 	a.view.PopupModal(&ModalOpts{
 		title:  "Do you want to quit the app?",
-		onDone: a.app.Stop,
+		onDone: global.app.Stop,
 	})
 }

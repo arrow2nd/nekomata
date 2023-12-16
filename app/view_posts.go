@@ -229,7 +229,7 @@ func (p *postList) Update(posts []*sharedapi.Post) error {
 
 	var err error = nil
 
-	global.RequestQueueUpdateDraw(func() {
+	global.app.QueueUpdateDraw(func() {
 		err = p.draw(cursorPos)
 	})
 

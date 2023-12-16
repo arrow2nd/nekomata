@@ -50,7 +50,7 @@ func (v *view) ShowPostForm(title string, opts *submitPostOpts) {
 		AddItem(nil, 0, 1, false).
 		AddItem(form, 0, 1, true)
 
-	global.RequestQueueUpdateDraw(func() {
+	global.app.QueueUpdateDraw(func() {
 		v.pages.AddPage("postForm", modal, true, true)
 		global.enableAppKeybind = false
 	})
