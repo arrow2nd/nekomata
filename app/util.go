@@ -31,7 +31,7 @@ func (a *App) openExternalEditor(editor string, args ...string) error {
 	if global.isCLI {
 		err = cmd.Run()
 	} else {
-		a.app.Suspend(func() {
+		global.app.Suspend(func() {
 			err = cmd.Run()
 		})
 	}
