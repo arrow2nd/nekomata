@@ -10,39 +10,29 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"syscall"
 
 	"github.com/arrow2nd/nekomata/api/sharedapi"
 	"github.com/arrow2nd/nekomata/cli"
 	"github.com/skanehira/clipboard-image/v2"
 	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/term"
 )
 
 func (a *App) newPostCmd() *cli.Command {
-	longHelp := `Submit a post.
-When the post content is abbreviated, the external editor set to $EDITOR will be launched.`
-
-	example := `post にゃーん --image cat.png dog.png
-  echo "にゃーん" | nekomata post`
-
 	return &cli.Command{
-		Name:      "post",
-		Short:     "Post",
-		Long:      longHelp,
-		UsageArgs: "[text]",
-		Example:   example,
+		Name:   "post",
+		Short:  "Submit a post",
+		Hidden: global.isCLI,
 		SetFlag: func(f *pflag.FlagSet) {
-			// 投稿に関する追加情報
+			// 投稿詳細
 			f.StringP("reply", "r", "", "reply destination post ID")
 			f.StringP("visibility", "v", "public", "post visibility range")
 			f.BoolP("nsfw", "n", false, "set the NSFW flag")
 
-			// コマンドの挙動関係
+			// エディタ
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "external editor for editing")
 
-			// 添付メディア関係
+			// 添付画像
 			f.StringSliceP("image", "i", nil, "path of the image(s) to attach (multiple can be specified, separated by commas)")
 			f.BoolP("clipboard", "c", false, "attach the image from the clipboard (this is ignored if --image is specified)")
 		},
@@ -51,16 +41,8 @@ When the post content is abbreviated, the external editor set to $EDITOR will be
 }
 
 func (a *App) execPostCmd(c *cli.Command, f *pflag.FlagSet) error {
-	text := ""
-
-	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
-		// 標準入力から受け取る
-		stdin, _ := io.ReadAll(os.Stdin)
-		text = string(stdin)
-	} else {
-		// 引数をすべてスペースで連結
-		text = strings.Join(f.Args(), " ")
-	}
+	// 引数をすべてスペースで連結
+	text := strings.Join(f.Args(), " ")
 
 	// 外部エディタを起動
 	if text == "" {
