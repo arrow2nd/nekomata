@@ -53,7 +53,7 @@ func (a *App) Init() error {
 	// コマンドを初期化
 	a.initCommands()
 
-	// コマンドラインモードならUIの初期化をスキップ
+	// CLIならUIの初期化をスキップ
 	if global.isCLI {
 		return nil
 	}
@@ -136,12 +136,12 @@ func (a *App) parseRuntimeArgs() (bool, string, error) {
 	}
 
 	// ログインをスキップするか
-	arg := f.Arg(0)
-	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "edit"
+	isSkipLogin := f.Changed("help") || f.Changed("version") || f.Arg(0) == "edit"
 
-	// コマンドラインモードか
+	// CLIか
 	global.isCLI = f.NArg() > 0 || isSkipLogin
 
+	// アカウントの指定を取得
 	account, _ := f.GetString("account")
 
 	return isSkipLogin, account, nil
@@ -295,7 +295,6 @@ func (a *App) ExecCommnad(cmd string) error {
 
 // Run : アプリを実行
 func (a *App) Run() error {
-	// コマンドラインモード
 	if global.isCLI {
 		return a.cmd.Execute(os.Args[1:])
 	}
