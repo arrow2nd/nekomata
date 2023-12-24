@@ -1,19 +1,16 @@
 package main
 
 import (
-	"log"
+	"os"
 
-	"github.com/arrow2nd/nekomata/app"
+	"github.com/arrow2nd/nekomata/cmd"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	app := app.New()
+	app := cmd.NewCmd()
 
-	if err := app.Init(); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := app.Run(); err != nil {
-		log.Fatalln(err)
+	if err := app.Run(os.Args); err != nil {
+		cli.Exit(err, 1)
 	}
 }
