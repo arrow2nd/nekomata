@@ -16,8 +16,8 @@ const (
 	FileNamePref = "preferences.toml"
 )
 
-// getConfigDir : 設定ディレクトリを取得
-func getConfigDir() (string, error) {
+// GetConfigDir : 設定ディレクトリを取得
+func GetConfigDir() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to get home directory: %w", err)
@@ -35,33 +35,13 @@ func getConfigDir() (string, error) {
 	return homeDir, nil
 }
 
-// GetConfigFileNames : 設定ディレクトリ以下のファイル名を取得
-func GetConfigFileNames() ([]string, error) {
-	path, err := getConfigDir()
-	if err != nil {
-		return nil, err
-	}
-
-	entries, err := os.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-
-	fileNames := []string{}
-	for _, e := range entries {
-		fileNames = append(fileNames, e.Name())
-	}
-
-	return fileNames, nil
-}
-
 // LoadCred : 資格情報を読込む
 func (c *Config) LoadCred() error {
 	if !c.hasFileExists(FileNameCred) {
 		return c.SaveCred()
 	}
 
-	return c.load(FileNameCred, c.Credentials)
+	return c.load(FileNameCred, c.Credential)
 }
 
 // LoadPreferences : 環境設定を読込む
@@ -85,7 +65,7 @@ func (c *Config) LoadPreferences() error {
 
 // SaveCred : 資格情報を保存
 func (c *Config) SaveCred() error {
-	return c.save(FileNameCred, c.Credentials)
+	return c.save(FileNameCred, c.Credential)
 }
 
 // SavePreferences : 環境設定を保存

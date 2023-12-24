@@ -9,7 +9,7 @@ type Config struct {
 }
 
 func New() (*Config, error) {
-	path, err := getConfigDir()
+	path, err := GetConfigDir()
 	if err != nil {
 		return nil, err
 	}
