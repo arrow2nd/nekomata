@@ -28,7 +28,7 @@ require (
 	code.rocketnine.space/tslocum/cbind v0.1.5
 	github.com/BurntSushi/toml v1.3.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/skanehira/clipboard-image/v2 v2.0.0
