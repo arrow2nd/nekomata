@@ -26,7 +26,7 @@ require (
 
 require (
 	code.rocketnine.space/tslocum/cbind v0.1.5
-	github.com/BurntSushi/toml v1.3.2
+	github.com/BurntSushi/toml v1.4.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/manifoldco/promptui v0.9.0
