@@ -10,7 +10,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/net v0.28.0
 	golang.org/x/term v0.23.0
-	nhooyr.io/websocket v1.8.11
+	nhooyr.io/websocket v1.8.17
 )
 
 require (
