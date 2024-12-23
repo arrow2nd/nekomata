@@ -8,7 +8,7 @@ require (
 	github.com/rivo/tview v0.0.0-20231126152417-33a1d271f2b6
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/net v0.32.0
+	golang.org/x/net v0.33.0
 	golang.org/x/term v0.27.0
 	nhooyr.io/websocket v1.8.17
 )
