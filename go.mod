@@ -3,7 +3,7 @@ module github.com/arrow2nd/nekomata
 go 1.20
 
 require (
-	github.com/gdamore/tcell/v2 v2.7.4
+	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/rivo/tview v0.0.0-20231126152417-33a1d271f2b6
 	github.com/spf13/pflag v1.0.5
@@ -16,7 +16,7 @@ require (
 require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/chzyer/readline v1.5.1 // indirect
-	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/encoding v1.0.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 	github.com/rivo/uniseg v0.4.4 // indirect
