@@ -6,7 +6,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/rivo/tview v0.0.0-20231126152417-33a1d271f2b6
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.34.0
 	golang.org/x/term v0.28.0
