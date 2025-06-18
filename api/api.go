@@ -17,7 +17,7 @@ const (
 func GetAllServices() []string {
 	return []string{
 		ServiceMastodon,
-		// Misskey,
+		ServiceMisskey,
 	}
 }
 

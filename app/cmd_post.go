@@ -136,10 +136,15 @@ func submitPost(opts *submitPostOpts) {
 		}
 	}
 
-	// TODO: replyID があれば ReplyPost を呼ぶ
-
-	// 送信
-	res, err := global.client.CreatePost(opts.post)
+	// リプライIDがあれば ReplyPost を呼ぶ
+	var res *sharedapi.Post
+	var err error
+	
+	if opts.replyID != "" {
+		res, err = global.client.ReplyPost(opts.replyID, opts.post)
+	} else {
+		res, err = global.client.CreatePost(opts.post)
+	}
 	if err != nil {
 		global.SetErrorStatus("Post", err.Error())
 	}
