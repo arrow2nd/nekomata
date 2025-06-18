@@ -26,8 +26,13 @@ func (p *postList) actionPost(action string) {
 
 		switch action {
 		case config.ActionReaction:
-			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
-			result, err = global.client.Reaction(id, "")
+			// デフォルトのリアクション（👍）、既にリアクションがある場合はそれを使用
+			reactionName := "👍"
+			if len(target.Reactions) > 0 {
+				// 既存のリアクションから最初のものを使用
+				reactionName = target.Reactions[0].Name
+			}
+			result, err = global.client.Reaction(id, reactionName)
 		case config.ActionUnreaction:
 			result, err = global.client.Unreaction(id)
 		case config.ActionRepost:
@@ -50,13 +55,47 @@ func (p *postList) actionPost(action string) {
 		// ステータスを反映
 		switch action {
 		case config.ActionReaction:
-			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
-			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, 1)
-			target.Reactions = result.Reactions
+			// リアクション結果をマージ
+			if len(result.Reactions) > 0 {
+				// 既存のリアクションを更新
+				for i, targetReaction := range target.Reactions {
+					for _, resultReaction := range result.Reactions {
+						if targetReaction.Name == resultReaction.Name {
+							target.Reactions[i] = resultReaction
+							break
+						}
+					}
+				}
+			} else if len(target.Reactions) > 0 {
+				// フォールバック：最初のリアクションの数を増やす
+				target.Reactions[0].Count++
+				target.Reactions[0].Reacted = true
+			} else {
+				// 新しいリアクションを追加
+				target.Reactions = []sharedapi.Reaction{{Name: "👍", Count: 1, Reacted: true}}
+			}
 		case config.ActionUnreaction:
-			// TODO: リアクション種別が複数ある場合どうにかする (Misskey)
-			synchronizeResponseCounts(target.Reactions[0].Count, &result.Reactions[0].Count, -1)
-			target.Reactions = result.Reactions
+			// リアクション削除結果をマージ
+			if len(result.Reactions) > 0 {
+				// 既存のリアクションを更新
+				for i, targetReaction := range target.Reactions {
+					for _, resultReaction := range result.Reactions {
+						if targetReaction.Name == resultReaction.Name {
+							target.Reactions[i] = resultReaction
+							break
+						}
+					}
+				}
+			} else if len(target.Reactions) > 0 {
+				// フォールバック：最初のリアクション済みのものを削除
+				for i := range target.Reactions {
+					if target.Reactions[i].Reacted {
+						target.Reactions[i].Count--
+						target.Reactions[i].Reacted = false
+						break
+					}
+				}
+			}
 		case config.ActionRepost:
 			synchronizeResponseCounts(target.RepostCount, &result.RepostCount, 1)
 			target.Reposted = result.Reposted

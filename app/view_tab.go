@@ -72,11 +72,21 @@ func (v *view) drawTab() {
 
 // handleTabHighlight : タブがハイライトされたときのコールバック
 func (v *view) handleTabHighlight(added, removed, remaining []string) {
-	// FIXME: 1つ目のタブを追加した or startupCommand でタブを追加した時にエラーになる
-	//        tview 内部の t.lineIndex の要素数が0の場合があるらしい
+	// 追加されたタブがない場合は何もしない（初期化時のエラー回避）
+	if len(added) == 0 {
+		return
+	}
 
-	// ハイライトされたタブまでスクロール
-	// v.tabBar.ScrollToHighlight()
+	// ハイライトされたタブまでスクロール（エラー回避のため条件付きで実行）
+	if len(v.tabs) > 1 {
+		defer func() {
+			if r := recover(); r != nil {
+				// tview内部のlineIndexエラーをキャッチ
+				// エラーログを出力せずに処理を継続
+			}
+		}()
+		v.tabBar.ScrollToHighlight()
+	}
 
 	// 前のページを非アクティブにする
 	if len(removed) > 0 {
@@ -85,7 +95,10 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 		}
 	}
 
-	// ページを切り替え
-	v.pages.SwitchToPage(added[0])
-	v.pageItems[added[0]].OnActive()
+	// ページの存在チェック
+	if page, ok := v.pageItems[added[0]]; ok {
+		// ページを切り替え
+		v.pages.SwitchToPage(added[0])
+		page.OnActive()
+	}
 }

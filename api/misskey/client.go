@@ -15,7 +15,7 @@ type Misskey struct {
 }
 
 func (m *Misskey) CreatePostURL(post *sharedapi.Post) (string, error) {
-	return "", nil
+	return fmt.Sprintf("%s/notes/%s", m.user.Server, post.ID), nil
 }
 
 // New : 新しいクライアントを生成
@@ -50,8 +50,8 @@ func (m *Misskey) post(endpoint sharedapi.Endpoint, in, out interface{}) error {
 
 	defer res.Body.Close()
 
-	// TODO: 200以外も返ってきてた気がするので修正する
-	if res.StatusCode != http.StatusOK {
+	// Misskeyでは200, 201, 204などが成功レスポンス
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		return sharedapi.NewHTTPError(res)
 	}
 

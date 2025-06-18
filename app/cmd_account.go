@@ -161,15 +161,17 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 		Hidden:    global.isCLI,
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			// TODO: 既にログイン中なら切り替えない
-			// if f.Arg(0) == shared.api.CurrentUser.UserName {
-			// 	return errors.New("account currently logged in")
-			// }
+			targetUsername := f.Arg(0)
+			
+			// 既にログイン中なら切り替えない
+			if targetUsername == global.currentUsername {
+				return fmt.Errorf("account '%s' is currently logged in", targetUsername)
+			}
 
-			// TODO: ログインする
-			// if err := loginAccount(f.Arg(0)); err != nil {
-			// 	return err
-			// }
+			// ログインする
+			if err := login(targetUsername); err != nil {
+				return err
+			}
 
 			// 初期化
 			a.view.Reset()
